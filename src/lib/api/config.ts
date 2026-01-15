@@ -1,16 +1,19 @@
 // Centralized API configuration
 // All API endpoints derive from this base path
 
-// Production API URL (Render backend)
-const PROD_API_URL = 'https://api.corpusai.datanestx.tech';
+// Get API base URL from environment variable
+// MUST be set in .env or deployment environment (Cloudflare Pages)
+// Example: VITE_API_BASE_URL=https://api.corpusai.datanestx.tech/api/v1
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// Development backend URL (FastAPI server)
-const DEV_API_URL = 'http://localhost:8000';
-
-// Use environment variable or fallback based on mode
-// VITE_API_BASE_URL should be set in production environment (Cloudflare Pages)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||
-  (import.meta.env.MODE === 'production' ? PROD_API_URL : DEV_API_URL);
+// Validate that API_BASE_URL is configured
+if (!API_BASE_URL) {
+  throw new Error(
+    'VITE_API_BASE_URL is not configured. Please set it in your environment:\n' +
+    '  Development: VITE_API_BASE_URL=http://localhost:8000/api/v1\n' +
+    '  Production: VITE_API_BASE_URL=https://api.corpusai.datanestx.tech/api/v1'
+  );
+}
 
 export const API_CONFIG = {
   BASE_URL: API_BASE_URL,
@@ -18,7 +21,7 @@ export const API_CONFIG = {
 } as const;
 
 // Get the API base path
-// Note: Backend routes already include /api/v1 prefix, so we return base URL directly
+// Routes are relative paths (e.g., /auth/login) that get appended to this versioned base URL
 export const getApiBasePath = (): string => {
   return API_CONFIG.BASE_URL;
 };
