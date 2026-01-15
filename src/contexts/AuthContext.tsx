@@ -112,12 +112,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithGoogle = useCallback(() => {
     // Redirect to backend Google OAuth endpoint
-    window.location.href = `${API_CONFIG.BASE_URL}/api/v1/auth/google`;
+    window.location.href = `${API_CONFIG.BASE_URL}/auth/google`;
   }, []);
 
   const loginWithGithub = useCallback(() => {
     // Redirect to backend GitHub OAuth endpoint
-    window.location.href = `${API_CONFIG.BASE_URL}/api/v1/auth/github`;
+    window.location.href = `${API_CONFIG.BASE_URL}/auth/github`;
   }, []);
 
   const logout = useCallback(async () => {
