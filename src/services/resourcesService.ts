@@ -1,0 +1,147 @@
+/**
+ * Resources Service for CorpusAI.
+ * Handles API calls for permanent resources (web imports, file uploads).
+ */
+
+import { getApiBasePath } from '@/lib/api/config';
+
+export interface WebSearchResult {
+    title: string;
+    url: string;
+    snippet: string;
+}
+
+export interface SearchResponse {
+    success: boolean;
+    data?: {
+        search_id: string;
+        query: string;
+        results: WebSearchResult[];
+        count: number;
+        usage: {
+            used: number;
+            limit: number;
+        };
+    };
+    error?: string;
+    message?: string;
+    usage?: {  // Also at root level for error responses
+        used: number;
+        limit: number;
+    };
+}
+
+export interface ResourceItem {
+    id: string;
+    file_name: string;
+    file_type: string;
+    resource_type: 'file_upload' | 'web_import' | 'chat_upload';
+    is_permanent: boolean;
+    source_url?: string;
+    created_at: string;
+    status: string;
+}
+
+export interface ResourcesResponse {
+    success: boolean;
+    data?: {
+        resources: ResourceItem[];
+    };
+    error?: string;
+}
+
+export interface ImportResponse {
+    success: boolean;
+    data?: {
+        imported: Array<{
+            id: string;
+            title: string;
+            url: string;
+            status: string;
+        }>;
+        errors: Array<{
+            index: number;
+            title?: string;
+            error: string;
+        }>;
+        imported_count: number;
+    };
+    error?: string;
+}
+
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('corpus_access_token');
+    return {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    };
+};
+
+export const resourcesService = {
+    /**
+     * List all permanent resources for the current user.
+     */
+    async listResources(): Promise<ResourcesResponse> {
+        const response = await fetch(`${getApiBasePath()}/resources`, {
+            headers: getAuthHeaders(),
+        });
+        return response.json();
+    },
+
+    /**
+     * Search web using Perplexity (Resource Page only).
+     * Makes EXACTLY ONE API call, returns up to 20 results.
+     */
+    async searchWeb(query: string): Promise<SearchResponse> {
+        const response = await fetch(`${getApiBasePath()}/resources/search`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ query }),
+        });
+        return response.json();
+    },
+
+    /**
+     * Import selected web search results as permanent resources.
+     */
+    async importResources(searchId: string, selectedIndices: number[]): Promise<ImportResponse> {
+        const response = await fetch(`${getApiBasePath()}/resources/import`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                search_id: searchId,
+                selected_indices: selectedIndices,
+            }),
+        });
+        return response.json();
+    },
+
+    /**
+     * Upload a file to Resource Page (permanent).
+     */
+    async uploadResource(file: File): Promise<{ success: boolean; data?: ResourceItem; error?: string }> {
+        const token = localStorage.getItem('corpus_access_token');
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(`${getApiBasePath()}/resources/upload`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            body: formData,
+        });
+        return response.json();
+    },
+
+    /**
+     * Delete a resource (permanent removal).
+     */
+    async deleteResource(resourceId: string): Promise<{ success: boolean; message?: string; error?: string }> {
+        const response = await fetch(`${getApiBasePath()}/resources/${resourceId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(),
+        });
+        return response.json();
+    },
+};
