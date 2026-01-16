@@ -624,8 +624,13 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
             !input.trim() ||
             isStreaming ||
             (currentChat?.attachments?.some(a => a.loading) ?? false) ||
-            // Disable in document-only mode when no file/image uploaded AND no resources selected
-            (dataSource === 'documents' && (!currentChat?.attachments || currentChat.attachments.length === 0) && selectedResources.size === 0)
+            // Only require documents/resources for FIRST message in Documents/Hybrid mode
+            // If chat already has messages, don't require new uploads
+            (hasMessages
+              ? false  // Follow-up messages: never require documents
+              : (dataSource === 'documents' || dataSource === 'hybrid') &&
+              (!currentChat?.attachments || currentChat.attachments.length === 0) &&
+              selectedResources.size === 0)
           }
           size="icon"
           className={cn(
@@ -633,7 +638,11 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
             input.trim() &&
               !isStreaming &&
               !(currentChat?.attachments?.some(a => a.loading) ?? false) &&
-              !(dataSource === 'documents' && (!currentChat?.attachments || currentChat.attachments.length === 0) && selectedResources.size === 0)
+              !(hasMessages
+                ? false
+                : (dataSource === 'documents' || dataSource === 'hybrid') &&
+                (!currentChat?.attachments || currentChat.attachments.length === 0) &&
+                selectedResources.size === 0)
               ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/90 hover:-translate-y-0.5"
               : "bg-muted text-muted-foreground opacity-50 shadow-none cursor-not-allowed"
           )}

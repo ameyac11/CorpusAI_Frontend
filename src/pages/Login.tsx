@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
 import { LandingHeader } from '@/components/layout/LandingHeader';
 import { SocialAuthButtons } from '@/components/auth/SocialAuthButtons';
 import { EmailAuthFlow } from '@/components/auth/EmailAuthFlow';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Login() {
+  const { resolvedTheme } = useTheme();
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background decoration */}
@@ -20,9 +22,7 @@ export default function Login() {
         <div className="w-full max-w-xs sm:max-w-sm md:max-w-md">
           {/* Logo */}
           <div className="flex justify-center mb-4 sm:mb-6 animate-fade-in">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl gradient-bg flex items-center justify-center glow-effect animate-float">
-              <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-primary-foreground" />
-            </div>
+            <img src={resolvedTheme === 'dark' ? "/DataNesTX_Logo_Dark_Frontend.png" : "/DataNesTX_Logo_Light_Frontend.png"} alt="DataNesTX Logo" className="w-16 h-16 sm:w-20 sm:h-20 animate-float" />
           </div>
 
           {/* Title */}
@@ -68,6 +68,13 @@ export default function Login() {
             >
               Sign up
             </Link>
+          </p>
+
+          {/* Terms & Privacy */}
+          <p className="text-center text-xs text-muted-foreground mt-3 animate-fade-in" style={{ animationDelay: '500ms' }}>
+            <Link to="/terms" className="underline hover:text-foreground transition-colors">Terms of Service</Link>
+            {' '}•{' '}
+            <Link to="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</Link>
           </p>
         </div>
       </main>

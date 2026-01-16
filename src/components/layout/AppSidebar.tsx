@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FileText, History, Plus, Layers, PanelLeft, MessageSquare, Clock, Search, Pin, Sparkles } from 'lucide-react';
+import { FileText, History, Plus, PanelLeft, MessageSquare, Clock, Search, Pin, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useChat } from '@/contexts/ChatContext';
 import { UserMenu } from './UserMenu';
 import { formatDistanceToNow } from 'date-fns';
@@ -34,6 +35,8 @@ export function AppSidebar({ collapsed, onToggle, isMobile = false, onItemClick 
   const navigate = useNavigate();
   const { chats, currentChat, selectChat, deleteChat, renameChat, starChat, createNewChat } = useChat();
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const { resolvedTheme } = useTheme();
 
   // Debug logging
   console.log('[AppSidebar] Chats from context:', chats);
@@ -97,16 +100,14 @@ export function AppSidebar({ collapsed, onToggle, isMobile = false, onItemClick 
           {collapsed ? (
             <button
               onClick={handleLogoClick}
-              className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+              className="w-12 h-12 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
             >
-              <Layers className="w-5 h-5 text-primary-foreground" />
+              <img src={resolvedTheme === 'dark' ? "/DataNesTX_Logo_Dark_Frontend.png" : "/DataNesTX_Logo_Light_Frontend.png"} alt="DataNesTX Logo" className="w-12 h-12" />
             </button>
           ) : (
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl gradient-bg flex items-center justify-center">
-                  <Layers className="w-4 h-4 text-primary-foreground" />
-                </div>
+                <img src={resolvedTheme === 'dark' ? "/DataNesTX_Logo_Dark_Frontend.png" : "/DataNesTX_Logo_Light_Frontend.png"} alt="DataNesTX Logo" className="w-12 h-12" />
                 <span className="font-semibold text-sm text-sidebar-foreground">CorpusAI</span>
                 <span className="text-[10px] bg-green-500/10 text-green-500 border border-green-500/20 px-2 py-0.5 rounded-full ml-2 flex items-center gap-1.5 shadow-[0_0_10px_rgba(34,197,94,0.15)]">
                   <span className="relative flex h-1.5 w-1.5">

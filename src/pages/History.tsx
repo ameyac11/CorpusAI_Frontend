@@ -92,7 +92,7 @@ export default function History() {
       {/* Header */}
       <header className="flex flex-col items-center px-4 sm:px-6 py-4">
         <div className="w-full max-w-3xl flex items-center justify-between mb-4">
-          <h1 className="text-lg font-semibold text-foreground">Chats</h1>
+          <h1 className="text-lg font-semibold text-foreground pl-12 xl:pl-0">Chats</h1>
           <Button variant="outline" size="sm" className="gap-2">
             + New chat
           </Button>

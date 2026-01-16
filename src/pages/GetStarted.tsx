@@ -3,14 +3,17 @@ import { Search, FileText, FlaskConical, Layout, MessageSquare, ArrowRight, Laye
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function GetStarted() {
+    const { resolvedTheme } = useTheme();
+
     return (
         <div className="min-h-screen bg-[#fcfcf9] dark:bg-[#191919] text-foreground font-sans selection:bg-purple-500/20">
             {/* Navbar */}
             <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
                 <div className="flex items-center gap-2">
-                    <Layers className="w-6 h-6" />
+                    <img src={resolvedTheme === 'dark' ? "/DataNesTX_Logo_Dark_Frontend.png" : "/DataNesTX_Logo_Light_Frontend.png"} alt="DataNesTX Logo" className="w-12 h-12" />
                     <span className="text-xl font-medium tracking-tight">CorpusAI</span>
                 </div>
                 <div className="flex items-center gap-6">
@@ -234,8 +237,8 @@ export default function GetStarted() {
                 <div className="max-w-7xl mx-auto px-6 py-12 flex items-center justify-between text-muted-foreground text-sm">
                     <p>© 2026 CorpusAI data engine.</p>
                     <div className="flex gap-6">
-                        <Link to="#" className="hover:text-foreground">Privacy</Link>
-                        <Link to="#" className="hover:text-foreground">Terms</Link>
+                        <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
+                        <Link to="/terms" className="hover:text-foreground">Terms</Link>
                     </div>
                 </div>
             </footer>

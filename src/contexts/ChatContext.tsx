@@ -536,8 +536,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const updated = {
         ...chatToUpdate,
         messages: [...chatToUpdate.messages, userMessage, assistantMessage],
-        // Don't update updatedAt timestamp - just move position
-        updatedAt: chatToUpdate.updatedAt,
+        // Update timestamp when sending message to move chat to top
+        updatedAt: new Date(),
         attachments: [], // Clear attachments from chat after adding to message
       };
 
@@ -663,6 +663,38 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           if (hasAttachments) {
             console.log('[sendMessage] Clearing attachments after send');
             clearAttachments();
+          }
+
+          // Refetch chat history to get updated timestamps from backend
+          try {
+            const response = await chatService.getChatHistory();
+            if (response.success && response.data?.chats) {
+              const mappedChats: Chat[] = response.data.chats.map((c: any) => {
+                const created = c.created_at ? new Date(c.created_at) : new Date();
+                const updated = c.updated_at ? new Date(c.updated_at) : created;
+                return {
+                  id: c.id,
+                  title: c.title,
+                  messages: [], // Messages will be loaded when chat is selected
+                  createdAt: isNaN(created.getTime()) ? new Date() : created,
+                  updatedAt: isNaN(updated.getTime()) ? created : updated,
+                  starred: c.starred || false,
+                };
+              });
+              // Update chats list while preserving messages for current chat
+              setChats(prev => {
+                return mappedChats.map(newChat => {
+                  const existingChat = prev.find(c => c.id === newChat.id);
+                  // Preserve messages if it's the current chat
+                  if (existingChat && existingChat.id === currentChatIdRef.current) {
+                    return { ...newChat, messages: existingChat.messages };
+                  }
+                  return newChat;
+                });
+              });
+            }
+          } catch (error) {
+            console.error('[sendMessage] Failed to refetch chat history:', error);
           }
 
           break;

@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { formatDistanceToNow } from 'date-fns';
 
 interface ChatItemMenuProps {
   chatId: string;
@@ -107,7 +106,7 @@ export function ChatItemMenu({
         </div>
         <p className="text-xs text-muted-foreground flex items-center gap-1">
           <Clock className="w-3 h-3" />
-          {formatDistanceToNow(updatedAt, { addSuffix: true })}
+          {updatedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </p>
       </div>
       <DropdownMenu>

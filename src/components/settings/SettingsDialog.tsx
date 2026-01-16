@@ -270,11 +270,11 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[800px] w-[95vw] sm:w-[800px] h-[85vh] sm:h-[600px] p-0 gap-0 overflow-hidden bg-background border-zinc-800 [&>button]:hidden shadow-2xl">
-        <div className="flex flex-col sm:flex-row h-full">
+      <DialogContent className="max-w-[800px] w-full xl:w-[800px] h-screen xl:h-[600px] p-0 gap-0 overflow-hidden bg-background xl:border-zinc-800 border-0 xl:rounded-lg rounded-none [&>button]:hidden shadow-2xl xl:shadow-2xl shadow-none">
+        <div className="flex flex-col xl:flex-row h-full">
           {/* Sidebar - Horizontal on mobile, vertical on desktop */}
-          <div className="sm:w-60 bg-secondary/20 border-b sm:border-b-0 sm:border-r border-border p-3 sm:p-4 flex sm:flex-col backdrop-blur-sm shrink-0">
-            <div className="hidden sm:block mb-6 px-2 pt-2">
+          <div className="xl:w-60 bg-secondary/20 border-b xl:border-b-0 xl:border-r border-border p-3 xl:p-4 flex xl:flex-col backdrop-blur-sm shrink-0">
+            <div className="hidden xl:block mb-6 px-2 pt-2">
               <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                 <div className="w-2 h-6 rounded-full bg-primary/80" />
                 Settings
@@ -282,13 +282,13 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             </div>
 
             {/* Mobile: horizontal scroll tabs */}
-            <nav className="flex sm:flex-col gap-1 sm:gap-1.5 flex-1 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0">
+            <nav className="flex xl:flex-col gap-1 xl:gap-1.5 flex-1 overflow-x-auto xl:overflow-visible pb-1 xl:pb-0">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    'flex items-center gap-2 sm:gap-3 px-3 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 group whitespace-nowrap shrink-0 sm:shrink sm:w-full',
+                    'flex items-center gap-2 xl:gap-3 px-3 py-2 xl:py-2.5 rounded-lg text-sm transition-all duration-200 group whitespace-nowrap shrink-0 xl:shrink xl:w-full',
                     activeTab === tab.id
                       ? 'bg-primary/10 text-primary font-medium shadow-sm'
                       : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
@@ -298,11 +298,11 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                     "w-4 h-4 transition-colors shrink-0",
                     activeTab === tab.id ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                   )} />
-                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="hidden xl:inline">{tab.label}</span>
                 </button>
               ))}
             </nav>
-            <div className="hidden sm:block mt-auto px-2">
+            <div className="hidden xl:block mt-auto px-2">
               <p className="text-[10px] text-muted-foreground text-center opacity-50">
                 v2.4.0 (Build 8902)
               </p>
@@ -312,8 +312,8 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           {/* Content Area */}
           <div className="flex-1 flex flex-col min-w-0 bg-background/50 overflow-hidden">
             {/* Header with Close */}
-            <div className="flex items-center justify-between sm:justify-end p-3 sm:p-4 pb-0 shrink-0">
-              <h2 className="sm:hidden text-base font-semibold text-foreground">
+            <div className="flex items-center justify-between xl:justify-end p-3 xl:p-4 pb-0 shrink-0">
+              <h2 className="xl:hidden text-base font-semibold text-foreground">
                 {tabs.find(t => t.id === activeTab)?.label}
               </h2>
               <button
@@ -325,7 +325,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-8 pt-2">
+            <div className="flex-1 overflow-y-auto p-4 xl:p-8 pt-2">
               {renderContent()}
             </div>
           </div>

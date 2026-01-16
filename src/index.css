@@ -317,3 +317,17 @@ code,
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-muted-foreground/30;
 }
+
+/* Mobile safe area padding */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

@@ -158,7 +158,7 @@ export default function Documents() {
             id: r.id,
             name: r.file_name,
             type: (r.file_type.split('/').pop() as DocumentType) || 'pdf',
-             // Convert bytes to MB here since the API returns bytes
+            // Convert bytes to MB here since the API returns bytes
             size: (r.size || 0) / (1024 * 1024),
             status: r.status === 'processed' ? 'ready' : 'processing' as DocumentStatus,
             uploadedAt: new Date(r.created_at),
@@ -674,7 +674,7 @@ export default function Documents() {
       {/* Header */}
       <div className="p-3 sm:p-4 border-b border-border">
         <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pl-12 xl:pl-0">
             <FileText className="w-5 h-5 text-muted-foreground" />
             <h1 className="text-base sm:text-lg font-semibold text-foreground">Resources</h1>
           </div>

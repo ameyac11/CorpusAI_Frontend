@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Layers, Moon, Sun, Menu, X } from 'lucide-react';
+import { Moon, Sun, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -41,14 +41,14 @@ export function LandingHeader() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-          ? 'bg-[#fcfcf9]/80 dark:bg-[#191919]/80 backdrop-blur-xl border-b border-border shadow-sm'
-          : 'bg-transparent border-transparent'
+        ? 'bg-[#fcfcf9]/80 dark:bg-[#191919]/80 backdrop-blur-xl border-b border-border shadow-sm'
+        : 'bg-transparent border-transparent'
         }`}
     >
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
-          <Layers className="w-6 h-6 text-purple-600 transition-transform duration-300 group-hover:scale-110" />
+          <img src={resolvedTheme === 'dark' ? "/DataNesTX_Logo_Dark_Frontend.png" : "/DataNesTX_Logo_Light_Frontend.png"} alt="DataNesTX Logo" className="w-12 h-12 transition-transform duration-300 group-hover:scale-110" />
           <span className="text-xl font-medium tracking-tight text-foreground">CorpusAI</span>
         </Link>
 

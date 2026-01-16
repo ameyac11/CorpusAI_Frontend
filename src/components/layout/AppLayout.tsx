@@ -6,14 +6,25 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
+import { MobileChatView } from '@/components/mobile/MobileChatView';
 
 export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [docsSidebarOpen, setDocsSidebarOpen] = useState(false);
   const [wasNavOpen, setWasNavOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1280);
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1280);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Show loading while checking authentication
   if (isLoading) {
@@ -54,45 +65,69 @@ export function AppLayout() {
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
-      {/* Mobile Hamburger Menu - Only visible below xl breakpoint */}
-      <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="fixed top-4 left-4 z-50 xl:hidden rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md"
-          >
-            <Menu className="w-5 h-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-64 xl:hidden">
-          <AppSidebar
-            collapsed={false}
-            onToggle={() => { }}
-            isMobile={true}
-            onItemClick={() => setMobileSidebarOpen(false)}
-          />
-        </SheetContent>
-      </Sheet>
+      {/* Mobile Chat View - Renders its own UI with built-in header */}
+      {isMobile && location.pathname === '/chat' ? (
+        <>
+          {/* Mobile Sidebar Sheet - triggered by MobileChatView header */}
+          <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+            <SheetContent side="left" className="p-0 w-[85vw] max-w-[320px]">
+              <AppSidebar
+                collapsed={false}
+                onToggle={() => { }}
+                isMobile={true}
+                onItemClick={() => setMobileSidebarOpen(false)}
+              />
+            </SheetContent>
+          </Sheet>
 
-      {/* Desktop Sidebar - Only visible at xl breakpoint and above */}
-      <div className="hidden xl:block relative">
-        <AppSidebar
-          collapsed={sidebarCollapsed}
-          onToggle={handleNavToggle}
-          isMobile={false}
-        />
-      </div>
+          <MobileChatView onOpenSidebar={() => setMobileSidebarOpen(true)} />
+        </>
+      ) : (
+        <>
+          {/* Mobile Hamburger Menu - Only visible below xl breakpoint, hidden on mobile /chat (uses MobileChatView) */}
+          {!(isMobile && location.pathname === '/chat') && (
+            <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="fixed top-4 left-4 z-50 xl:hidden rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md"
+                >
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-64 xl:hidden">
+                <AppSidebar
+                  collapsed={false}
+                  onToggle={() => { }}
+                  isMobile={true}
+                  onItemClick={() => setMobileSidebarOpen(false)}
+                />
+              </SheetContent>
+            </Sheet>
+          )}
 
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {location.pathname === '/chat' ? (
-          <Outlet context={{ docsSidebarOpen, setDocsSidebarOpen: handleDocsSidebarChange }} />
-        ) : (
-          <Outlet />
-        )}
-      </main>
+          {/* Desktop Sidebar - Only visible at xl breakpoint and above */}
+          <div className="hidden xl:block relative">
+            <AppSidebar
+              collapsed={sidebarCollapsed}
+              onToggle={handleNavToggle}
+              isMobile={false}
+            />
+          </div>
+
+          <main className="flex-1 flex flex-col overflow-hidden">
+            {location.pathname === '/chat' ? (
+              <Outlet context={{ docsSidebarOpen, setDocsSidebarOpen: handleDocsSidebarChange }} />
+            ) : (
+              <Outlet />
+            )}
+          </main>
+        </>
+      )}
 
       <OnboardingTour />
     </div>
   );
 }
+
