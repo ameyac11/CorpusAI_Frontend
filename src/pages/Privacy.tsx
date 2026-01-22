@@ -53,7 +53,7 @@ export default function Privacy() {
                 <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
                   1. Information We Collect
                 </h2>
-                
+
                 <h3 className="text-xl font-medium text-zinc-900 dark:text-zinc-100 mb-3 mt-6">
                   a) Account Information
                 </h3>
@@ -253,7 +253,8 @@ export default function Privacy() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="DataNesTX Logo" className="w-10 h-10" />
+              <img src="/DataNesTX_Logo_Light_Frontend.png" alt="DataNesTX Logo" className="w-10 h-10 block dark:hidden" />
+              <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-10 h-10 hidden dark:block" />
               <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">CorpusAI</span>
             </div>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">

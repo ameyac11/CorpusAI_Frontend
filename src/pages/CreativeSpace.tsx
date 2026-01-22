@@ -247,8 +247,8 @@ export default function CreativeSpace() {
     <div className="flex-1 flex flex-col h-full bg-background overflow-hidden relative">
       {/* Coming Soon Overlay */}
       <div className="absolute inset-0 z-50 bg-background/60 backdrop-blur-md flex flex-col items-center justify-center text-center p-6">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center mb-6 shadow-xl shadow-purple-500/20 animate-pulse">
-          <Sparkles className="w-8 h-8 text-white" />
+        <div className="w-20 h-20 rounded-2xl bg-black border border-white/10 flex items-center justify-center mb-6 shadow-2xl shadow-black/50 animate-pulse">
+          <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-12 h-12 object-contain" />
         </div>
         <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-3">
           Coming Soon

@@ -5,14 +5,21 @@ import { useChat } from '@/contexts/ChatContext';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export default function History() {
-  const { chats, selectChat, deleteChat, renameChat, starChat } = useChat();
+  const { chats, selectChat, deleteChat, renameChat, starChat, createNewChat } = useChat();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [selectedChats, setSelectedChats] = useState<Set<string>>(new Set());
   const [hoveredChatId, setHoveredChatId] = useState<string | null>(null);
+
+  const handleNewChat = () => {
+    createNewChat();
+    navigate('/chat');
+  };
 
   const filteredChats = chats.filter(chat =>
     chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -93,7 +100,7 @@ export default function History() {
       <header className="flex flex-col items-center px-4 sm:px-6 py-4">
         <div className="w-full max-w-3xl flex items-center justify-between mb-4">
           <h1 className="text-lg font-semibold text-foreground pl-12 xl:pl-0">Chats</h1>
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2" onClick={handleNewChat}>
             + New chat
           </Button>
         </div>

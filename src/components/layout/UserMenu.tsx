@@ -46,9 +46,6 @@ export function UserMenu({ collapsed = false }: UserMenuProps) {
                 <p className="text-sm font-medium text-sidebar-foreground truncate">
                   {isAuthenticated ? user?.username : 'Guest'}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {isAuthenticated ? user?.email : 'Not logged in'}
-                </p>
               </div>
             )}
           </button>

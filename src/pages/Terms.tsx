@@ -211,7 +211,8 @@ export default function Terms() {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
-                            <img src="/logo.png" alt="DataNesTX Logo" className="w-10 h-10" />
+                            <img src="/DataNesTX_Logo_Light_Frontend.png" alt="DataNesTX Logo" className="w-10 h-10 block dark:hidden" />
+                            <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-10 h-10 hidden dark:block" />
                             <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">CorpusAI</span>
                         </div>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">

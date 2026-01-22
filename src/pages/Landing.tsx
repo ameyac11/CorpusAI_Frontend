@@ -20,12 +20,13 @@ import {
     Rocket,
     Code,
     LineChart,
-    UsersRound
+    UsersRound,
+    ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LandingHeader } from '@/components/layout/LandingHeader';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const fadeInUp = {
     initial: { opacity: 0, y: 20 },
@@ -125,15 +126,11 @@ const faqs = [
     },
     {
         question: 'What file types are supported?',
-        answer: 'We support PDF, DOCX, TXT, and image files (PNG, JPG). We use OCR technology for image-based documents to extract text automatically.',
+        answer: 'We support PDF, DOCX, TXT, and image files (PNG, JPG).',
     },
     {
         question: 'Is my data secure?',
         answer: 'Absolutely. All documents are encrypted both at rest and in transit. We never share your data with third parties and you can delete your documents at any time.',
-    },
-    {
-        question: 'Can I use CorpusAI for free?',
-        answer: 'Yes! Our free plan includes document uploads and messages. Perfect for getting started.',
     },
     {
         question: 'How accurate are the AI responses?',
@@ -158,6 +155,7 @@ export default function Landing() {
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -511,24 +509,49 @@ export default function Landing() {
                         </h2>
                     </motion.div>
 
-                    <div className="max-w-4xl mx-auto grid gap-6">
-                        {faqs.map((faq, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 10 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="p-8 bg-white dark:bg-black rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-[#7756AF]/30 transition-all cursor-pointer group"
-                            >
-                                <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-3 group-hover:text-[#7756AF] transition-colors">
-                                    {faq.question}
-                                </h3>
-                                <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed font-light">
-                                    {faq.answer}
-                                </p>
-                            </motion.div>
-                        ))}
+                    <div className="max-w-3xl mx-auto space-y-4">
+                        {faqs.map((faq, index) => {
+                            const isOpen = openIndex === index;
+
+                            return (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="bg-white dark:bg-black rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
+                                >
+                                    <button
+                                        onClick={() => setOpenIndex(isOpen ? null : index)}
+                                        className="w-full flex items-center justify-between p-6 text-left group transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+                                    >
+                                        <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-[#7756AF] transition-colors pr-8">
+                                            {faq.question}
+                                        </h3>
+                                        <div className={`shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                                            <ChevronDown className="w-5 h-5 text-zinc-400 group-hover:text-[#7756AF]" />
+                                        </div>
+                                    </button>
+                                    <AnimatePresence>
+                                        {isOpen && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                            >
+                                                <div className="px-6 pb-6 pt-0">
+                                                    <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed font-light border-t border-zinc-100 dark:border-zinc-800 pt-4">
+                                                        {faq.answer}
+                                                    </p>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </div>
             </section>
@@ -575,7 +598,7 @@ export default function Landing() {
                                         </div>
                                         <div>
                                             <p className="text-sm text-zinc-500 dark:text-zinc-400 font-light">Location</p>
-                                            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">San Francisco, CA</p>
+                                            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">India</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4">
@@ -666,7 +689,8 @@ export default function Landing() {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
-                            <img src="/logo.png" alt="DataNesTX Logo" className="w-12 h-12" />
+                            <img src="/DataNesTX_Logo_Light_Frontend.png" alt="DataNesTX Logo" className="w-12 h-12 block dark:hidden" />
+                            <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-12 h-12 hidden dark:block" />
                             <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">CorpusAI</span>
                         </div>
                         <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
