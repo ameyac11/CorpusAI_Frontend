@@ -41,14 +41,6 @@ interface AuthResponse {
   message?: string;
 }
 
-// Store tokens after successful auth
-const storeTokens = (tokens: AuthTokens): void => {
-  tokenStorage.setToken(tokens.accessToken);
-  if (tokens.refreshToken) {
-    tokenStorage.setRefreshToken(tokens.refreshToken);
-  }
-};
-
 export const authService = {
   async login(credentials: LoginCredentials): Promise<ApiResponse<User & { providers?: string[]; emailVerified?: boolean }>> {
     try {
@@ -79,7 +71,7 @@ export const authService = {
         };
       }
 
-      // Step 3: Get our backend JWT tokens
+      // Step 3: Get our backend JWT tokens (stored in HTTP-only cookies)
       const response = await apiPost<{ success: boolean; data: AuthResponse; error?: string }>(
         API_ROUTES.AUTH.LOGIN,
         credentials
@@ -87,7 +79,7 @@ export const authService = {
 
       if (response.success && response.data?.data) {
         const authData = response.data.data;
-        storeTokens(authData.tokens);
+        // Tokens are now in HTTP-only cookies, no need to store in localStorage
         return {
           data: {
             id: authData.user.id,
@@ -136,7 +128,7 @@ export const authService = {
 
     if (response.success && response.data?.data) {
       const authData = response.data.data;
-      storeTokens(authData.tokens);
+      // Tokens are now in HTTP-only cookies, no need to store
 
       // Step 2: Create Appwrite session to send verification email
       try {
@@ -191,7 +183,7 @@ export const authService = {
 
     const response = await apiPost<void>(API_ROUTES.AUTH.LOGOUT);
 
-    // Clear tokens regardless of API response
+    // Clear any legacy tokens (cookies are cleared by backend)
     tokenStorage.clearAll();
 
     return response;
@@ -210,25 +202,14 @@ export const authService = {
   },
 
   async refreshToken(): Promise<ApiResponse<AuthTokens>> {
-    const refreshToken = tokenStorage.getRefreshToken();
-
-    if (!refreshToken) {
-      const error: ApiError = {
-        code: 'NO_REFRESH_TOKEN',
-        message: 'No refresh token available',
-        status: 401,
-      };
-      return { data: null, error, success: false };
-    }
-
-    const response = await apiPost<{ success: boolean; data: AuthTokens }>(
-      API_ROUTES.AUTH.REFRESH_TOKEN,
-      { refresh_token: refreshToken }
+    // Refresh token is now in HTTP-only cookie
+    const response = await apiPost<{ success: boolean; data: { message: string }; error?: string }>(
+      API_ROUTES.AUTH.REFRESH_TOKEN
     );
 
-    if (response.success && response.data?.data) {
-      storeTokens(response.data.data);
-      return { data: response.data.data, error: null, success: true };
+    if (response.success) {
+      // Tokens are refreshed in cookies
+      return { data: { accessToken: '', refreshToken: '' }, error: null, success: true };
     }
 
     return { data: null, error: response.error, success: false };
@@ -329,22 +310,10 @@ export const authService = {
     }
   },
 
-  // Handle OAuth callback - parse tokens from URL and store them
-  handleOAuthCallback(params: URLSearchParams): { accessToken: string; refreshToken: string } | null {
-    const accessToken = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-
-    if (accessToken && refreshToken) {
-      storeTokens({ accessToken, refreshToken });
-      return { accessToken, refreshToken };
-    }
-
-    return null;
-  },
-
-  // Check if user has a stored token
-  hasStoredToken(): boolean {
-    return !!tokenStorage.getToken();
+  // Check if user is authenticated (by calling /me endpoint)
+  async isAuthenticated(): Promise<boolean> {
+    const response = await this.getCurrentUser();
+    return response.success;
   },
 
   // Clear auth state

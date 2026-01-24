@@ -32,11 +32,8 @@ export function ChatMessage({ message, isLoading = false, loadingStatus }: ChatM
           } else {
             // Fallback to preview endpoint
             try {
-              const token = localStorage.getItem('corpus_access_token');
-              if (!token) continue;
-
               const response = await fetch(`${getApiBasePath()}/resources/preview/${attachment.id}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include' // Send cookies automatically
               });
 
               if (response.ok) {

@@ -69,13 +69,8 @@ export interface ImportResponse {
     error?: string;
 }
 
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('corpus_access_token');
-    return {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    };
-};
+// Cookies are sent automatically with credentials: 'include'
+// No need for manual auth headers
 
 export const resourcesService = {
     /**
@@ -83,7 +78,7 @@ export const resourcesService = {
      */
     async listResources(): Promise<ResourcesResponse> {
         const response = await fetch(`${getApiBasePath()}/resources`, {
-            headers: getAuthHeaders(),
+            credentials: 'include', // Send cookies
         });
         return response.json();
     },
@@ -95,7 +90,10 @@ export const resourcesService = {
     async searchWeb(query: string): Promise<SearchResponse> {
         const response = await fetch(`${getApiBasePath()}/resources/search`, {
             method: 'POST',
-            headers: getAuthHeaders(),
+            credentials: 'include', // Send cookies
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ query }),
         });
         return response.json();
@@ -107,7 +105,10 @@ export const resourcesService = {
     async importResources(searchId: string, selectedIndices: number[]): Promise<ImportResponse> {
         const response = await fetch(`${getApiBasePath()}/resources/import`, {
             method: 'POST',
-            headers: getAuthHeaders(),
+            credentials: 'include', // Send cookies
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                 search_id: searchId,
                 selected_indices: selectedIndices,
@@ -120,15 +121,12 @@ export const resourcesService = {
      * Upload a file to Resource Page (permanent).
      */
     async uploadResource(file: File): Promise<{ success: boolean; data?: ResourceItem; error?: string }> {
-        const token = localStorage.getItem('corpus_access_token');
         const formData = new FormData();
         formData.append('file', file);
 
         const response = await fetch(`${getApiBasePath()}/resources/upload`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
+            credentials: 'include', // Send cookies
             body: formData,
         });
         return response.json();
@@ -140,7 +138,7 @@ export const resourcesService = {
     async deleteResource(resourceId: string): Promise<{ success: boolean; message?: string; error?: string }> {
         const response = await fetch(`${getApiBasePath()}/resources/${resourceId}`, {
             method: 'DELETE',
-            headers: getAuthHeaders(),
+            credentials: 'include', // Send cookies
         });
         return response.json();
     },

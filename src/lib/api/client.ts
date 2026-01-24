@@ -50,7 +50,7 @@ const mapStatusToErrorCode = (status: number): string => {
   }
 };
 
-// Create headers with auth token
+// Create headers (no auth token needed - using HTTP-only cookies)
 const createHeaders = (customHeaders?: HeadersInit, isFormData: boolean = false): Headers => {
   const headers = new Headers(customHeaders);
 
@@ -58,10 +58,7 @@ const createHeaders = (customHeaders?: HeadersInit, isFormData: boolean = false)
     headers.set('Content-Type', 'application/json');
   }
 
-  const token = tokenStorage.getToken();
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
+  // No longer need Authorization header - cookies are sent automatically
 
   return headers;
 };
@@ -83,6 +80,7 @@ export const apiClient = {
       const response = await fetch(url, {
         ...options,
         headers: createHeaders(options.headers, isFormData),
+        credentials: 'include', // CRITICAL: Send cookies with every request
         signal: controller.signal,
       });
 
@@ -148,16 +146,10 @@ export async function apiDelete<T>(route: string): Promise<ApiResponse<T>> {
 }
 
 export async function apiUpload<T>(route: string, formData: FormData): Promise<ApiResponse<T>> {
-  const token = tokenStorage.getToken();
-  const headers: HeadersInit = {};
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
+  // Cookies are sent automatically with credentials: 'include'
+  // No Authorization header needed for file uploads
   return apiClient.request<T>(route, {
     method: 'POST',
     body: formData,
-    headers,
   });
 }

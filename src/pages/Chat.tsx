@@ -1375,14 +1375,14 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
             sideOffset={10}
             className={cn(
               "mb-2 p-0 overflow-hidden rounded-3xl border border-border shadow-xl",
-              "transition-[width,height] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+              "transition-[width,height] duration-500 ease-&lsqb;cubic-bezier(0.32,0.72,0,1)&rsqb;",
               showContactForm ? "w-[400px]" : "w-64",
               // Ensure entry animation is from bottom
               "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=top]:slide-in-from-bottom-2"
             )}
           >
             <div className={cn(
-              "transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+              "transition-all duration-500 ease-&lsqb;cubic-bezier(0.32,0.72,0,1)&rsqb;",
               // Use a wrapper to help smooth height transitions if possible, or just let content dictate
             )}>
               {!showContactForm ? (

@@ -875,12 +875,12 @@ export default function Documents() {
 
       {/* Add Resources Modal - Professional & Clean */}
       <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
-        <DialogContent className="sm:max-w-[600px] p-0 gap-0 bg-black border border-zinc-800/50 [&>button]:hidden">
+        <DialogContent className="sm:max-w-[600px] p-0 gap-0 bg-background border border-border [&>button]:hidden">
           {/* Header */}
           <div className="relative pt-6">
             <button
               onClick={() => setAddModalOpen(false)}
-              className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 transition-colors p-1 z-10"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-1 z-10"
             >
               <X className="w-5 h-5" />
             </button>
@@ -888,16 +888,16 @@ export default function Documents() {
           <div className="px-8 py-6 space-y-6">
             {/* Web Search Section */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-zinc-300">Search Web Resources</label>
+              <label className="text-sm font-medium text-foreground">Search Web Resources</label>
               <form onSubmit={handleWebSearch}>
                 <div className="relative">
-                  <Search className="w-4.5 h-4.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+                  <Search className="w-4.5 h-4.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
                     type="text"
                     placeholder="Search articles, papers, documentation..."
                     value={webSearchQuery}
                     onChange={(e) => setWebSearchQuery(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 rounded-lg bg-zinc-900/50 border border-zinc-800 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-zinc-700 focus:bg-zinc-900/80 transition-all"
+                    className="w-full pl-11 pr-4 py-3 rounded-lg bg-secondary/50 border border-input text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:bg-secondary/80 transition-all"
                   />
                 </div>
               </form>
@@ -906,16 +906,16 @@ export default function Documents() {
             {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-zinc-800/50"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center">
-                <span className="px-3 text-xs text-zinc-600 bg-black">OR</span>
+                <span className="px-3 text-xs text-muted-foreground bg-background">OR</span>
               </div>
             </div>
 
             {/* Upload Section */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-zinc-300">Upload from Device</label>
+              <label className="text-sm font-medium text-foreground">Upload from Device</label>
 
               {/* Drag and Drop Area */}
               <div
@@ -925,19 +925,19 @@ export default function Documents() {
                 className={cn(
                   "border-2 border-dashed rounded-lg py-10 px-6 text-center transition-all duration-200",
                   isDragging
-                    ? "border-zinc-600 bg-zinc-900/50"
-                    : "border-zinc-800/80 bg-zinc-900/20 hover:border-zinc-700 hover:bg-zinc-900/30"
+                    ? "border-primary bg-primary/5"
+                    : "border-border bg-secondary/20 hover:border-primary/50 hover:bg-secondary/40"
                 )}
               >
                 <div className="flex flex-col items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-                    <Upload className="w-5 h-5 text-zinc-400" />
+                  <div className="w-12 h-12 rounded-full bg-secondary border border-border flex items-center justify-center">
+                    <Upload className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm text-zinc-300 font-medium mb-1">
+                    <p className="text-sm text-foreground font-medium mb-1">
                       {isDragging ? "Drop files here" : "Drag and drop your files"}
                     </p>
-                    <p className="text-xs text-zinc-500">
+                    <p className="text-xs text-muted-foreground">
                       Supports PDF, DOCX, TXT, PNG, JPG, JPEG
                     </p>
                   </div>
@@ -947,7 +947,7 @@ export default function Documents() {
               {/* Upload Button */}
               <label className="block cursor-pointer">
                 <input type="file" multiple onChange={handleFileInput} className="hidden" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" />
-                <div className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white text-black font-medium text-sm hover:bg-zinc-100 transition-colors">
+                <div className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors shadow-sm">
                   <Upload className="w-4 h-4" />
                   Browse Files
                 </div>

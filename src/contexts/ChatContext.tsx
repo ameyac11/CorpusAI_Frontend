@@ -125,11 +125,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     if (!isAuthenticated) return;
 
     try {
-      const token = localStorage.getItem('corpus_access_token');
-      if (!token) return;
-
       const response = await fetch(`${getApiBasePath()}/rate-limit/status`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        credentials: 'include' // Send cookies automatically
       });
 
       if (response.ok) {

@@ -106,18 +106,13 @@ export const chatService = {
     };
 
     try {
-      const token = localStorage.getItem('corpus_access_token');
-      if (!token) {
-        yield { token: '', done: true, error: 'Not authenticated' };
-        return;
-      }
-
+      // Cookies are sent automatically with credentials: 'include'
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
+        credentials: 'include', // Send cookies automatically
         body: JSON.stringify(body),
       });
 
@@ -254,15 +249,10 @@ export const chatService = {
     const url = `${getApiBasePath()}${API_ROUTES.CHAT.UPLOAD}`;
 
     try {
-      const token = localStorage.getItem('corpus_access_token');
-      const headers: HeadersInit = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
+      // Cookies are sent automatically with credentials: 'include'
       const response = await fetch(url, {
         method: 'POST',
-        headers,
+        credentials: 'include', // Send cookies automatically
         body: formData,
       });
 

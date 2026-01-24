@@ -30,21 +30,20 @@ export default function OAuthCallback() {
                 return;
             }
 
-            // Try to parse tokens from URL
-            const tokens = authService.handleOAuthCallback(searchParams);
-
-            if (tokens) {
+            // Cookies are already set by backend, just verify authentication
+            const provider = searchParams.get('provider');
+            if (provider) {
                 setStatus('success');
                 setMessage('Authentication successful! Redirecting...');
 
-                // Refresh auth state
+                // Refresh auth state (will read from cookies)
                 await checkAuth();
 
                 // Redirect to onboarding (it will check if completed and redirect to chat)
                 setTimeout(() => navigate('/onboarding'), 1500);
             } else {
                 setStatus('error');
-                setMessage('Invalid callback. Missing authentication tokens.');
+                setMessage('Invalid callback. Please try again.');
                 setTimeout(() => navigate('/login'), 3000);
             }
         };

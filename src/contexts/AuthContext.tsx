@@ -46,12 +46,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Check auth status on app load
   const checkAuth = useCallback(async () => {
-    if (!tokenStorage.getToken()) {
-      setIsLoading(false);
-      return;
-    }
-
+    setIsLoading(true);
     try {
+      // Always try to get current user (cookies are sent automatically)
       const response = await authService.getCurrentUser();
       if (response.success && response.data) {
         setUser({
@@ -61,11 +58,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           providers: response.data.providers,
         });
       } else {
-        // Token invalid, clear it
-        tokenStorage.clearAll();
+        // No valid session
+        setUser(null);
+        tokenStorage.clearAll(); // Clean up any legacy tokens
       }
     } catch (error) {
-      tokenStorage.clearAll();
+      setUser(null);
+      tokenStorage.clearAll(); // Clean up any legacy tokens
     } finally {
       setIsLoading(false);
     }
