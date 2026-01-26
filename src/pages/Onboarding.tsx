@@ -134,74 +134,83 @@ export default function Onboarding() {
     }
 
     return (
-        <div className="min-h-screen bg-background flex flex-col">
-            {/* Background decoration */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse-slow" />
-                <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+        <div className="min-h-screen relative flex flex-col overflow-hidden">
+            {/* Background Image */}
+            <div
+                className="absolute inset-0 z-0"
+                style={{
+                    backgroundImage: 'url("/background.png")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                }}
+            >
+                <div className="absolute inset-0 bg-black/40" />
             </div>
 
             {/* Content */}
             <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 relative z-10">
-                {/* Progress indicator */}
-                {step < totalSteps && (
-                    <div className="w-full max-w-md mb-8">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-muted-foreground">
-                                Step {step} of {totalSteps - 1}
-                            </span>
-                            <span className="text-sm text-muted-foreground">
-                                {Math.round((step / (totalSteps - 1)) * 100)}%
-                            </span>
+                <div className="w-full max-w-4xl backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-3xl p-8 relative">
+                    {/* Progress indicator */}
+                    {step < totalSteps && (
+                        <div className="w-full max-w-md mx-auto mb-12">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-white/80">
+                                    Step {step} of {totalSteps - 1}
+                                </span>
+                                <span className="text-sm font-medium text-white/80">
+                                    {Math.round((step / (totalSteps - 1)) * 100)}%
+                                </span>
+                            </div>
+                            <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+                                <div
+                                    className="h-full bg-white transition-all duration-500 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                                    style={{ width: `${(step / (totalSteps - 1)) * 100}%` }}
+                                />
+                            </div>
                         </div>
-                        <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                            <div
-                                className="h-full gradient-bg transition-all duration-500"
-                                style={{ width: `${(step / (totalSteps - 1)) * 100}%` }}
-                            />
-                        </div>
+                    )}
+
+                    {/* Step content */}
+                    <div className="w-full text-white button-glass-wrapper">
+                        {renderStep()}
                     </div>
-                )}
 
-                {/* Step content */}
-                <div className="w-full max-w-4xl">
-                    {renderStep()}
-                </div>
-
-                {/* Navigation buttons */}
-                {step < totalSteps && (
-                    <div className="flex items-center gap-3 mt-8">
-                        {step > 1 && (
-                            <Button
-                                variant="outline"
-                                onClick={handleBack}
-                                className="min-w-[120px]"
-                            >
-                                <ArrowLeft className="w-4 h-4 mr-2" />
-                                Back
-                            </Button>
-                        )}
-                        <Button
-                            onClick={handleNext}
-                            disabled={!canProceed() || isLoading}
-                            className="min-w-[120px]"
-                        >
-                            {isLoading ? (
-                                <span className="animate-pulse">Saving...</span>
-                            ) : step === totalSteps - 1 ? (
-                                <>
-                                    Finish
-                                    <Check className="w-4 h-4 ml-2" />
-                                </>
-                            ) : (
-                                <>
-                                    Next
-                                    <ArrowRight className="w-4 h-4 ml-2" />
-                                </>
+                    {/* Navigation buttons */}
+                    {step < totalSteps && (
+                        <div className="flex items-center justify-center gap-4 mt-12">
+                            {step > 1 && (
+                                <Button
+                                    variant="outline"
+                                    onClick={handleBack}
+                                    className="min-w-[140px] bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
+                                >
+                                    <ArrowLeft className="w-4 h-4 mr-2" />
+                                    Back
+                                </Button>
                             )}
-                        </Button>
-                    </div>
-                )}
+                            <Button
+                                onClick={handleNext}
+                                disabled={!canProceed() || isLoading}
+                                className="min-w-[140px] bg-white text-black hover:bg-white/90"
+                            >
+                                {isLoading ? (
+                                    <span className="animate-pulse">Saving...</span>
+                                ) : step === totalSteps - 1 ? (
+                                    <>
+                                        Finish
+                                        <Check className="w-4 h-4 ml-2" />
+                                    </>
+                                ) : (
+                                    <>
+                                        Next
+                                        <ArrowRight className="w-4 h-4 ml-2" />
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

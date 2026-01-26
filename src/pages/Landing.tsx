@@ -161,6 +161,14 @@ export default function Landing() {
         e.preventDefault();
         setIsSubmitting(true);
 
+        // Domain restriction: Only allow sending from the official domain (and localhost for dev)
+        const allowedDomains = ['corpusai.datanestx.tech', 'localhost', '127.0.0.1'];
+        if (!allowedDomains.includes(window.location.hostname)) {
+            toast.error('Security restriction: Contact form can only be sent from corpusai.datanestx.tech');
+            setIsSubmitting(false);
+            return;
+        }
+
         try {
             const formPayload = new FormData();
             formPayload.append('access_key', import.meta.env.VITE_WEB3FORMS_ACCESS_KEY);

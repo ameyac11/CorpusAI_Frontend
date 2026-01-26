@@ -1,55 +1,59 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { LandingHeader } from '@/components/layout/LandingHeader';
 import { SocialAuthButtons } from '@/components/auth/SocialAuthButtons';
 import { EmailAuthFlow } from '@/components/auth/EmailAuthFlow';
-import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Signup() {
-  const { resolvedTheme } = useTheme();
-
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: 'url("/background.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40" /> {/* Overlay for better text contrast */}
       </div>
 
-      <LandingHeader />
+      <main className="relative z-10 w-full max-w-[380px] px-4 animate-in fade-in zoom-in duration-500">
+        {/* Glass Card */}
+        <div className="backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-3xl p-6 text-center">
 
-      <main className="flex-1 flex items-center justify-center px-4 pt-20 pb-8 relative z-10">
-        <div className="w-full max-w-xs sm:max-w-sm md:max-w-md">
           {/* Logo */}
-          <div className="flex justify-center mb-4 sm:mb-6 animate-fade-in">
-            <img src={resolvedTheme === 'dark' ? "/DataNesTX_Logo_Dark_Frontend.png" : "/DataNesTX_Logo_Light_Frontend.png"} alt="DataNesTX Logo" className="w-16 h-16 sm:w-20 sm:h-20 animate-float" />
+          <div className="flex justify-center mb-4">
+            <div className="bg-black/20 p-2.5 rounded-xl backdrop-blur-sm border border-white/10">
+              <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-10 h-10" />
+            </div>
           </div>
 
           {/* Title */}
-          <div className="text-center mb-4 sm:mb-6 animate-slide-up" style={{ animationDelay: '100ms' }}>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1">
-              Create your account
+          <div className="mb-4 space-y-0.5">
+            <h1 className="text-xl font-bold text-white tracking-tight">
+              Create Account
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Start chatting with your documents today
+            <p className="text-xs text-gray-200/80 font-medium">
+              Start chatting with your documents today.
             </p>
           </div>
 
-          {/* Auth Card */}
-          <div
-            className="bg-card rounded-2xl p-4 sm:p-5 space-y-4 sm:space-y-5 border-2 border-border/60 shadow-lg animate-scale-in"
-            style={{ animationDelay: '200ms' }}
-          >
+          <div className="space-y-3">
             {/* Social Buttons */}
-            <SocialAuthButtons />
+            <div className="button-glass-wrapper">
+              <SocialAuthButtons />
+            </div>
+
 
             {/* Divider */}
-            <div className="relative">
+            <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border/80" />
+                <div className="w-full border-t border-white/10" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-3 text-muted-foreground">
+              <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-semibold">
+                <span className="bg-transparent px-2 text-white/50">
                   Or sign up with email
                 </span>
               </div>
@@ -60,24 +64,24 @@ export default function Signup() {
           </div>
 
           {/* Login Link */}
-          <p className="text-center text-sm text-muted-foreground mt-5 animate-fade-in" style={{ animationDelay: '400ms' }}>
+          <p className="text-center text-xs text-gray-300 mt-6">
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-primary hover:underline font-medium transition-colors hover:text-primary/80"
+              className="text-white font-semibold hover:underline decoration-2 transition-all"
             >
               Sign in
             </Link>
           </p>
-
-          {/* Terms */}
-          <p className="text-center text-xs text-muted-foreground mt-3 animate-fade-in" style={{ animationDelay: '500ms' }}>
-            By signing up, you agree to our{' '}
-            <Link to="/terms" className="underline hover:text-foreground transition-colors">Terms of Service</Link>
-            {' '}and{' '}
-            <Link to="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</Link>
-          </p>
         </div>
+
+        {/* Footer */}
+        <p className="text-center text-xs text-white/50 mt-8">
+          By signing up, you agree to our{' '}
+          <Link to="/terms" className="underline hover:text-white transition-colors">Terms</Link>
+          {' '}and{' '}
+          <Link to="/privacy" className="underline hover:text-white transition-colors">Privacy Policy</Link>
+        </p>
       </main>
     </div>
   );
