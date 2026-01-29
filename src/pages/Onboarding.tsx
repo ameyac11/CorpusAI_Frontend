@@ -149,7 +149,7 @@ export default function Onboarding() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-10">
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 relative z-10 w-full overflow-y-auto">
 
                 {/* Progress indicator - Dots */}
                 {step < totalSteps && (
@@ -158,15 +158,15 @@ export default function Onboarding() {
                             <div
                                 key={index}
                                 className={`h-1.5 rounded-full transition-all duration-300 ${index + 1 === step
-                                        ? 'w-8 bg-white'
-                                        : 'w-1.5 bg-white/30'
+                                    ? 'w-8 bg-white'
+                                    : 'w-1.5 bg-white/30'
                                     }`}
                             />
                         ))}
                     </div>
                 )}
 
-                <div className="w-full max-w-lg backdrop-blur-2xl bg-white/10 border border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] rounded-[32px] p-8 md:p-12 relative overflow-hidden">
+                <div className="max-w-5xl backdrop-blur-2xl bg-white/10 border border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] rounded-[32px] p-6 md:p-10 relative overflow-hidden">
 
                     {/* Step content */}
                     <div className="w-full text-center">

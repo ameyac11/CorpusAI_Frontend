@@ -198,7 +198,7 @@ export default function Landing() {
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black font-sans selection:bg-[#7756AF]/20">
+        <div className="min-h-screen bg-[#fcfcf9] dark:bg-[#191919] font-sans selection:bg-[#7756AF]/20">
             <LandingHeader />
 
             {/* Hero Section */}
@@ -237,27 +237,96 @@ export default function Landing() {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.2, duration: 0.5 }}
                         >
-                            <div className="w-full rounded-3xl overflow-hidden relative bg-zinc-900 dark:bg-zinc-800 p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800">
-                                <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
-                                <div className="relative bg-white dark:bg-[#0a0a0a] rounded-2xl p-6 shadow-inner">
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <div className="w-3 h-3 rounded-full bg-red-400/80" />
-                                        <div className="w-3 h-3 rounded-full bg-yellow-400/80" />
-                                        <div className="w-3 h-3 rounded-full bg-green-400/80" />
+                            <div className="w-full h-[400px] md:h-[600px] rounded-[2.5rem] overflow-hidden relative border border-purple-200/60 dark:border-[#2a2438] shadow-2xl shadow-purple-900/10 dark:shadow-black/50 bg-white dark:bg-[#191919] flex">
+                                {/* Decorative Soft Glows */}
+                                <div className="absolute top-0 left-1/4 w-[30rem] h-[30rem] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+                                <div className="absolute bottom-0 right-1/4 w-[30rem] h-[30rem] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+                                {/* Mockup Sidebar */}
+                                <div className="hidden md:flex w-64 flex-col border-r border-purple-200/60 dark:border-[#2a2438] bg-purple-50/50 dark:bg-[#151515]/50 backdrop-blur-sm p-4 z-10">
+                                    <div className="flex items-center gap-2 mb-8 px-2">
+                                        <div className="w-8 h-8 rounded-xl bg-purple-600/10 dark:bg-purple-600/20 flex items-center justify-center text-purple-600">
+                                            <Zap className="w-5 h-5" />
+                                        </div>
+                                        <div className="h-4 w-24 bg-purple-200/50 dark:bg-zinc-800 rounded-full"></div>
                                     </div>
-                                    <div className="space-y-4">
-                                        <div className="flex gap-3 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
-                                            <div className="w-8 h-8 rounded-lg bg-[#7756AF] flex items-center justify-center text-white text-xs font-medium">U</div>
-                                            <div className="flex-1">
-                                                <p className="text-sm text-zinc-900 dark:text-zinc-100">What are the key findings from my research paper?</p>
+                                    <div className="space-y-3">
+                                        {[1, 2, 3].map((i) => (
+                                            <div key={i} className="h-10 w-full rounded-xl bg-white/50 dark:bg-zinc-800/50 flex items-center px-3 gap-3 border border-purple-100/50 dark:border-transparent">
+                                                <div className="w-4 h-4 rounded-full bg-purple-100 dark:bg-zinc-700"></div>
+                                                <div className="h-2 w-20 bg-purple-100 dark:bg-zinc-700 rounded-full"></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-auto space-y-3">
+                                        <div className="h-12 w-full rounded-xl bg-purple-600/10 border border-purple-600/20 flex items-center px-4 gap-3">
+                                            <div className="w-5 h-5 rounded-md bg-purple-600/40"></div>
+                                            <div className="h-2 w-16 bg-purple-600/30 rounded-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Mockup Main Content */}
+                                <div className="flex-1 flex flex-col relative z-10 bg-white/40 dark:bg-[#1a1a1a]/50 backdrop-blur-sm">
+                                    {/* Mockup Header */}
+                                    <div className="h-16 border-b border-purple-200/60 dark:border-[#2a2438] flex items-center justify-between px-6 bg-white/50 dark:bg-transparent">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-4 w-32 bg-purple-100 dark:bg-zinc-800 rounded-full"></div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-zinc-800"></div>
+                                        </div>
+                                    </div>
+
+                                    {/* Mockup Chat Area */}
+                                    <div className="flex-1 p-8 space-y-8 overflow-hidden relative">
+                                        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]"></div>
+
+                                        {/* AI Message */}
+                                        <div className="flex gap-4 max-w-2xl">
+                                            <div className="w-10 h-10 rounded-xl bg-purple-600/10 dark:bg-purple-600/20 flex items-center justify-center shrink-0 border border-purple-100 dark:border-transparent">
+                                                <Sparkles className="w-5 h-5 text-purple-600" />
+                                            </div>
+                                            <div className="space-y-3 flex-1">
+                                                <div className="h-4 w-3/4 bg-purple-100/50 dark:bg-zinc-800 rounded-full"></div>
+                                                <div className="h-4 w-full bg-purple-100/50 dark:bg-zinc-800 rounded-full"></div>
+                                                <div className="h-4 w-5/6 bg-purple-100/50 dark:bg-zinc-800 rounded-full"></div>
+                                                <div className="flex gap-3 mt-4">
+                                                    <div className="h-24 w-40 rounded-xl bg-purple-50 dark:bg-zinc-800 border border-purple-200/60 dark:border-zinc-700"></div>
+                                                    <div className="h-24 w-40 rounded-xl bg-purple-50 dark:bg-zinc-800 border border-purple-200/60 dark:border-zinc-700"></div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="flex gap-3 p-4 rounded-xl bg-white dark:bg-black border border-zinc-100 dark:border-zinc-800 shadow-sm">
-                                            <div className="w-8 h-8 rounded-lg bg-[#F1EBF9] dark:bg-[#7756AF]/20 flex items-center justify-center">
-                                                <Sparkles className="w-4 h-4 text-[#7756AF]" />
+
+                                        {/* User Message */}
+                                        <div className="flex gap-4 max-w-2xl ml-auto flex-row-reverse">
+                                            <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+                                                <div className="w-5 h-5 rounded-full bg-purple-300 dark:bg-zinc-600"></div>
                                             </div>
-                                            <div className="flex-1">
-                                                <p className="text-sm text-zinc-600 dark:text-zinc-300">Based on the analysis, the key findings indicate a significant correlation between...</p>
+                                            <div className="space-y-3 flex-1">
+                                                <div className="h-4 w-full bg-purple-100 dark:bg-purple-900/20 rounded-full ml-auto"></div>
+                                                <div className="h-4 w-2/3 bg-purple-100 dark:bg-purple-900/20 rounded-full ml-auto"></div>
+                                            </div>
+                                        </div>
+
+                                        {/* AI Message 2 */}
+                                        <div className="flex gap-4 max-w-2xl opacity-60">
+                                            <div className="w-10 h-10 rounded-xl bg-purple-600/10 dark:bg-purple-600/20 flex items-center justify-center shrink-0">
+                                                <Sparkles className="w-5 h-5 text-purple-600" />
+                                            </div>
+                                            <div className="space-y-3 flex-1">
+                                                <div className="h-4 w-1/2 bg-purple-50 dark:bg-zinc-800 rounded-full"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    {/* Mockup Input Box */}
+                                    <div className="p-6 border-t border-purple-200/60 dark:border-[#2a2438] bg-white/50 dark:bg-transparent">
+                                        <div className="h-14 w-full rounded-2xl bg-white dark:bg-zinc-900 border border-purple-200/60 dark:border-[#2a2438] flex items-center px-4 justify-between shadow-sm">
+                                            <div className="h-4 w-48 bg-purple-50 dark:bg-zinc-800 rounded-full opacity-50"></div>
+                                            <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center shadow-md shadow-purple-600/20">
+                                                <ArrowRight className="w-4 h-4 text-white" />
                                             </div>
                                         </div>
                                     </div>
@@ -269,7 +338,7 @@ export default function Landing() {
             </section>
 
             {/* Features Section */}
-            <section id="features" className="py-20 px-6 bg-zinc-50 dark:bg-zinc-900/20">
+            <section id="features" className="py-20 px-6 bg-[#fcfcf9] dark:bg-[#191919]">
                 <div className="max-w-7xl mx-auto">
                     <motion.div
                         className="text-center mb-16"
@@ -298,7 +367,7 @@ export default function Landing() {
                                     hidden: { opacity: 0, y: 20 },
                                     show: { opacity: 1, y: 0 }
                                 }}
-                                className="p-8 bg-white dark:bg-black rounded-[2rem] border border-zinc-200 dark:border-zinc-800 hover:border-[#7756AF]/30 transition-all group hover:shadow-lg hover:shadow-[#7756AF]/5"
+                                className="p-8 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10 hover:border-[#7756AF]/30 transition-all group hover:shadow-lg hover:shadow-[#7756AF]/5"
                             >
                                 <div className="w-14 h-14 rounded-2xl bg-[#F1EBF9] dark:bg-[#7756AF]/10 flex items-center justify-center mb-6 group-hover:bg-[#7756AF]/10 dark:group-hover:bg-[#7756AF]/20 transition-colors">
                                     <feature.icon className="w-7 h-7 text-[#7756AF]" />
@@ -328,7 +397,7 @@ export default function Landing() {
                                 whileInView={{ opacity: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="p-6 bg-white dark:bg-black rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 relative group hover:border-[#7756AF]/30 transition-colors"
+                                className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border-2 border-dashed border-purple-100 dark:border-purple-500/10 relative group hover:border-[#7756AF]/30 transition-colors"
                             >
                                 <div className="absolute top-3 right-3 px-2 py-1 bg-[#F1EBF9] dark:bg-[#7756AF]/10 text-[#7756AF] text-xs font-medium rounded-full">
                                     Soon
@@ -365,7 +434,7 @@ export default function Landing() {
 
                     <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
                         <motion.div
-                            className="p-10 bg-zinc-50 dark:bg-zinc-900/30 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 hover:border-[#7756AF]/30 transition-all group"
+                            className="p-10 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10 hover:border-[#7756AF]/30 transition-all group"
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
@@ -395,7 +464,7 @@ export default function Landing() {
                         </motion.div>
 
                         <motion.div
-                            className="p-10 bg-zinc-50 dark:bg-zinc-900/30 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 hover:border-[#7756AF]/30 transition-all group"
+                            className="p-10 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10 hover:border-[#7756AF]/30 transition-all group"
                             initial={{ opacity: 0, x: 20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
@@ -428,7 +497,7 @@ export default function Landing() {
             </section>
 
             {/* Use Cases Section */}
-            <section id="use-cases" className="py-20 px-6 bg-zinc-50 dark:bg-zinc-900/20">
+            <section id="use-cases" className="py-20 px-6 bg-[#fcfcf9] dark:bg-[#191919]">
                 <div className="max-w-7xl mx-auto">
                     <motion.div
                         className="text-center mb-16"
@@ -456,7 +525,7 @@ export default function Landing() {
                                     hidden: { opacity: 0, y: 20 },
                                     show: { opacity: 1, y: 0 }
                                 }}
-                                className="p-8 bg-white dark:bg-black rounded-2xl text-center border border-zinc-200 dark:border-zinc-800 hover:border-[#7756AF]/30 transition-all hover:scale-105"
+                                className="p-8 bg-white dark:bg-zinc-900/50 rounded-[2rem] text-center border border-purple-100 dark:border-purple-500/10 hover:border-[#7756AF]/30 transition-all hover:scale-105"
                             >
                                 <div className="w-16 h-16 rounded-2xl bg-[#F1EBF9] dark:bg-[#7756AF]/10 flex items-center justify-center mx-auto mb-4">
                                     <useCase.icon className="w-8 h-8 text-[#7756AF]" />
@@ -477,21 +546,20 @@ export default function Landing() {
             <section className="py-20 px-6">
                 <div className="max-w-7xl mx-auto">
                     <motion.div
-                        className="relative rounded-[3rem] overflow-hidden bg-zinc-900 dark:bg-zinc-800"
+                        className="relative rounded-[3rem] overflow-hidden bg-white border border-purple-100 dark:border-transparent dark:bg-zinc-900/50"
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
-                        {/* Soft purple glow in background of CTA for variety */}
-                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#7756AF]/20 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
+                        <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay dark:mix-blend-overlay"></div>
+
 
                         <div className="relative p-16 md:p-24 text-center">
-                            <h2 className="text-4xl md:text-5xl font-serif text-white mb-6">
+                            <h2 className="text-4xl md:text-5xl font-serif text-zinc-900 dark:text-white mb-6">
                                 Ready to get started?
                             </h2>
-                            <p className="text-xl text-zinc-300 max-w-2xl mx-auto mb-10 font-light">
+                            <p className="text-xl text-zinc-600 dark:text-zinc-300 max-w-2xl mx-auto mb-10 font-light">
                                 Join thousands of users who are already chatting with their documents.
                             </p>
                             <Link to="/chat">
@@ -506,7 +574,7 @@ export default function Landing() {
             </section>
 
             {/* FAQ Section */}
-            <section id="faq" className="py-20 px-6 bg-zinc-50 dark:bg-zinc-900/20">
+            <section id="faq" className="py-20 px-6 bg-[#fcfcf9] dark:bg-[#191919]">
                 <div className="max-w-7xl mx-auto">
                     <motion.div
                         className="text-center mb-12"
@@ -528,7 +596,7 @@ export default function Landing() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: index * 0.1 }}
-                                    className="bg-white dark:bg-black rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
+                                    className="bg-white dark:bg-zinc-900/50 rounded-[2rem] border border-purple-100 dark:border-purple-500/10 overflow-hidden"
                                 >
                                     <button
                                         onClick={() => setOpenIndex(isOpen ? null : index)}
@@ -588,7 +656,7 @@ export default function Landing() {
                             viewport={{ once: true }}
                             transition={{ duration: 0.5 }}
                         >
-                            <div className="p-8 bg-zinc-50 dark:bg-zinc-900/30 rounded-[2rem] border border-zinc-200 dark:border-zinc-800">
+                            <div className="p-8 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10">
                                 <h3 className="text-xl font-serif text-zinc-900 dark:text-zinc-100 mb-6">Get in Touch</h3>
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-4">
@@ -624,7 +692,7 @@ export default function Landing() {
 
                         {/* Contact Form */}
                         <motion.div
-                            className="p-8 bg-zinc-50 dark:bg-zinc-900/30 rounded-[2rem] border border-zinc-200 dark:border-zinc-800"
+                            className="p-8 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10"
                             initial={{ opacity: 0, x: 20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
@@ -693,7 +761,7 @@ export default function Landing() {
             </section>
 
             {/* Footer */}
-            <footer className="py-12 px-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
+            <footer className="py-12 px-6 border-t border-purple-100 dark:border-[#2a2438] bg-[#fcfcf9] dark:bg-[#191919]">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2">

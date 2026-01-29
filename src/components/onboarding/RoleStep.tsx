@@ -55,8 +55,8 @@ const roles = [
 export function RoleStep({ role, setRole }: RoleStepProps) {
     return (
         <div className="space-y-8 animate-fade-in">
-            <div className="text-center space-y-2">
-                <h2 className="text-3xl font-bold text-white tracking-tight">
+            <div className="text-center space-y-2 mb-6">
+                <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
                     What best describes you?
                 </h2>
                 <p className="text-white/60 text-lg font-light">
@@ -74,28 +74,28 @@ export function RoleStep({ role, setRole }: RoleStepProps) {
                             key={roleOption.id}
                             onClick={() => setRole(roleOption.id)}
                             className={cn(
-                                'group relative p-6 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center h-full',
-                                'hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]',
+                                'group relative p-5 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center h-full',
+                                'hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]',
                                 isSelected
-                                    ? 'border-white/50 bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-105'
-                                    : 'border-white/10 hover:border-white/30 bg-white/5'
+                                    ? 'border-white/40 bg-white/10 shadow-[0_0_30px_rgba(255,255,255,0.1)] scale-105'
+                                    : 'border-white/5 hover:border-white/20 bg-white/[0.03] hover:bg-white/[0.06]'
                             )}
                         >
                             {/* Icon with gradient background */}
                             <div className={cn(
-                                'w-14 h-14 rounded-xl mb-4 flex items-center justify-center transition-transform shadow-lg',
+                                'w-12 h-12 rounded-2xl mb-4 flex items-center justify-center transition-all duration-300 shadow-lg',
                                 'bg-gradient-to-br',
                                 roleOption.color,
-                                isSelected ? 'scale-110' : 'group-hover:scale-110'
+                                isSelected ? 'scale-110 shadow-xl' : 'group-hover:scale-110 group-hover:shadow-lg'
                             )}>
-                                <Icon className="w-7 h-7 text-white" />
+                                <Icon className="w-6 h-6 text-white" />
                             </div>
 
                             {/* Title and description */}
-                            <h3 className="text-lg font-semibold text-white mb-1">
+                            <h3 className="text-lg font-semibold text-white mb-1 tracking-tight">
                                 {roleOption.title}
                             </h3>
-                            <p className="text-sm text-white/60 group-hover:text-white/80 transition-colors">
+                            <p className="text-xs leading-relaxed text-white/50 group-hover:text-white/70 transition-colors">
                                 {roleOption.description}
                             </p>
 
@@ -107,11 +107,11 @@ export function RoleStep({ role, setRole }: RoleStepProps) {
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
+                                        strokeWidth={3}
                                     >
                                         <path
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
-                                            strokeWidth={3}
                                             d="M5 13l4 4L19 7"
                                         />
                                     </svg>

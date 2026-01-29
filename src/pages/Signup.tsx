@@ -21,7 +21,7 @@ export default function Signup() {
 
       <main className="relative z-10 w-full max-w-[380px] px-4 animate-in fade-in zoom-in duration-500">
         {/* Glass Card */}
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-3xl p-6 text-center">
+        <div className="backdrop-blur-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-2xl rounded-3xl p-6 text-center">
 
           {/* Logo */}
           <div className="flex justify-center mb-4">

@@ -52,30 +52,55 @@ export default function OAuthCallback() {
     }, [searchParams, navigate, checkAuth]);
 
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center">
-            <div className="text-center space-y-4">
-                {status === 'loading' && (
-                    <>
-                        <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
-                        <p className="text-muted-foreground">{message}</p>
-                    </>
-                )}
-
-                {status === 'success' && (
-                    <>
-                        <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
-                        <p className="text-foreground font-medium">{message}</p>
-                    </>
-                )}
-
-                {status === 'error' && (
-                    <>
-                        <XCircle className="w-12 h-12 text-destructive mx-auto" />
-                        <p className="text-destructive font-medium">{message}</p>
-                        <p className="text-sm text-muted-foreground">Redirecting to login...</p>
-                    </>
-                )}
+        <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+            {/* Background Image */}
+            <div
+                className="absolute inset-0 z-0"
+                style={{
+                    backgroundImage: 'url("/background.png")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                }}
+            >
+                <div className="absolute inset-0 bg-black/40" />
             </div>
+
+            <main className="relative z-10 w-full max-w-md px-4 animate-in fade-in zoom-in duration-500">
+                {/* Glass Card */}
+                <div className="backdrop-blur-3xl bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-2xl rounded-[32px] p-8 relative overflow-hidden text-center">
+                    {status === 'loading' && (
+                        <div className="space-y-4">
+                            <div className="mx-auto w-16 h-16 bg-white/5 rounded-full flex items-center justify-center animate-pulse">
+                                <Loader2 className="w-8 h-8 text-white animate-spin" />
+                            </div>
+                            <h2 className="text-xl font-semibold text-white">Authenticating...</h2>
+                            <p className="text-white/60">{message}</p>
+                        </div>
+                    )}
+
+                    {status === 'success' && (
+                        <div className="space-y-4">
+                            <div className="mx-auto w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center">
+                                <CheckCircle className="w-8 h-8 text-green-500" />
+                            </div>
+                            <h2 className="text-xl font-semibold text-white">Success!</h2>
+                            <p className="text-white/60">{message}</p>
+                        </div>
+                    )}
+
+                    {status === 'error' && (
+                        <div className="space-y-4">
+                            <div className="mx-auto w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center">
+                                <XCircle className="w-8 h-8 text-red-500" />
+                            </div>
+                            <h2 className="text-xl font-semibold text-white">Authentication Failed</h2>
+                            <p className="text-white/60">{message}</p>
+                            <p className="text-sm text-white/40">Redirecting to login...</p>
+                        </div>
+                    )}
+                </div>
+            </main>
         </div>
     );
 }

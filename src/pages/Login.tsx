@@ -9,7 +9,7 @@ export default function Login() {
   const [showEmailForm, setShowEmailForm] = useState(false);
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-[#1a103c]">
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
       {/* Background Image - Matching Onboarding */}
       <div
         className="absolute inset-0 z-0"
@@ -20,12 +20,12 @@ export default function Login() {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-[#2d1b69]/40 to-[#1a103c]/90" />
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
       <main className="relative z-10 w-full max-w-[400px] px-4 animate-in fade-in zoom-in duration-500">
         {/* Glass Card */}
-        <div className="backdrop-blur-2xl bg-white/10 border border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] rounded-[32px] p-8 relative overflow-hidden">
+        <div className="backdrop-blur-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-2xl rounded-[32px] p-8 relative overflow-hidden">
 
           {/* Logo */}
           <div className="flex justify-center mb-6">

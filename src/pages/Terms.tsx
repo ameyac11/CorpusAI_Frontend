@@ -6,7 +6,7 @@ import { FileText } from 'lucide-react';
 
 export default function Terms() {
     return (
-        <div className="min-h-screen bg-white dark:bg-black font-sans">
+        <div className="min-h-screen bg-[#fcfcf9] dark:bg-[#191919] font-sans">
             <LandingHeader />
 
             {/* Hero Section */}
@@ -40,14 +40,14 @@ export default function Terms() {
                     transition={{ delay: 0.2, duration: 0.5 }}
                 >
                     <div className="prose prose-zinc dark:prose-invert max-w-none">
-                        <div className="bg-zinc-50 dark:bg-zinc-900/30 rounded-2xl p-8 md:p-12 border border-zinc-200 dark:border-zinc-800">
+                        <div className="bg-white dark:bg-zinc-900/50 rounded-[2rem] p-8 md:p-12 border border-purple-100 dark:border-purple-500/10">
                             <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-8">
                                 By accessing or using CorpusAI, you agree to these Terms of Service. If you do not agree, do not use the service.
                             </p>
 
                             {/* Section 1 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     1. Description of Service
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-4">
@@ -60,7 +60,7 @@ export default function Terms() {
 
                             {/* Section 2 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     2. User Accounts
                                 </h2>
                                 <ul className="list-disc list-inside text-zinc-600 dark:text-zinc-300 leading-relaxed mb-6 space-y-2">
@@ -72,7 +72,7 @@ export default function Terms() {
 
                             {/* Section 3 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     3. User Content
                                 </h2>
                                 <ul className="list-disc list-inside text-zinc-600 dark:text-zinc-300 leading-relaxed mb-6 space-y-2">
@@ -84,7 +84,7 @@ export default function Terms() {
 
                             {/* Section 4 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     4. Acceptable Use
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-4">
@@ -103,7 +103,7 @@ export default function Terms() {
 
                             {/* Section 5 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     5. AI Disclaimer
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-4">
@@ -120,7 +120,7 @@ export default function Terms() {
 
                             {/* Section 6 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     6. Service Availability
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-4">
@@ -133,7 +133,7 @@ export default function Terms() {
 
                             {/* Section 7 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     7. Limitation of Liability
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-4">
@@ -151,7 +151,7 @@ export default function Terms() {
 
                             {/* Section 8 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     8. Termination
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-6">
@@ -161,7 +161,7 @@ export default function Terms() {
 
                             {/* Section 9 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     9. Changes to Terms
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-6">
@@ -171,7 +171,7 @@ export default function Terms() {
 
                             {/* Section 10 */}
                             <div className="mb-10">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     10. Governing Law
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-6">
@@ -181,7 +181,7 @@ export default function Terms() {
 
                             {/* Section 11 */}
                             <div className="mb-6">
-                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                                <h2 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 border-b border-zinc-200 dark:border-[#2a2438] pb-3">
                                     11. Contact
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed mb-2">
@@ -207,7 +207,7 @@ export default function Terms() {
             </section>
 
             {/* Footer */}
-            <footer className="py-8 px-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
+            <footer className="py-8 px-6 border-t border-purple-100 dark:border-[#2a2438] bg-[#fcfcf9] dark:bg-[#191919]">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2">

@@ -40,7 +40,7 @@ export default function ResetPassword() {
 
     try {
       const response = await authService.resetPassword(userId, secret, password);
-      
+
       if (response.success) {
         setSuccess(true);
       } else {
@@ -58,8 +58,8 @@ export default function ResetPassword() {
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-md space-y-8 text-center">
           <div className="space-y-4">
-            <h1 className="text-2xl font-bold text-foreground">Invalid Reset Link</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-bold text-white">Invalid Reset Link</h1>
+            <p className="text-white/70">
               This password reset link is invalid. Please request a new one.
             </p>
           </div>
@@ -81,8 +81,8 @@ export default function ResetPassword() {
                 <CheckCircle2 className="w-8 h-8 text-green-500" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">Password Reset!</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-bold text-white">Password Reset!</h1>
+            <p className="text-white/70">
               Your password has been successfully reset. You can now log in with your new password.
             </p>
           </div>
@@ -95,23 +95,36 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: 'url("/background.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md space-y-8 p-8 backdrop-blur-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-2xl rounded-3xl text-center">
         <div className="space-y-2 text-center">
           <div className="flex justify-center mb-4">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
               <Lock className="w-6 h-6 text-primary" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Reset Your Password</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-2xl font-bold text-white">Reset Your Password</h1>
+          <p className="text-sm text-white/70">
             Enter your new password below
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-foreground">
+            <label htmlFor="password" className="text-sm font-medium text-white">
               New Password
             </label>
             <Input
@@ -123,11 +136,12 @@ export default function ResetPassword() {
               disabled={isLoading}
               required
               minLength={8}
+              className="h-12 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-white/10 focus:ring-0 transition-all duration-300"
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
+            <label htmlFor="confirmPassword" className="text-sm font-medium text-white">
               Confirm Password
             </label>
             <Input
@@ -139,6 +153,7 @@ export default function ResetPassword() {
               disabled={isLoading}
               required
               minLength={8}
+              className="h-12 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-white/10 focus:ring-0 transition-all duration-300"
             />
           </div>
 
@@ -163,7 +178,7 @@ export default function ResetPassword() {
             type="button"
             variant="ghost"
             onClick={() => navigate('/login')}
-            className="w-full"
+            className="w-full text-white hover:text-white/80 hover:bg-white/10"
           >
             Back to Login
           </Button>

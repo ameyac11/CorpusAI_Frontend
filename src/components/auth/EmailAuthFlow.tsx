@@ -273,7 +273,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="pl-12 h-12 bg-black/40 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-black/60 focus:ring-0 transition-all duration-300"
+                className="pl-12 h-12 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-white/10 focus:ring-0 transition-all duration-300"
                 autoFocus
               />
             </div>
@@ -296,7 +296,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="pl-12 h-12 bg-black/40 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-black/60 focus:ring-0 transition-all duration-300"
+                className="pl-12 h-12 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-white/10 focus:ring-0 transition-all duration-300"
                 autoFocus
               />
             </div>
@@ -309,7 +309,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="pl-12 h-12 bg-black/40 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-black/60 focus:ring-0 transition-all duration-300"
+                  className="pl-12 h-12 bg-white/5 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-white/10 focus:ring-0 transition-all duration-300"
                 />
               </div>
             )}

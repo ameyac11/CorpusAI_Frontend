@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import { MobileChatView } from '@/components/mobile/MobileChatView';
+import { LoadingScreen } from '@/components/layout/LoadingScreen';
 
 export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -28,14 +29,7 @@ export function AppLayout() {
 
   // Show loading while checking authentication
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   // Redirect to login if not authenticated

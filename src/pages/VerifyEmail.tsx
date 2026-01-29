@@ -23,7 +23,7 @@ export default function VerifyEmail() {
 
       try {
         const response = await authService.verifyEmail(userId, secret);
-        
+
         if (response.success) {
           setStatus('success');
           setMessage('Email verified successfully! You can now log in.');
@@ -41,8 +41,21 @@ export default function VerifyEmail() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8 text-center">
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: 'url("/background.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md space-y-8 text-center p-8 backdrop-blur-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-2xl rounded-3xl">
         <div className="space-y-4">
           {/* Logo/Icon */}
           <div className="flex justify-center">
@@ -64,14 +77,14 @@ export default function VerifyEmail() {
           </div>
 
           {/* Title */}
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold text-white">
             {status === 'verifying' && 'Verifying Email'}
             {status === 'success' && 'Email Verified!'}
             {status === 'error' && 'Verification Failed'}
           </h1>
 
           {/* Message */}
-          <p className="text-muted-foreground">{message}</p>
+          <p className="text-white/70">{message}</p>
         </div>
 
         {/* Actions */}
@@ -84,7 +97,7 @@ export default function VerifyEmail() {
               Go to Login
             </Button>
           )}
-          
+
           {status === 'error' && (
             <>
               <Button
