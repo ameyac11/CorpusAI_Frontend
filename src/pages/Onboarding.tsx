@@ -134,7 +134,7 @@ export default function Onboarding() {
     }
 
     return (
-        <div className="min-h-screen relative flex flex-col overflow-hidden">
+        <div className="min-h-screen relative flex flex-col overflow-hidden bg-[#1a103c]">
             {/* Background Image */}
             <div
                 className="absolute inset-0 z-0"
@@ -145,57 +145,54 @@ export default function Onboarding() {
                     backgroundRepeat: 'no-repeat',
                 }}
             >
-                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#2d1b69]/40 to-[#1a103c]/90" />
             </div>
 
             {/* Content */}
-            <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 relative z-10">
-                <div className="w-full max-w-4xl backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-3xl p-8 relative">
-                    {/* Progress indicator */}
-                    {step < totalSteps && (
-                        <div className="w-full max-w-md mx-auto mb-12">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-medium text-white/80">
-                                    Step {step} of {totalSteps - 1}
-                                </span>
-                                <span className="text-sm font-medium text-white/80">
-                                    {Math.round((step / (totalSteps - 1)) * 100)}%
-                                </span>
-                            </div>
-                            <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
-                                <div
-                                    className="h-full bg-white transition-all duration-500 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-                                    style={{ width: `${(step / (totalSteps - 1)) * 100}%` }}
-                                />
-                            </div>
-                        </div>
-                    )}
+            <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-10">
+
+                {/* Progress indicator - Dots */}
+                {step < totalSteps && (
+                    <div className="flex items-center justify-center gap-2 mb-8">
+                        {[...Array(totalSteps - 1)].map((_, index) => (
+                            <div
+                                key={index}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${index + 1 === step
+                                        ? 'w-8 bg-white'
+                                        : 'w-1.5 bg-white/30'
+                                    }`}
+                            />
+                        ))}
+                    </div>
+                )}
+
+                <div className="w-full max-w-lg backdrop-blur-2xl bg-white/10 border border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] rounded-[32px] p-8 md:p-12 relative overflow-hidden">
 
                     {/* Step content */}
-                    <div className="w-full text-white button-glass-wrapper">
+                    <div className="w-full text-center">
                         {renderStep()}
                     </div>
 
                     {/* Navigation buttons */}
                     {step < totalSteps && (
-                        <div className="flex items-center justify-center gap-4 mt-12">
-                            {step > 1 && (
-                                <Button
-                                    variant="outline"
-                                    onClick={handleBack}
-                                    className="min-w-[140px] bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
-                                >
-                                    <ArrowLeft className="w-4 h-4 mr-2" />
-                                    Back
-                                </Button>
-                            )}
+                        <div className="flex items-center justify-between mt-12 pt-4">
+                            <Button
+                                variant="ghost"
+                                onClick={handleBack}
+                                disabled={step === 1}
+                                className={`text-white/60 hover:text-white hover:bg-white/10 ${step === 1 ? 'opacity-0 pointer-events-none' : ''}`}
+                            >
+                                <ArrowLeft className="w-4 h-4 mr-2" />
+                                Back
+                            </Button>
+
                             <Button
                                 onClick={handleNext}
                                 disabled={!canProceed() || isLoading}
-                                className="min-w-[140px] bg-white text-black hover:bg-white/90"
+                                className="min-w-[140px] bg-white text-[#1a103c] hover:bg-white/90 rounded-xl h-12 text-sm font-medium transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_25px_rgba(255,255,255,0.5)]"
                             >
                                 {isLoading ? (
-                                    <span className="animate-pulse">Saving...</span>
+                                    <span className="animate-pulse">Processing...</span>
                                 ) : step === totalSteps - 1 ? (
                                     <>
                                         Finish
@@ -203,7 +200,7 @@ export default function Onboarding() {
                                     </>
                                 ) : (
                                     <>
-                                        Next
+                                        Continue
                                         <ArrowRight className="w-4 h-4 ml-2" />
                                     </>
                                 )}

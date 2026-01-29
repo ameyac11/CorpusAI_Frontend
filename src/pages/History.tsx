@@ -170,7 +170,7 @@ export default function History() {
                 <div
                   key={chat.id}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 cursor-pointer group transition-colors border-b border-white/20",
+                    "flex items-center gap-3 px-3 py-2.5 cursor-pointer group transition-colors border-b border-border",
                     isSelected
                       ? "bg-primary/10"
                       : "hover:bg-secondary/50"

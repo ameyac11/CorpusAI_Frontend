@@ -11,11 +11,41 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const models: { value: AIModel; label: string }[] = [
+interface ModelOption {
+  value: AIModel;
+  label: string;
+  badges?: {
+    text: string;
+    variant: 'default' | 'outline' | 'secondary' | 'vision' | 'web';
+  }[];
+}
+
+const models: ModelOption[] = [
+  {
+    value: 'compound',
+    label: 'Compound',
+    badges: [{ text: 'Web', variant: 'web' }]
+  },
+  {
+    value: 'compound-mini',
+    label: 'Compound Mini',
+    badges: [{ text: 'Web', variant: 'web' }]
+  },
+  {
+    value: 'llama-scout-4',
+    label: 'Llama 4 Scout',
+    badges: [
+      { text: 'Default', variant: 'secondary' },
+      { text: 'Vision', variant: 'vision' }
+    ]
+  },
+  { value: 'gpt-oss-120b', label: 'GPT OSS 120B' },
   { value: 'gpt-4.1', label: 'GPT-4.1' },
-  { value: 'gpt-4o', label: 'GPT-4o' },
-  { value: 'qwen3-32b', label: 'Qwen 3 32B' },
-  { value: 'llama-3.3-70b', label: 'Llama 3.3 70B' },
+  {
+    value: 'gpt-4o-mini',
+    label: 'GPT-4o Mini',
+    badges: [{ text: 'Vision', variant: 'vision' }]
+  },
 ];
 
 const dataSources: { value: DataSource; label: string }[] = [
@@ -114,7 +144,26 @@ export function ChatInput() {
                   onClick={() => setModel(m.value)}
                   className={cn(model === m.value && 'bg-accent')}
                 >
-                  {m.label}
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <span>{m.label}</span>
+                    {m.badges && (
+                      <div className="flex items-center gap-1">
+                        {m.badges.map((badge, i) => (
+                          <span
+                            key={i}
+                            className={cn(
+                              "text-[10px] px-1.5 py-0.5 rounded-full font-medium tracking-wide",
+                              badge.variant === 'web' && "text-green-400 bg-green-400/10",
+                              badge.variant === 'vision' && "text-blue-400 bg-blue-400/10",
+                              badge.variant === 'secondary' && "text-purple-400 bg-purple-400/10"
+                            )}
+                          >
+                            {badge.text}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

@@ -253,37 +253,27 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
   return (
     <div className="space-y-6">
       {/* Step Indicator */}
-      <div className="flex items-center justify-center gap-2">
-        {Array.from({ length: totalSteps }).map((_, index) => (
-          <div
-            key={index}
-            className={cn(
-              'w-8 h-1 rounded-full transition-all duration-300',
-              index + 1 <= step ? 'bg-primary' : 'bg-border'
-            )}
-          />
-        ))}
-      </div>
+      {/* Hidden in new design as parent handles flow */}
 
       {/* Step Content */}
       <div className="space-y-4">
         {step === 1 && (
           <div className="animate-fade-in space-y-4">
             <div className="text-center">
-              <h3 className="text-lg font-medium text-foreground">Enter your email</h3>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h3 className="text-xl font-medium text-white">Enter your email</h3>
+              <p className="text-sm text-white/50 mt-1">
                 We'll use this to {mode === 'login' ? 'find your account' : 'create your account'}
               </p>
             </div>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <div className="relative group">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-[#8b5cf6] transition-colors" />
               <Input
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="pl-10"
+                className="pl-12 h-12 bg-black/40 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-black/60 focus:ring-0 transition-all duration-300"
                 autoFocus
               />
             </div>
@@ -293,33 +283,33 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
         {step === 2 && (
           <div className="animate-fade-in space-y-4">
             <div className="text-center">
-              <h3 className="text-lg font-medium text-foreground">Enter your password</h3>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h3 className="text-xl font-medium text-white">Enter your password</h3>
+              <p className="text-sm text-white/50 mt-1">
                 {mode === 'signup' ? 'Create a secure password' : 'Welcome back!'}
               </p>
             </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <div className="relative group">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-[#8b5cf6] transition-colors" />
               <Input
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="pl-10"
+                className="pl-12 h-12 bg-black/40 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-black/60 focus:ring-0 transition-all duration-300"
                 autoFocus
               />
             </div>
             {mode === 'signup' && (
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-[#8b5cf6] transition-colors" />
                 <Input
                   type="password"
                   placeholder="Confirm password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="pl-10"
+                  className="pl-12 h-12 bg-black/40 border-2 border-white/10 rounded-xl text-white placeholder:text-white/20 focus:border-[#8b5cf6] focus:bg-black/60 focus:ring-0 transition-all duration-300"
                 />
               </div>
             )}
@@ -327,7 +317,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
               <button
                 type="button"
                 onClick={() => setShowForgotPassword(true)}
-                className="text-sm text-primary hover:underline w-full text-center"
+                className="text-sm text-[#8b5cf6] hover:text-[#a78bfa] hover:underline w-full text-center transition-colors"
               >
                 Forgot your password?
               </button>
@@ -337,7 +327,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
 
         {error && (
           <div className="space-y-3 animate-fade-in">
-            <p className="text-sm text-destructive text-center flex items-center justify-center gap-2">
+            <p className="text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg p-3 text-center flex items-center justify-center gap-2">
               <AlertCircle className="w-4 h-4" />
               {error}
             </p>
@@ -347,7 +337,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
                 size="sm"
                 onClick={handleResendVerification}
                 disabled={isLoading}
-                className="w-full text-xs"
+                className="w-full text-xs border-white/20 text-white hover:bg-white/10"
               >
                 {isLoading ? 'Sending...' : 'Resend verification email'}
               </Button>
@@ -357,7 +347,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/login')}
-                className="w-full text-xs"
+                className="w-full text-xs text-white/60 hover:text-white"
               >
                 Go to login
               </Button>
@@ -367,12 +357,13 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 pt-2">
         {step > 1 && (
+          // Hidden back button here since parent has one, but needed for internal step 2 -> 1
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={() => setStep(step - 1)}
-            className="flex-1"
+            className="text-white/60 hover:text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
@@ -381,7 +372,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
         <Button
           onClick={handleNext}
           disabled={isLoading}
-          className="flex-1"
+          className="flex-1 h-12 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all duration-300"
         >
           {isLoading ? (
             <span className="animate-pulse">Loading...</span>

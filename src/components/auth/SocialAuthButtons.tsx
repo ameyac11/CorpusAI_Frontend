@@ -7,13 +7,13 @@ export function SocialAuthButtons() {
   const { loginWithGoogle, loginWithGithub } = useAuth();
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Button
         variant="outline"
-        className="w-full h-11 border-border/80 hover:bg-secondary/80 hover:border-border transition-all duration-200 group"
+        className="w-full h-12 bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30 text-white transition-all duration-300 group"
         onClick={loginWithGoogle}
       >
-        <svg className="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24">
           <path
             fill="#4285F4"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -36,10 +36,10 @@ export function SocialAuthButtons() {
 
       <Button
         variant="outline"
-        className="w-full h-11 border-border/80 hover:bg-secondary/80 hover:border-border transition-all duration-200 group"
+        className="w-full h-12 bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30 text-white transition-all duration-300 group"
         onClick={loginWithGithub}
       >
-        <Github className="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" />
+        <Github className="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" />
         Continue with GitHub
       </Button>
     </div>

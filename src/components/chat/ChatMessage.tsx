@@ -20,7 +20,7 @@ export function ChatMessage({ message, isLoading = false, loadingStatus }: ChatM
 
     const loadImages = async () => {
       const newUrls = new Map<string, string>();
-      
+
       for (const attachment of message.attachments || []) {
         if (attachment.type === 'image') {
           // Use storage_url directly if available
@@ -65,7 +65,7 @@ export function ChatMessage({ message, isLoading = false, loadingStatus }: ChatM
     <div
       className={cn(
         'flex gap-4 p-4 rounded-xl animate-fade-in',
-        isUser ? 'bg-chat-user' : 'bg-chat-assistant'
+        isUser ? '!bg-primary/40 backdrop-blur-sm shadow-sm' : 'bg-chat-assistant'
       )}
     >
       <div
@@ -80,14 +80,14 @@ export function ChatMessage({ message, isLoading = false, loadingStatus }: ChatM
         <p className="text-sm font-medium text-foreground mb-1">
           {isUser ? 'You' : 'CorpusAI'}
         </p>
-        
+
         {/* Render attachments ABOVE the message content */}
         {isUser && message.attachments && message.attachments.length > 0 && (
           <div className="mb-3 space-y-2">
             {message.attachments.map((attachment) => {
               const isImage = attachment.type === 'image';
               const imageUrl = imageUrls.get(attachment.id) || attachment.url;
-              
+
               if (isImage) {
                 if (imageUrl === 'EXPIRED' || imageUrl === 'ERROR') {
                   return (
@@ -98,12 +98,12 @@ export function ChatMessage({ message, isLoading = false, loadingStatus }: ChatM
                     </div>
                   );
                 }
-                
+
                 if (imageUrl) {
                   return (
                     <div key={attachment.id} className="relative rounded-lg overflow-hidden border border-border max-w-md">
-                      <img 
-                        src={imageUrl} 
+                      <img
+                        src={imageUrl}
                         alt={attachment.name || attachment.file_name || 'Uploaded image'}
                         className="w-full h-auto"
                         style={{ maxHeight: '400px', objectFit: 'contain' }}
@@ -115,7 +115,7 @@ export function ChatMessage({ message, isLoading = false, loadingStatus }: ChatM
                   );
                 }
               }
-              
+
               return (
                 <div
                   key={attachment.id}
@@ -130,7 +130,7 @@ export function ChatMessage({ message, isLoading = false, loadingStatus }: ChatM
             })}
           </div>
         )}
-        
+
         {isLoading ? (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" />

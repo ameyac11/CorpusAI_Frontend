@@ -54,17 +54,17 @@ const roles = [
 
 export function RoleStep({ role, setRole }: RoleStepProps) {
     return (
-        <div className="space-y-6 animate-fade-in">
-            <div className="text-center">
-                <h2 className="text-2xl font-bold text-foreground mb-2">
+        <div className="space-y-8 animate-fade-in">
+            <div className="text-center space-y-2">
+                <h2 className="text-3xl font-bold text-white tracking-tight">
                     What best describes you?
                 </h2>
-                <p className="text-muted-foreground">
+                <p className="text-white/60 text-lg font-light">
                     Help us personalize your experience
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto">
                 {roles.map((roleOption) => {
                     const Icon = roleOption.icon;
                     const isSelected = role === roleOption.id;
@@ -74,16 +74,16 @@ export function RoleStep({ role, setRole }: RoleStepProps) {
                             key={roleOption.id}
                             onClick={() => setRole(roleOption.id)}
                             className={cn(
-                                'group relative p-6 rounded-2xl border-2 transition-all duration-300',
-                                'hover:scale-105 hover:shadow-lg',
+                                'group relative p-6 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center h-full',
+                                'hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]',
                                 isSelected
-                                    ? 'border-primary bg-primary/5 shadow-lg scale-105'
-                                    : 'border-border hover:border-primary/50 bg-card'
+                                    ? 'border-white/50 bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-105'
+                                    : 'border-white/10 hover:border-white/30 bg-white/5'
                             )}
                         >
                             {/* Icon with gradient background */}
                             <div className={cn(
-                                'w-14 h-14 rounded-xl mb-4 flex items-center justify-center transition-transform',
+                                'w-14 h-14 rounded-xl mb-4 flex items-center justify-center transition-transform shadow-lg',
                                 'bg-gradient-to-br',
                                 roleOption.color,
                                 isSelected ? 'scale-110' : 'group-hover:scale-110'
@@ -92,18 +92,18 @@ export function RoleStep({ role, setRole }: RoleStepProps) {
                             </div>
 
                             {/* Title and description */}
-                            <h3 className="text-lg font-semibold text-foreground mb-1">
+                            <h3 className="text-lg font-semibold text-white mb-1">
                                 {roleOption.title}
                             </h3>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-white/60 group-hover:text-white/80 transition-colors">
                                 {roleOption.description}
                             </p>
 
                             {/* Selection indicator */}
                             {isSelected && (
-                                <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center animate-scale-in">
+                                <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white text-[#1a103c] flex items-center justify-center animate-scale-in shadow-lg">
                                     <svg
-                                        className="w-4 h-4 text-primary-foreground"
+                                        className="w-4 h-4"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"

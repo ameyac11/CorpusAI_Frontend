@@ -270,7 +270,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[800px] w-full xl:w-[800px] h-screen xl:h-[600px] p-0 gap-0 overflow-hidden bg-background xl:border-zinc-800 border-0 xl:rounded-lg rounded-none [&>button]:hidden shadow-2xl xl:shadow-2xl shadow-none">
+      <DialogContent className="max-w-[850px] w-full xl:w-[850px] h-screen xl:h-[650px] p-0 gap-0 overflow-hidden bg-background dark:bg-[#0A0A0A] xl:border-border dark:xl:border-white/20 border-0 xl:rounded-2xl rounded-none [&>button]:hidden shadow-2xl dark:xl:shadow-[0_0_50px_-12px_rgba(0,0,0,0.8)] ring-1 ring-border dark:ring-white/10 data-[state=open]:duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
         <div className="flex flex-col xl:flex-row h-full">
           {/* Sidebar - Horizontal on mobile, vertical on desktop */}
           <div className="xl:w-60 bg-secondary/20 border-b xl:border-b-0 xl:border-r border-border p-3 xl:p-4 flex xl:flex-col backdrop-blur-sm shrink-0">

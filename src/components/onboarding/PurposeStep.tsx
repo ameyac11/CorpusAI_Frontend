@@ -18,20 +18,17 @@ const purposes = [
 
 export function PurposeStep({ purpose, setPurpose }: PurposeStepProps) {
     return (
-        <div className="space-y-6 animate-fade-in">
-            <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-bg flex items-center justify-center">
-                    <Lightbulb className="w-8 h-8 text-primary-foreground" />
-                </div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">
-                    What will you use CorpusAI for?
+        <div className="space-y-8 animate-fade-in">
+            <div className="text-center space-y-2">
+                <h2 className="text-3xl font-bold text-white tracking-tight">
+                    What "Job" are you hiring CorpusAI for?
                 </h2>
-                <p className="text-muted-foreground">
-                    This helps us tailor your experience
+                <p className="text-white/60 text-lg font-light">
+                    Help us personalize your experience
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
                 {purposes.map((option) => {
                     const isSelected = purpose === option.id;
 
@@ -40,24 +37,24 @@ export function PurposeStep({ purpose, setPurpose }: PurposeStepProps) {
                             key={option.id}
                             onClick={() => setPurpose(option.id)}
                             className={cn(
-                                'px-6 py-4 rounded-xl border-2 transition-all duration-200',
-                                'hover:scale-105 hover:shadow-md text-left',
+                                'px-6 py-5 rounded-xl border transition-all duration-200',
+                                'hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] text-left',
                                 isSelected
-                                    ? 'border-primary bg-primary/10 shadow-md scale-105'
-                                    : 'border-border hover:border-primary/50 bg-card'
+                                    ? 'border-white/50 bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.15)] scale-[1.02]'
+                                    : 'border-white/10 hover:border-white/30 bg-white/5'
                             )}
                         >
                             <div className="flex items-center justify-between">
                                 <span className={cn(
-                                    'font-medium',
-                                    isSelected ? 'text-primary' : 'text-foreground'
+                                    'font-medium text-lg',
+                                    isSelected ? 'text-white' : 'text-white/80'
                                 )}>
                                     {option.label}
                                 </span>
                                 {isSelected && (
-                                    <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                                    <div className="w-6 h-6 rounded-full bg-white text-[#1a103c] flex items-center justify-center shadow-md">
                                         <svg
-                                            className="w-3 h-3 text-primary-foreground"
+                                            className="w-3.5 h-3.5"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
