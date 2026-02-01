@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, X, Search, ArrowUp, ChevronDown, Globe, Database, Cpu, Plus, Lock, Loader2, Copy, ThumbsUp, ThumbsDown, Share, MoreHorizontal, Image as ImageIcon, ZoomIn, Check, File, AlertCircle, HelpCircle, Mail, Send, ArrowLeft } from 'lucide-react';
+import { FileText, X, Search, ArrowUp, ChevronDown, Globe, Database, Cpu, Plus, Lock, Loader2, Copy, ThumbsUp, ThumbsDown, Share, MoreHorizontal, Image as ImageIcon, ZoomIn, Check, File, AlertCircle, HelpCircle, Mail, Send, ArrowLeft, Pin, Clock } from 'lucide-react';
 import { useChat, AIModel, DataSource, Message } from '@/contexts/ChatContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -212,10 +212,24 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
 
     const message = input;
     const currentAttachments = [...(currentChat?.attachments || [])];
+    const currentSelectedResources = Array.from(selectedResources);
+
+    // Get resource metadata for display in message
+    const selectedResourcesMetadata = permanentResources
+      .filter(r => selectedResources.has(r.id))
+      .map(r => ({
+        id: r.id,
+        name: r.file_name,
+        type: 'permanent_resource',
+        file_name: r.file_name,
+      }));
+
     setInput('');
+    // Clear selected resources immediately so they disappear from input area
+    setSelectedResources(new Set());
 
     // Send message - attachments will be included automatically from currentChat
-    await sendMessage(message, Array.from(selectedResources));
+    await sendMessage(message, currentSelectedResources, selectedResourcesMetadata);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -399,9 +413,18 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
                 <span className="text-xs font-medium text-foreground truncate max-w-[100px]">
                   {attachment.name}
                 </span>
-                <span className="text-[10px] text-muted-foreground uppercase">
-                  {attachment.loading ? 'Uploading...' : getFileExtension(attachment.name)}
-                </span>
+                {attachment.loading ? (
+                  <span className="text-[10px] text-muted-foreground uppercase">
+                    Uploading...
+                  </span>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-muted-foreground uppercase">
+                      {getFileExtension(attachment.name)}
+                    </span>
+                    <Clock className="w-2.5 h-2.5 text-red-500" />
+                  </div>
+                )}
               </div>
 
               {/* Close button inside the box on right side */}
@@ -409,6 +432,54 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
                 onClick={(e) => {
                   e.stopPropagation();
                   removeAttachment(attachment.id);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-muted-foreground/20 hover:bg-destructive/80 flex items-center justify-center text-muted-foreground hover:text-white transition-colors"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // Render selected permanent resources above search bar
+  const renderSelectedResources = () => {
+    if (selectedResources.size === 0 || dataSource === 'ai-only') return null;
+
+    const selectedResourcesList = permanentResources.filter(r => selectedResources.has(r.id));
+    if (selectedResourcesList.length === 0) return null;
+
+    return (
+      <div className="flex flex-wrap gap-2 mb-3 px-1">
+        {selectedResourcesList.map(resource => {
+          return (
+            <div
+              key={resource.id}
+              className="relative flex items-center gap-2 pl-2 pr-8 py-2 bg-primary/10 dark:bg-primary/20 rounded-xl border border-primary/30 transition-all group hover:border-primary/50"
+            >
+              <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center">
+                <Database className="w-4 h-4 text-primary" />
+              </div>
+
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-medium text-foreground truncate max-w-[100px]">
+                  {resource.file_name}
+                </span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] text-muted-foreground uppercase">
+                    {getFileExtension(resource.file_name)}
+                  </span>
+                  <Pin className="w-2.5 h-2.5 text-green-500" />
+                </div>
+              </div>
+
+              {/* Close button inside the box on right side */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleResource(resource.id);
                 }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-muted-foreground/20 hover:bg-destructive/80 flex items-center justify-center text-muted-foreground hover:text-white transition-colors"
               >
@@ -670,16 +741,24 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
             <div className="flex flex-wrap gap-2 justify-end max-w-[80%]">
               {attachedFiles.map(file => {
                 const isImage = file.type === 'image';
+                const isPermanentResource = file.type === 'permanent_resource';
 
                 return (
                   <div
                     key={file.id}
                     onClick={() => openAttachmentPreview(file, file.id)}
-                    className="flex items-center gap-2 pl-2 pr-3 py-2 bg-secondary/60 dark:bg-secondary/80 rounded-xl border border-border/50 cursor-pointer hover:border-primary/30 transition-colors"
+                    className={cn(
+                      "flex items-center gap-2 pl-2 pr-3 py-2 rounded-xl border transition-colors cursor-pointer",
+                      isPermanentResource
+                        ? "bg-primary/10 dark:bg-primary/20 border-primary/30 hover:border-primary/50"
+                        : "bg-secondary/60 dark:bg-secondary/80 border-border/50 hover:border-primary/30"
+                    )}
                   >
                     {/* Icon for file type */}
                     <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center">
-                      {isImage ? (
+                      {isPermanentResource ? (
+                        <Database className="w-4 h-4 text-primary" />
+                      ) : isImage ? (
                         <ImageIcon className="w-4 h-4 text-primary" />
                       ) : (
                         <FileText className="w-4 h-4 text-primary" />
@@ -690,9 +769,16 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
                       <span className="text-xs font-medium text-foreground truncate max-w-[100px]">
                         {file.name}
                       </span>
-                      <span className="text-[10px] text-muted-foreground uppercase">
-                        {getFileExtension(file.name)}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] text-muted-foreground uppercase">
+                          {getFileExtension(file.name)}
+                        </span>
+                        {isPermanentResource ? (
+                          <Pin className="w-2.5 h-2.5 text-green-500" />
+                        ) : (
+                          <Clock className="w-2.5 h-2.5 text-red-500" />
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -992,6 +1078,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
 
               {/* Uploaded files display */}
               <div className="w-full max-w-2xl px-4 sm:px-0" id="tour-chat-input">
+                {renderSelectedResources()}
                 {renderUploadedFiles()}
                 {renderSearchBar()}
 
@@ -1016,36 +1103,35 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
           ) : (
             // ChatGPT-style conversation layout
             <div className="max-w-3xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 pb-24 sm:pb-6">
-              {/* Scope Lock Indicator */}
+              {/* Scope Lock Indicator - Compact Design */}
               {currentChat?.scope_locked && (currentChat?.scope_resources?.length > 0 || currentChat?.scope_images?.length > 0) && (
-                <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-start gap-3">
-                  <Lock className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground mb-1">
-                      🔒 This chat is locked to selected documents
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {currentChat.scope_resources?.map((r) => (
-                        <span key={r.id} className="text-xs px-2 py-1 bg-background rounded border border-border inline-flex items-center gap-1.5">
-                          <FileText className="w-3 h-3" />
-                          {r.file_name}
-                          {r.expires_at && new Date(r.expires_at) < new Date() && (
-                            <span className="text-red-500">(Expired)</span>
-                          )}
-                        </span>
-                      ))}
-                      {currentChat.scope_images?.map((i) => (
-                        <span key={i.id} className="text-xs px-2 py-1 bg-background rounded border border-border inline-flex items-center gap-1.5">
-                          <ImageIcon className="w-3 h-3" />
-                          {i.file_name}
-                        </span>
-                      ))}
-                    </div>
-                    {currentChat.scope_resources?.some(r => r.expires_at) && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        📅 Chat uploads are available for 24 hours
-                      </p>
-                    )}
+                <div className="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-lg py-1.5 px-3 flex items-center gap-3 overflow-hidden">
+                  <div className="flex items-center gap-1.5 shrink-0 text-primary">
+                    <Lock className="w-3.5 h-3.5" />
+                    <span className="text-xs font-medium">Context Locked</span>
+                  </div>
+
+                  <div className="h-4 w-px bg-primary/20 shrink-0" />
+
+                  <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto no-scrollbar mask-gradient-right">
+                    {currentChat.scope_resources?.map((r) => (
+                      <div key={r.id} className="flex items-center gap-1.5 pl-1.5 pr-2 py-0.5 bg-background/50 rounded-md border border-primary/10 text-[11px] whitespace-nowrap">
+                        <Database className="w-3 h-3 text-primary/70" />
+                        <span className="font-medium text-foreground/80 truncate max-w-[120px]">{r.file_name}</span>
+                        {r.expires_at ? (
+                          <Clock className="w-2.5 h-2.5 text-red-400" />
+                        ) : (
+                          <Pin className="w-2.5 h-2.5 text-green-500" />
+                        )}
+                      </div>
+                    ))}
+                    {currentChat.scope_images?.map((i) => (
+                      <div key={i.id} className="flex items-center gap-1.5 pl-1.5 pr-2 py-0.5 bg-background/50 rounded-md border border-primary/10 text-[11px] whitespace-nowrap">
+                        <ImageIcon className="w-3 h-3 text-primary/70" />
+                        <span className="font-medium text-foreground/80 truncate max-w-[120px]">{i.file_name}</span>
+                        <Clock className="w-2.5 h-2.5 text-red-400" />
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -1062,6 +1148,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
         {hasMessages && (
           <div className="sticky bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-background via-background to-transparent pb-safe sm:relative">
             <div className="w-full mx-auto" style={{ maxWidth: '720px' }}>
+              {renderSelectedResources()}
               {renderUploadedFiles()}
               {renderSearchBar()}
             </div>

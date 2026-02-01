@@ -65,7 +65,7 @@ interface ChatContextType {
   setInternetSearch: (enabled: boolean) => void;
   createNewChat: () => void;
   selectChat: (chatId: string) => void;
-  sendMessage: (content: string, resourceIds?: string[]) => Promise<void>;
+  sendMessage: (content: string, resourceIds?: string[], resourceMetadata?: Array<{ id: string; name: string; type: string; file_name: string; }>) => Promise<void>;
   addAttachments: (files: AttachedFile[]) => Promise<void>;
   removeAttachment: (attachmentId: string) => void;
   clearAttachments: () => void;
@@ -430,10 +430,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
-  const sendMessage = useCallback(async (content: string, resourceIds?: string[]): Promise<void> => {
+  const sendMessage = useCallback(async (content: string, resourceIds?: string[], resourceMetadata?: Array<{ id: string; name: string; type: string; file_name: string; }>): Promise<void> => {
     console.log('[sendMessage] Called with content:', content);
     console.log('[sendMessage] Current chat state:', currentChat);
     console.log('[sendMessage] Current chat attachments:', currentChat?.attachments);
+    console.log('[sendMessage] Resource metadata:', resourceMetadata);
     setStreamError(null);
     setIsStreaming(true);
     setIsThinking(false);
@@ -464,19 +465,25 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     console.log('[sendMessage] TOTAL Resource IDs being sent:', totalResourceIds);
     console.log('[sendMessage] Number of resource IDs:', totalResourceIds.length);
 
+    // Combine uploaded file attachments and selected resource metadata
+    const uploadedFileAttachments = hasAttachments ? attachedFiles.map(a => ({
+      id: a.resourceId || a.id,
+      name: a.name,
+      type: a.type,
+      // Store just metadata, not blob URL (will be lost on refresh anyway)
+      url: undefined,
+    })) : [];
+
+    const resourceAttachments = resourceMetadata || [];
+    const allAttachments = [...uploadedFileAttachments, ...resourceAttachments];
+
     // Create user message locally first with attachments
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content,
       timestamp: new Date(),
-      attachments: hasAttachments ? attachedFiles.map(a => ({
-        id: a.resourceId || a.id,
-        name: a.name,
-        type: a.type,
-        // Store just metadata, not blob URL (will be lost on refresh anyway)
-        url: undefined,
-      })) : undefined,
+      attachments: allAttachments.length > 0 ? allAttachments : undefined,
     };
 
     console.log('[sendMessage] Created user message:', userMessage);
