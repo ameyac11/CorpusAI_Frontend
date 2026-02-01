@@ -25,14 +25,14 @@ export default function Login() {
 
       <main className="relative z-10 w-full max-w-[400px] px-4 animate-in fade-in zoom-in duration-500">
         {/* Glass Card */}
-        <div className="backdrop-blur-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-2xl rounded-[32px] p-8 relative overflow-hidden">
+        <div className="backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl p-8 relative overflow-hidden">
 
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="absolute inset-0 bg-purple-500/20 blur-xl rounded-full"></div>
-              <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-16 h-16 relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
-            </div>
+            <Link to="/" className="relative hover:opacity-80 transition-opacity">
+              {/* Removed the intense purple blur background */}
+              <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-16 h-16 relative z-10 drop-shadow-lg" />
+            </Link>
           </div>
 
           {/* Title */}
@@ -66,7 +66,7 @@ export default function Login() {
                 <div className="text-center">
                   <Button
                     onClick={() => setShowEmailForm(true)}
-                    className="w-full h-12 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all duration-300 font-medium text-lg"
+                    className="w-full h-11 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 font-medium text-base"
                   >
                     Continue with Email
                   </Button>

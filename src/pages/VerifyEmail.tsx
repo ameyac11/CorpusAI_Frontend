@@ -55,7 +55,7 @@ export default function VerifyEmail() {
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      <div className="relative z-10 w-full max-w-md space-y-8 text-center p-8 backdrop-blur-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-2xl rounded-3xl">
+      <div className="relative z-10 w-full max-w-md space-y-8 text-center p-8 backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl">
         <div className="space-y-4">
           {/* Logo/Icon */}
           <div className="flex justify-center">

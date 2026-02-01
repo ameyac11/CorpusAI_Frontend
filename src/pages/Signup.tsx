@@ -21,13 +21,13 @@ export default function Signup() {
 
       <main className="relative z-10 w-full max-w-[380px] px-4 animate-in fade-in zoom-in duration-500">
         {/* Glass Card */}
-        <div className="backdrop-blur-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-2xl rounded-3xl p-6 text-center">
+        <div className="backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl p-6 text-center">
 
           {/* Logo */}
           <div className="flex justify-center mb-4">
-            <div className="bg-black/20 p-2.5 rounded-xl backdrop-blur-sm border border-white/10">
-              <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-10 h-10" />
-            </div>
+            <Link to="/" className="relative hover:opacity-80 transition-opacity">
+              <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-12 h-12 drop-shadow-lg" />
+            </Link>
           </div>
 
           {/* Title */}

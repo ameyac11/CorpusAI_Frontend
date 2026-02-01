@@ -224,7 +224,7 @@ export default function Landing() {
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
                             <Link to="/chat">
                                 <Button className="rounded-full bg-[#7756AF] hover:bg-[#664996] text-white font-medium px-10 h-14 text-lg transition-all hover:scale-105 shadow-lg shadow-[#7756AF]/20">
-                                    Try for Free
+                                    Try Now
                                     <ArrowRight className="w-5 h-5 ml-2" />
                                 </Button>
                             </Link>
@@ -564,7 +564,7 @@ export default function Landing() {
                             </p>
                             <Link to="/chat">
                                 <Button className="rounded-full bg-[#7756AF] hover:bg-[#664996] text-white font-medium px-10 h-14 text-lg shadow-xl transition-all hover:scale-105">
-                                    Start for Free
+                                    Try Now
                                     <ArrowRight className="w-5 h-5 ml-2" />
                                 </Button>
                             </Link>

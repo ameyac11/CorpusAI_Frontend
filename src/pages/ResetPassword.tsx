@@ -109,11 +109,11 @@ export default function ResetPassword() {
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      <div className="relative z-10 w-full max-w-md space-y-8 p-8 backdrop-blur-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/20 shadow-2xl rounded-3xl text-center">
+      <div className="relative z-10 w-full max-w-md space-y-8 p-8 backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl text-center">
         <div className="space-y-2 text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-              <Lock className="w-6 h-6 text-primary" />
+            <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-full flex items-center justify-center">
+              <Lock className="w-6 h-6 text-white/80" />
             </div>
           </div>
           <h1 className="text-2xl font-bold text-white">Reset Your Password</h1>

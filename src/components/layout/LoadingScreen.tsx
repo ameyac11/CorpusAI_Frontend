@@ -37,8 +37,15 @@ export function LoadingScreen() {
                 >
                     {/* Background Image with Dark Overlay */}
                     <div className="absolute inset-0 z-0">
-                        <div className="absolute inset-0 bg-[url('/background.png')] bg-cover bg-center opacity-100" />
-                        <div className="absolute inset-0 bg-[#030014]/70 backdrop-blur-[0px]" />
+                        {/* Static Image with refined settings: Brightness 75%, Saturation 80%, Slight Blur */}
+                        <div
+                            className="absolute inset-0 bg-[url('/background.png')] bg-cover bg-center"
+                            style={{
+                                filter: 'brightness(0.75) saturate(0.8) blur(2px)' // Precise control as requested
+                            }}
+                        />
+                        {/* Dark Overlay: Black @ 30% */}
+                        <div className="absolute inset-0 bg-black/30" />
                     </div>
 
                     {/* Corner Accents */}
@@ -62,7 +69,7 @@ export function LoadingScreen() {
                             <img
                                 src="/DataNesTX_Logo_Light_Frontend.png"
                                 alt="DataNesTX Logo"
-                                className="w-20 h-20 object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]"
+                                className="w-20 h-20 object-contain"
                             />
                         </motion.div>
 
@@ -85,14 +92,9 @@ export function LoadingScreen() {
                         >
                             <div className="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                                 <motion.div
-                                    className="h-full rounded-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-purple-600 relative overflow-hidden"
+                                    className="h-full rounded-full bg-white relative overflow-hidden shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                                     style={{ width: `${progress}%` }}
                                 >
-                                    <motion.div
-                                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
-                                        animate={{ x: ["-100%", "100%"] }}
-                                        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                                    />
                                 </motion.div>
                             </div>
 
