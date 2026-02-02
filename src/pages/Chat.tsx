@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, X, Search, ArrowUp, ChevronDown, Globe, Database, Cpu, Plus, Lock, Loader2, Copy, ThumbsUp, ThumbsDown, Share, MoreHorizontal, Image as ImageIcon, ZoomIn, Check, File, AlertCircle, HelpCircle, Mail, Send, ArrowLeft, Pin, Clock } from 'lucide-react';
+import { FileText, X, Search, ArrowUp, ChevronDown, Globe, Database, Cpu, Plus, Lock, Loader2, Copy, ThumbsUp, ThumbsDown, Share, MoreHorizontal, Image as ImageIcon, ZoomIn, Check, File, AlertCircle, HelpCircle, Mail, Send, ArrowLeft, Pin, Clock, FileType } from 'lucide-react';
 import { useChat, AIModel, DataSource, Message } from '@/contexts/ChatContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -296,6 +296,11 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
     return ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext || '');
   };
 
+  const isPdfFile = (filename: string) => {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    return ext === 'pdf';
+  };
+
   // Open preview for message attachments
   const openAttachmentPreview = async (attachment: { id: string; name: string; type?: string; file?: File }, resourceId?: string) => {
     setPreviewAttachmentInfo({ name: attachment.name, type: attachment.type || 'document' });
@@ -403,6 +408,8 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
                 <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center">
                   {attachment.loading ? (
                     <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                  ) : isPdfFile(attachment.name) ? (
+                    <FileType className="w-4 h-4 text-red-500" />
                   ) : (
                     <FileText className="w-4 h-4 text-primary" />
                   )}
@@ -457,10 +464,14 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
           return (
             <div
               key={resource.id}
-              className="relative flex items-center gap-2 pl-2 pr-8 py-2 bg-primary/10 dark:bg-primary/20 rounded-xl border border-primary/30 transition-all group hover:border-primary/50"
+              className="relative flex items-center gap-2 pl-2 pr-8 py-2 bg-secondary/60 dark:bg-secondary/80 rounded-xl border border-border/50 transition-all group hover:border-primary/30"
             >
               <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center">
-                <Database className="w-4 h-4 text-primary" />
+                {isPdfFile(resource.file_name) ? (
+                  <FileType className="w-4 h-4 text-red-500" />
+                ) : (
+                  <FileText className="w-4 h-4 text-primary" />
+                )}
               </div>
 
               <div className="flex flex-col min-w-0">
@@ -748,16 +759,13 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
                     key={file.id}
                     onClick={() => openAttachmentPreview(file, file.id)}
                     className={cn(
-                      "flex items-center gap-2 pl-2 pr-3 py-2 rounded-xl border transition-colors cursor-pointer",
-                      isPermanentResource
-                        ? "bg-primary/10 dark:bg-primary/20 border-primary/30 hover:border-primary/50"
-                        : "bg-secondary/60 dark:bg-secondary/80 border-border/50 hover:border-primary/30"
+                      "flex items-center gap-2 pl-2 pr-3 py-2 rounded-xl border transition-colors cursor-pointer bg-secondary/60 dark:bg-secondary/80 border-border/50 hover:border-primary/30"
                     )}
                   >
                     {/* Icon for file type */}
                     <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center">
-                      {isPermanentResource ? (
-                        <Database className="w-4 h-4 text-primary" />
+                      {isPdfFile(file.name) ? (
+                        <FileType className="w-4 h-4 text-red-500" />
                       ) : isImage ? (
                         <ImageIcon className="w-4 h-4 text-primary" />
                       ) : (
