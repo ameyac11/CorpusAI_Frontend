@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Monitor, Moon, Sun, User, Bell, Shield, HelpCircle, Mail, Clock, X } from 'lucide-react';
+import { Monitor, Moon, Sun, Shield, HelpCircle, Mail, X } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { useChat, AIModel, DataSource } from '@/contexts/ChatContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -24,13 +23,11 @@ const themeOptions = [
   { value: 'system', label: 'System', icon: Monitor },
 ] as const;
 
-type SettingsTab = 'appearance' | 'ai' | 'account' | 'notifications' | 'help';
+type SettingsTab = 'appearance' | 'ai' | 'help';
 
 const tabs: { id: SettingsTab; label: string; icon: React.ElementType }[] = [
   { id: 'appearance', label: 'Appearance', icon: Sun },
   { id: 'ai', label: 'AI Preferences', icon: Shield },
-  { id: 'account', label: 'Account', icon: User },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'help', label: 'Help & Support', icon: HelpCircle },
 ];
 
@@ -43,7 +40,6 @@ interface SettingsDialogProps {
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { user, isAuthenticated } = useAuth();
   const { model, setModel, dataSource, setDataSource } = useChat();
   const [activeTab, setActiveTab] = useState<SettingsTab>('appearance');
 
@@ -112,14 +108,16 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                   <p className="text-xs text-muted-foreground">Select the AI model for new chats</p>
                 </div>
                 <Select value={model} onValueChange={(v) => setModel(v as AIModel)}>
-                  <SelectTrigger className="w-32 bg-background">
+                  <SelectTrigger className="w-40 bg-background">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="llama-scout-4">Llama 4 Scout</SelectItem>
+                    <SelectItem value="compound">Compound</SelectItem>
+                    <SelectItem value="compound-mini">Compound Mini</SelectItem>
+                    <SelectItem value="gpt-oss-120b">GPT OSS 120B</SelectItem>
                     <SelectItem value="gpt-4.1">GPT-4.1</SelectItem>
-                    <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                    <SelectItem value="qwen3-32b">Qwen 3 32B</SelectItem>
-                    <SelectItem value="llama-3.3-70b">Llama 3.3 70B</SelectItem>
+                    <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -144,107 +142,12 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           </div>
         );
 
-      case 'account':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-base font-medium text-foreground mb-1">Account</h3>
-              <p className="text-sm text-muted-foreground mb-4">Manage your profile and plan</p>
-            </div>
-
-            {isAuthenticated ? (
-              <div className="p-5 rounded-xl border border-border bg-card/50 flex items-start gap-4">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                  {user?.username?.[0]?.toUpperCase() || 'U'}
-                </div>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-lg font-semibold text-foreground">{user?.username}</h4>
-                    <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20 uppercase tracking-wider">
-                      Free Plan
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
-                  <div className="pt-2 flex gap-2">
-                    <Button variant="outline" size="sm" className="h-7 text-xs">Edit Profile</Button>
-                    <Button variant="outline" size="sm" className="h-7 text-xs text-destructive hover:text-destructive">Sign Out</Button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-xl border border-dashed border-border p-8 text-center bg-card/30">
-                <div className="w-12 h-12 rounded-full bg-secondary mx-auto mb-3 flex items-center justify-center">
-                  <User className="w-6 h-6 text-muted-foreground" />
-                </div>
-                <h4 className="text-sm font-medium text-foreground mb-1">Guest Access</h4>
-                <p className="text-xs text-muted-foreground mb-4 max-w-[200px] mx-auto">Create an account to sync your chats and access advanced features.</p>
-                <Button size="sm" onClick={() => navigate('/login')}>Sign In / Register</Button>
-              </div>
-            )}
-
-
-          </div>
-        );
-
-      case 'notifications':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-base font-medium text-foreground mb-1">Notifications</h3>
-              <p className="text-sm text-muted-foreground mb-4">Choose what alerts you want to receive</p>
-            </div>
-
-            <div className="space-y-3">
-              {[
-                { label: 'Email Notifications', desc: 'Receive updates about your account', default: true },
-                { label: 'Desktop Alerts', desc: 'Show notifications when app is in background', default: false },
-                { label: 'Weekly Digest', desc: 'Summary of your weekly learning progress', default: true },
-                { label: 'Product Updates', desc: 'New features and improvement announcements', default: false },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-xl border border-border bg-card/30">
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-medium text-foreground">{item.label}</p>
-                    <p className="text-xs text-muted-foreground">{item.desc}</p>
-                  </div>
-                  {/* Mock Toggle */}
-                  <div className={cn(
-                    "w-9 h-5 rounded-full relative transition-colors cursor-pointer",
-                    item.default ? "bg-primary" : "bg-zinc-700"
-                  )}>
-                    <div className={cn(
-                      "absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm",
-                      item.default ? "left-[18px]" : "left-0.5"
-                    )} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
       case 'help':
         return (
           <div className="space-y-6">
             <div>
               <h3 className="text-base font-medium text-foreground mb-1">Help & Support</h3>
               <p className="text-sm text-muted-foreground mb-4">We're here to help you</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 mb-2">
-              <button className="p-4 rounded-xl border border-border bg-card/30 hover:bg-accent/50 transition-colors text-left group">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <HelpCircle className="w-4 h-4" />
-                </div>
-                <p className="text-sm font-medium text-foreground">Documentation</p>
-                <p className="text-xs text-muted-foreground mt-1">Read guides and docs</p>
-              </button>
-              <button className="p-4 rounded-xl border border-border bg-card/30 hover:bg-accent/50 transition-colors text-left group">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <Monitor className="w-4 h-4" />
-                </div>
-                <p className="text-sm font-medium text-foreground">Keyboard Shortcuts</p>
-                <p className="text-xs text-muted-foreground mt-1">View all shortcuts</p>
-              </button>
             </div>
 
             <div className="rounded-xl border border-border p-4 bg-card/50">
@@ -261,7 +164,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 </div>
               </div>
               <Button onClick={handleContactUs} className="w-full mt-4" size="sm">
-                SendMessage
+                Send Message
               </Button>
             </div>
           </div>
