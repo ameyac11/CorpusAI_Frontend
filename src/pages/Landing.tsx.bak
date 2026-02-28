@@ -1,0 +1,820 @@
+import { Navbar } from '@/components/landing/Navbar';
+import { Hero } from '@/components/landing/Hero';
+import { About } from '@/components/landing/About';
+import { Features } from '@/components/landing/Features';
+import { UseCases } from '@/components/landing/UseCases';
+import { FAQ } from '@/components/landing/FAQ';
+import { Contact } from '@/components/landing/Contact';
+import { Footer } from '@/components/landing/Footer';
+
+export default function Landing() {
+  return (
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-purple-500/20">
+      <Navbar />
+      <main>
+        <Hero />
+        <About />
+        <Features />
+        <UseCases />
+        <FAQ />
+        <Contact />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/* Old landing page code removed - replaced with modular CorpusAI-themed components */
+const _unused = null; // placeholder to close file cleanly
+/* --- ORIGINAL CODE BELOW REPLACED ---
+import React_old, { useState as _useState } from 'react';
+import { Link as _Link } from 'react-router-dom';
+import {
+    Sparkles as _Sparkles,
+    FileText as _FileText,
+    MessageSquare,
+    Zap,
+    Shield,
+    Globe,
+    ArrowRight,
+    Check,
+    GraduationCap,
+    Building2,
+    Users,
+    BookOpen,
+    Clock,
+    Mail,
+    MapPin,
+    Send,
+    Rocket,
+    Code,
+    LineChart,
+    UsersRound,
+    ChevronDown
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { LandingHeader } from '@/components/layout/LandingHeader';
+import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.5 }
+};
+
+// staggered entrance animations for feature cards
+const staggerContainer = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const currentFeatures = [
+    {
+        icon: FileText,
+        title: 'Document Intelligence',
+        description: 'Upload PDFs, docs, and images. Our RAG system extracts and indexes content for instant querying.',
+    },
+    {
+        icon: MessageSquare,
+        title: 'Natural Conversations',
+        description: 'Chat naturally with your documents. Get accurate answers with source citations.',
+    },
+    {
+        icon: Zap,
+        title: 'Advanced AI Models',
+        description: 'Choose between multiple AI models for the best performance on your tasks.',
+    },
+    {
+        icon: Globe,
+        title: 'Web Search Integration',
+        description: 'Combine document knowledge with real-time web search for comprehensive answers.',
+    },
+    {
+        icon: Shield,
+        title: 'Privacy First',
+        description: 'Your documents are encrypted and processed securely. We never share your data.',
+    },
+];
+
+const comingSoonFeatures = [
+    {
+        icon: UsersRound,
+        title: 'Team Collaboration',
+        description: 'Work together with your team on shared documents and conversations.',
+    },
+    {
+        icon: Code,
+        title: 'API Access',
+        description: 'Integrate CorpusAI into your applications with our REST API.',
+    },
+    {
+        icon: Rocket,
+        title: 'Custom AI Training',
+        description: 'Train custom models on your specific domain and use cases.',
+    },
+    {
+        icon: LineChart,
+        title: 'Advanced Analytics',
+        description: 'Track usage, insights, and document engagement metrics.',
+    },
+];
+
+const useCases = [
+    {
+        icon: GraduationCap,
+        title: 'Students & Researchers',
+        description: 'Quickly find information across research papers, notes, and textbooks.',
+    },
+    {
+        icon: Building2,
+        title: 'Businesses',
+        description: 'Search through company documents, reports, and policies instantly.',
+    },
+    {
+        icon: Users,
+        title: 'Legal Professionals',
+        description: 'Navigate complex legal documents and find relevant precedents.',
+    },
+    {
+        icon: BookOpen,
+        title: 'Educators',
+        description: 'Create study materials and answer student questions from course content.',
+    },
+];
+
+const faqs = [
+    {
+        question: 'What is CorpusAI?',
+        answer: 'CorpusAI is an AI-powered document assistant that lets you upload documents and have natural conversations with them. Ask questions and get accurate, cited answers instantly.',
+    },
+    {
+        question: 'What file types are supported?',
+        answer: 'We support PDF, DOCX, TXT, and image files (PNG, JPG).',
+    },
+    {
+        question: 'Is my data secure?',
+        answer: 'Absolutely. All documents are encrypted both at rest and in transit. We never share your data with third parties and you can delete your documents at any time.',
+    },
+    {
+        question: 'How accurate are the AI responses?',
+        answer: 'Our AI provides highly accurate responses by directly referencing your uploaded documents. All answers include source citations so you can verify the information.',
+    },
+];
+
+const queryOptions = [
+    'General Inquiry',
+    'Technical Support',
+    'Partnership',
+    'Enterprise Sales',
+    'Feedback',
+    'Other',
+];
+
+export default function Landing() {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        queryType: '',
+        message: '',
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        // only allow the contact form from our domain (or localhost for dev)
+        const allowedDomains = ['corpusai.datanestx.tech', 'localhost', '127.0.0.1'];
+        if (!allowedDomains.includes(window.location.hostname)) {
+            toast.error('Security restriction: Contact form can only be sent from corpusai.datanestx.tech');
+            setIsSubmitting(false);
+            return;
+        }
+
+        try {
+            const formPayload = new FormData();
+            formPayload.append('access_key', import.meta.env.VITE_WEB3FORMS_ACCESS_KEY);
+            formPayload.append('name', formData.name);
+            formPayload.append('email', formData.email);
+            formPayload.append('subject', `Landing Page Contact Form - ${formData.queryType}`);
+            formPayload.append('message', `Query Type: ${formData.queryType}\n\nMessage:\n${formData.message}`);
+
+            const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formPayload,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                toast.success('Message sent! We\'ll get back to you within 24 hours.');
+                setFormData({ name: '', email: '', queryType: '', message: '' });
+            } else {
+                toast.error('Failed to send message. Please try again.');
+            }
+        } catch (error) {
+            toast.error('An error occurred. Please try again later.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-[#fcfcf9] dark:bg-[#191919] font-sans selection:bg-[#7756AF]/20">
+            <LandingHeader />
+
+            {/* Hero Section */}
+            <section id="about" className="pt-32 pb-20 px-6">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div
+                        className="text-center mb-16"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <h1 className="text-5xl md:text-7xl font-serif tracking-tight text-zinc-900 dark:text-zinc-100 mb-6 leading-[1.1]">
+                            Chat with your documents
+                            <br />
+                            <span className="text-[#7756AF]">efficiency redefined.</span>
+                        </h1>
+
+                        <p className="text-xl md:text-2xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto mb-12 font-light leading-relaxed">
+                            Upload documents, ask questions, and get instant AI-powered answers.
+                            CorpusAI makes knowledge retrieval effortless.
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+                            <Link to="/chat">
+                                <Button className="rounded-full bg-[#7756AF] hover:bg-[#664996] text-white font-medium px-10 h-14 text-lg transition-all hover:scale-105 shadow-lg shadow-[#7756AF]/20">
+                                    Try Now
+                                    <ArrowRight className="w-5 h-5 ml-2" />
+                                </Button>
+                            </Link>
+                        </div>
+
+                        {/* Preview */}
+                        <motion.div
+                            className="relative max-w-5xl mx-auto"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.2, duration: 0.5 }}
+                        >
+                            <div className="w-full h-[400px] md:h-[600px] rounded-[2.5rem] overflow-hidden relative border border-purple-200/60 dark:border-[#2a2438] shadow-2xl shadow-purple-900/10 dark:shadow-black/50 bg-white dark:bg-[#191919] flex">
+                                {/* Decorative Soft Glows */}
+                                <div className="absolute top-0 left-1/4 w-[30rem] h-[30rem] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+                                <div className="absolute bottom-0 right-1/4 w-[30rem] h-[30rem] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+                                {/* Mockup Sidebar */}
+                                <div className="hidden md:flex w-64 flex-col border-r border-purple-200/60 dark:border-[#2a2438] bg-purple-50/50 dark:bg-[#151515]/50 backdrop-blur-sm p-4 z-10">
+                                    <div className="flex items-center gap-2 mb-8 px-2">
+                                        <div className="w-8 h-8 rounded-xl bg-purple-600/10 dark:bg-purple-600/20 flex items-center justify-center text-purple-600">
+                                            <Zap className="w-5 h-5" />
+                                        </div>
+                                        <div className="h-4 w-24 bg-purple-200/50 dark:bg-zinc-800 rounded-full"></div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {[1, 2, 3].map((i) => (
+                                            <div key={i} className="h-10 w-full rounded-xl bg-white/50 dark:bg-zinc-800/50 flex items-center px-3 gap-3 border border-purple-100/50 dark:border-transparent">
+                                                <div className="w-4 h-4 rounded-full bg-purple-100 dark:bg-zinc-700"></div>
+                                                <div className="h-2 w-20 bg-purple-100 dark:bg-zinc-700 rounded-full"></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-auto space-y-3">
+                                        <div className="h-12 w-full rounded-xl bg-purple-600/10 border border-purple-600/20 flex items-center px-4 gap-3">
+                                            <div className="w-5 h-5 rounded-md bg-purple-600/40"></div>
+                                            <div className="h-2 w-16 bg-purple-600/30 rounded-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Mockup Main Content */}
+                                <div className="flex-1 flex flex-col relative z-10 bg-white/40 dark:bg-[#1a1a1a]/50 backdrop-blur-sm">
+                                    {/* Mockup Header */}
+                                    <div className="h-16 border-b border-purple-200/60 dark:border-[#2a2438] flex items-center justify-between px-6 bg-white/50 dark:bg-transparent">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-4 w-32 bg-purple-100 dark:bg-zinc-800 rounded-full"></div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-zinc-800"></div>
+                                        </div>
+                                    </div>
+
+                                    {/* Mockup Chat Area */}
+                                    <div className="flex-1 p-8 space-y-8 overflow-hidden relative">
+                                        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]"></div>
+
+                                        {/* AI Message */}
+                                        <div className="flex gap-4 max-w-2xl">
+                                            <div className="w-10 h-10 rounded-xl bg-purple-600/10 dark:bg-purple-600/20 flex items-center justify-center shrink-0 border border-purple-100 dark:border-transparent">
+                                                <Sparkles className="w-5 h-5 text-purple-600" />
+                                            </div>
+                                            <div className="space-y-3 flex-1">
+                                                <div className="h-4 w-3/4 bg-purple-100/50 dark:bg-zinc-800 rounded-full"></div>
+                                                <div className="h-4 w-full bg-purple-100/50 dark:bg-zinc-800 rounded-full"></div>
+                                                <div className="h-4 w-5/6 bg-purple-100/50 dark:bg-zinc-800 rounded-full"></div>
+                                                <div className="flex gap-3 mt-4">
+                                                    <div className="h-24 w-40 rounded-xl bg-purple-50 dark:bg-zinc-800 border border-purple-200/60 dark:border-zinc-700"></div>
+                                                    <div className="h-24 w-40 rounded-xl bg-purple-50 dark:bg-zinc-800 border border-purple-200/60 dark:border-zinc-700"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* User Message */}
+                                        <div className="flex gap-4 max-w-2xl ml-auto flex-row-reverse">
+                                            <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+                                                <div className="w-5 h-5 rounded-full bg-purple-300 dark:bg-zinc-600"></div>
+                                            </div>
+                                            <div className="space-y-3 flex-1">
+                                                <div className="h-4 w-full bg-purple-100 dark:bg-purple-900/20 rounded-full ml-auto"></div>
+                                                <div className="h-4 w-2/3 bg-purple-100 dark:bg-purple-900/20 rounded-full ml-auto"></div>
+                                            </div>
+                                        </div>
+
+                                        {/* AI Message 2 */}
+                                        <div className="flex gap-4 max-w-2xl opacity-60">
+                                            <div className="w-10 h-10 rounded-xl bg-purple-600/10 dark:bg-purple-600/20 flex items-center justify-center shrink-0">
+                                                <Sparkles className="w-5 h-5 text-purple-600" />
+                                            </div>
+                                            <div className="space-y-3 flex-1">
+                                                <div className="h-4 w-1/2 bg-purple-50 dark:bg-zinc-800 rounded-full"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    {/* Mockup Input Box */}
+                                    <div className="p-6 border-t border-purple-200/60 dark:border-[#2a2438] bg-white/50 dark:bg-transparent">
+                                        <div className="h-14 w-full rounded-2xl bg-white dark:bg-zinc-900 border border-purple-200/60 dark:border-[#2a2438] flex items-center px-4 justify-between shadow-sm">
+                                            <div className="h-4 w-48 bg-purple-50 dark:bg-zinc-800 rounded-full opacity-50"></div>
+                                            <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center shadow-md shadow-purple-600/20">
+                                                <ArrowRight className="w-4 h-4 text-white" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* Features Section */}
+            <section id="features" className="py-20 px-6 bg-[#fcfcf9] dark:bg-[#191919]">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div
+                        className="text-center mb-16"
+                        {...fadeInUp}
+                    >
+                        <h2 className="text-4xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 mb-4">
+                            Features
+                        </h2>
+                        <p className="text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto font-light">
+                            Powerful tools designed for clarity and speed
+                        </p>
+                    </motion.div>
+
+                    {/* Current Features */}
+                    <motion.div
+                        className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20"
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                    >
+                        {currentFeatures.map((feature, index) => (
+                            <motion.div
+                                key={index}
+                                variants={{
+                                    hidden: { opacity: 0, y: 20 },
+                                    show: { opacity: 1, y: 0 }
+                                }}
+                                className="p-8 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10 hover:border-[#7756AF]/30 transition-all group hover:shadow-lg hover:shadow-[#7756AF]/5"
+                            >
+                                <div className="w-14 h-14 rounded-2xl bg-[#F1EBF9] dark:bg-[#7756AF]/10 flex items-center justify-center mb-6 group-hover:bg-[#7756AF]/10 dark:group-hover:bg-[#7756AF]/20 transition-colors">
+                                    <feature.icon className="w-7 h-7 text-[#7756AF]" />
+                                </div>
+                                <h3 className="text-xl font-serif text-zinc-900 dark:text-zinc-100 mb-3">
+                                    {feature.title}
+                                </h3>
+                                <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed font-light">
+                                    {feature.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+
+                    {/* Coming Soon Features */}
+                    <motion.div
+                        className="text-center mb-12"
+                        {...fadeInUp}
+                    >
+                        <h3 className="text-3xl font-serif text-zinc-400 dark:text-zinc-600 mb-2">Coming Soon</h3>
+                    </motion.div>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {comingSoonFeatures.map((feature, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border-2 border-dashed border-purple-100 dark:border-purple-500/10 relative group hover:border-[#7756AF]/30 transition-colors"
+                            >
+                                <div className="absolute top-3 right-3 px-2 py-1 bg-[#F1EBF9] dark:bg-[#7756AF]/10 text-[#7756AF] text-xs font-medium rounded-full">
+                                    Soon
+                                </div>
+                                <div className="w-12 h-12 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 flex items-center justify-center mb-4 group-hover:bg-[#7756AF]/5 dark:group-hover:bg-[#7756AF]/10 transition-colors">
+                                    <feature.icon className="w-6 h-6 text-zinc-400 group-hover:text-[#7756AF]/50 transition-colors" />
+                                </div>
+                                <h4 className="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-2">
+                                    {feature.title}
+                                </h4>
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400 font-light">
+                                    {feature.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* What You Can Do Section */}
+            <section id="capabilities" className="py-20 px-6">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div
+                        className="text-center mb-16"
+                        {...fadeInUp}
+                    >
+                        <h2 className="text-4xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 mb-4">
+                            Capabilities
+                        </h2>
+                        <p className="text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto font-light">
+                            Unlock the full potential of your documents
+                        </p>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
+                        <motion.div
+                            className="p-10 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10 hover:border-[#7756AF]/30 transition-all group"
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-900 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                                <MessageSquare className="w-7 h-7 text-[#7756AF]" />
+                            </div>
+                            <h3 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4">Interactive Q&A</h3>
+                            <p className="text-lg text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed font-light">
+                                Transform static documents into interactive knowledge bases. Ask complex questions about your PDFs, reports, and contracts.
+                            </p>
+                            <ul className="space-y-3">
+                                <li className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                                    <Check className="w-5 h-5 text-[#7756AF] shrink-0" />
+                                    <span className="font-light">Extract specific data points</span>
+                                </li>
+                                <li className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                                    <Check className="w-5 h-5 text-[#7756AF] shrink-0" />
+                                    <span className="font-light">Summarize long documents</span>
+                                </li>
+                                <li className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                                    <Check className="w-5 h-5 text-[#7756AF] shrink-0" />
+                                    <span className="font-light">Compare information across files</span>
+                                </li>
+                            </ul>
+                        </motion.div>
+
+                        <motion.div
+                            className="p-10 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10 hover:border-[#7756AF]/30 transition-all group"
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-900 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                                <Sparkles className="w-7 h-7 text-[#7756AF]" />
+                            </div>
+                            <h3 className="text-2xl font-serif text-zinc-900 dark:text-zinc-100 mb-4">Visual Understanding</h3>
+                            <p className="text-lg text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed font-light">
+                                Go beyond text. Upload images, charts, and diagrams. Our advanced vision models analyze visual content to provide insights.
+                            </p>
+                            <ul className="space-y-3">
+                                <li className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                                    <Check className="w-5 h-5 text-[#7756AF] shrink-0" />
+                                    <span className="font-light">Analyze charts and graphs</span>
+                                </li>
+                                <li className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                                    <Check className="w-5 h-5 text-[#7756AF] shrink-0" />
+                                    <span className="font-light">Extract text from screenshots</span>
+                                </li>
+                                <li className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                                    <Check className="w-5 h-5 text-[#7756AF] shrink-0" />
+                                    <span className="font-light">Interpret visual diagrams</span>
+                                </li>
+                            </ul>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Use Cases Section */}
+            <section id="use-cases" className="py-20 px-6 bg-[#fcfcf9] dark:bg-[#191919]">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div
+                        className="text-center mb-16"
+                        {...fadeInUp}
+                    >
+                        <h2 className="text-4xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 mb-4">
+                            Use Cases
+                        </h2>
+                        <p className="text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto font-light">
+                            See how different professionals use CorpusAI
+                        </p>
+                    </motion.div>
+
+                    <motion.div
+                        className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                    >
+                        {useCases.map((useCase, index) => (
+                            <motion.div
+                                key={index}
+                                variants={{
+                                    hidden: { opacity: 0, y: 20 },
+                                    show: { opacity: 1, y: 0 }
+                                }}
+                                className="p-8 bg-white dark:bg-zinc-900/50 rounded-[2rem] text-center border border-purple-100 dark:border-purple-500/10 hover:border-[#7756AF]/30 transition-all hover:scale-105"
+                            >
+                                <div className="w-16 h-16 rounded-2xl bg-[#F1EBF9] dark:bg-[#7756AF]/10 flex items-center justify-center mx-auto mb-4">
+                                    <useCase.icon className="w-8 h-8 text-[#7756AF]" />
+                                </div>
+                                <h3 className="text-lg font-serif text-zinc-900 dark:text-zinc-100 mb-2">
+                                    {useCase.title}
+                                </h3>
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400 font-light">
+                                    {useCase.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-20 px-6">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div
+                        className="relative rounded-[3rem] overflow-hidden bg-white border border-purple-100 dark:border-transparent dark:bg-zinc-900/50"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay dark:mix-blend-overlay"></div>
+
+
+                        <div className="relative p-16 md:p-24 text-center">
+                            <h2 className="text-4xl md:text-5xl font-serif text-zinc-900 dark:text-white mb-6">
+                                Ready to get started?
+                            </h2>
+                            <p className="text-xl text-zinc-600 dark:text-zinc-300 max-w-2xl mx-auto mb-10 font-light">
+                                Join thousands of users who are already chatting with their documents.
+                            </p>
+                            <Link to="/chat">
+                                <Button className="rounded-full bg-[#7756AF] hover:bg-[#664996] text-white font-medium px-10 h-14 text-lg shadow-xl transition-all hover:scale-105">
+                                    Try Now
+                                    <ArrowRight className="w-5 h-5 ml-2" />
+                                </Button>
+                            </Link>
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section id="faq" className="py-20 px-6 bg-[#fcfcf9] dark:bg-[#191919]">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div
+                        className="text-center mb-12"
+                        {...fadeInUp}
+                    >
+                        <h2 className="text-4xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 mb-4">
+                            Frequently Asked Questions
+                        </h2>
+                    </motion.div>
+
+                    <div className="max-w-3xl mx-auto space-y-4">
+                        {faqs.map((faq, index) => {
+                            const isOpen = openIndex === index;
+
+                            return (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="bg-white dark:bg-zinc-900/50 rounded-[2rem] border border-purple-100 dark:border-purple-500/10 overflow-hidden"
+                                >
+                                    <button
+                                        onClick={() => setOpenIndex(isOpen ? null : index)}
+                                        className="w-full flex items-center justify-between p-6 text-left group transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+                                    >
+                                        <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-[#7756AF] transition-colors pr-8">
+                                            {faq.question}
+                                        </h3>
+                                        <div className={`shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                                            <ChevronDown className="w-5 h-5 text-zinc-400 group-hover:text-[#7756AF]" />
+                                        </div>
+                                    </button>
+                                    <AnimatePresence>
+                                        {isOpen && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                            >
+                                                <div className="px-6 pb-6 pt-0">
+                                                    <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed font-light border-t border-zinc-100 dark:border-zinc-800 pt-4">
+                                                        {faq.answer}
+                                                    </p>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* Contact Section */}
+            <section id="contact" className="py-20 px-6">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div
+                        className="text-center mb-12"
+                        {...fadeInUp}
+                    >
+                        <h2 className="text-4xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 mb-4">
+                            Contact Us
+                        </h2>
+                        <p className="text-xl text-zinc-500 dark:text-zinc-400 font-light">
+                            Have questions? We'd love to hear from you.
+                        </p>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+                        {/* Contact Info */}
+                        <motion.div
+                            className="space-y-6"
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <div className="p-8 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10">
+                                <h3 className="text-xl font-serif text-zinc-900 dark:text-zinc-100 mb-6">Get in Touch</h3>
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white dark:bg-zinc-800 flex items-center justify-center border border-zinc-100 dark:border-zinc-700">
+                                            <Mail className="w-6 h-6 text-[#7756AF]" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-zinc-500 dark:text-zinc-400 font-light">Email</p>
+                                            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">contact@corpusai.datanestx.tech</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white dark:bg-zinc-800 flex items-center justify-center border border-zinc-100 dark:border-zinc-700">
+                                            <MapPin className="w-6 h-6 text-[#7756AF]" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-zinc-500 dark:text-zinc-400 font-light">Location</p>
+                                            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">India</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white dark:bg-zinc-800 flex items-center justify-center border border-zinc-100 dark:border-zinc-700">
+                                            <Clock className="w-6 h-6 text-[#7756AF]" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-zinc-500 dark:text-zinc-400 font-light">Response Time</p>
+                                            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Up to 24 hours</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* Contact Form */}
+                        <motion.div
+                            className="p-8 bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-purple-100 dark:border-purple-500/10"
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <form onSubmit={handleSubmit} className="space-y-5">
+                                <div>
+                                    <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">Name</label>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                        required
+                                        className="w-full px-4 py-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#7756AF] focus:border-transparent transition-all"
+                                        placeholder="Your name"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">Email</label>
+                                    <input
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                        required
+                                        className="w-full px-4 py-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#7756AF] focus:border-transparent transition-all"
+                                        placeholder="your@email.com"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">Query Type</label>
+                                    <select
+                                        value={formData.queryType}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, queryType: e.target.value }))}
+                                        required
+                                        className="w-full px-4 py-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#7756AF] focus:border-transparent transition-all"
+                                    >
+                                        <option value="">Select a topic</option>
+                                        {queryOptions.map((option) => (
+                                            <option key={option} value={option}>{option}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2 block">Message</label>
+                                    <textarea
+                                        value={formData.message}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                                        required
+                                        rows={4}
+                                        className="w-full px-4 py-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#7756AF] focus:border-transparent resize-none transition-all"
+                                        placeholder="How can we help?"
+                                    />
+                                </div>
+
+                                <Button type="submit" disabled={isSubmitting} className="w-full bg-[#7756AF] hover:bg-[#664996] text-white rounded-xl h-12 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                                    <Send className="w-4 h-4 mr-2" />
+                                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                                </Button>
+                            </form>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="py-12 px-6 border-t border-purple-100 dark:border-[#2a2438] bg-[#fcfcf9] dark:bg-[#191919]">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                            <img src="/DataNesTX_Logo_Light_Frontend.png" alt="DataNesTX Logo" className="w-12 h-12 block dark:hidden" />
+                            <img src="/DataNesTX_Logo_Dark_Frontend.png" alt="DataNesTX Logo" className="w-12 h-12 hidden dark:block" />
+                            <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">CorpusAI</span>
+                        </div>
+                        <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
+                            <div className="flex items-center gap-4 text-sm">
+                                <Link to="/privacy" className="text-zinc-500 dark:text-zinc-400 hover:text-[#7756AF] transition-colors">
+                                    Privacy Policy
+                                </Link>
+                                <Link to="/terms" className="text-zinc-500 dark:text-zinc-400 hover:text-[#7756AF] transition-colors">
+                                    Terms of Service
+                                </Link>
+                            </div>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                                © {new Date().getFullYear()} CorpusAI. All rights reserved.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    );
+}

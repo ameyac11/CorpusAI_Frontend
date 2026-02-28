@@ -10,6 +10,7 @@ import { NotificationProvider } from "@/components/notifications/NotificationPro
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
 import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Onboarding from "./pages/Onboarding";
@@ -53,8 +54,9 @@ const AppWithLoading = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/login" element={<Auth />} />
+      <Route path="/signup" element={<Auth />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/auth/callback" element={<OAuthCallback />} />
       <Route path="/auth/verify-email" element={<VerifyEmail />} />
