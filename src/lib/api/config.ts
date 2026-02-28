@@ -57,6 +57,7 @@ export const API_ROUTES = {
   RESOURCES: {
     LIST: '/resources',
     UPLOAD: '/resources/upload',
+    STATUS: (resourceId: string) => `/resources/${resourceId}/status`,
     DELETE: (resourceId: string) => `/resources/${resourceId}`,
     PREVIEW: (resourceId: string) => `/resources/${resourceId}/preview`,
     WEB_SEARCH: '/resources/search',

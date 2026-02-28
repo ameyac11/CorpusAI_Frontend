@@ -782,39 +782,46 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
               attachments: prev.attachments?.filter(a => a.id !== file.id)
             } : prev);
           } else {
-            console.log('[addAttachments] Upload successful:', uploadResult.data);
-            console.log(`[addAttachments] Processed: ${uploadResult.data?.chunk_count} chunks stored in Qdrant`);
+            console.log('[addAttachments] Upload accepted:', uploadResult.data);
 
-            // Update attachment with returned resource ID
+            // Update attachment with returned resource ID immediately (status=processing)
             if (uploadResult.data?.id) {
               const resourceId = uploadResult.data.id;
-              console.log(`[addAttachments] Setting resourceId ${resourceId} for file ${file.name}`);
+              console.log(`[addAttachments] Setting resourceId ${resourceId} for file ${file.name} (processing)`);
 
-              setChats(prev => prev.map(c => {
-                if (c.id === (currentChatIdRef.current || chatToUpdate?.id)) {
-                  const updated = {
-                    ...c,
-                    attachments: c.attachments?.map(a =>
-                      a.id === file.id ? { ...a, resourceId, loading: false } : a
+              const updateAttachmentResource = (resourceId: string, loading: boolean) => {
+                setChats(prev => prev.map(c => {
+                  if (c.id === (currentChatIdRef.current || chatToUpdate?.id)) {
+                    return {
+                      ...c,
+                      attachments: c.attachments?.map(a =>
+                        a.id === file.id ? { ...a, resourceId, loading } : a
+                      )
+                    };
+                  }
+                  return c;
+                }));
+                setCurrentChat(prev => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    attachments: prev.attachments?.map(a =>
+                      a.id === file.id ? { ...a, resourceId, loading } : a
                     )
                   };
-                  console.log(`[addAttachments] Updated chat attachments:`, updated.attachments?.map(a => `${a.name}:${a.resourceId}`));
-                  return updated;
-                }
-                return c;
-              }));
+                });
+              };
 
-              // Also update current chat state
-              setCurrentChat(prev => {
-                if (!prev) return prev;
-                const updated = {
-                  ...prev,
-                  attachments: prev.attachments?.map(a =>
-                    a.id === file.id ? { ...a, resourceId, loading: false } : a
-                  )
-                };
-                console.log(`[addAttachments] Updated currentChat attachments:`, updated.attachments?.map(a => `${a.name}:${a.resourceId}`));
-                return updated;
+              // Set resourceId immediately but keep loading=true while ingestion runs
+              updateAttachmentResource(resourceId, true);
+
+              // Poll for ingestion completion in the background
+              chatService.pollResourceStatus(resourceId).then(result => {
+                console.log(`[addAttachments] Ingestion complete for ${file.name}: ${result.status}, ${result.chunk_count} chunks`);
+                updateAttachmentResource(resourceId, false);
+                if (result.status === 'failed') {
+                  setStreamError(`Processing failed for ${file.name}`);
+                }
               });
             } else {
               console.error('[addAttachments] No resource ID returned for', file.name);

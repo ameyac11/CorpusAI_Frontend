@@ -87,4 +87,19 @@ export const resourceService = {
   async getUsageStats(): Promise<ApiResponse<UsageStats>> {
     return apiGet<UsageStats>(API_ROUTES.RESOURCES.USAGE);
   },
+
+  async pollResourceStatus(resourceId: string, intervalMs = 1000, maxAttempts = 60): Promise<{ status: string; chunk_count: number }> {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const result = await apiGet<{ status: string; chunk_count: number }>(API_ROUTES.RESOURCES.STATUS(resourceId));
+        if (result.data && result.data.status !== 'pending') {
+          return { status: result.data.status, chunk_count: result.data.chunk_count || 0 };
+        }
+      } catch {
+        // ignore transient errors
+      }
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
+    }
+    return { status: 'failed', chunk_count: 0 };
+  },
 };

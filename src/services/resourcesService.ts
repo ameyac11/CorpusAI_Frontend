@@ -137,6 +137,29 @@ export const resourcesService = {
     },
 
     /**
+     * Poll ingestion status for a permanent resource until processing completes.
+     */
+    async pollResourceStatus(resourceId: string, intervalMs = 1000, maxAttempts = 60): Promise<{ status: string; chunk_count: number }> {
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                const response = await fetch(`${getApiBasePath()}/resources/${resourceId}/status`, {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.status !== 'pending') {
+                        return { status: data.status, chunk_count: data.chunk_count || 0 };
+                    }
+                }
+            } catch {
+                // ignore transient network errors
+            }
+            await new Promise(resolve => setTimeout(resolve, intervalMs));
+        }
+        return { status: 'failed', chunk_count: 0 };
+    },
+
+    /**
      * Delete a resource (permanent removal).
      */
     async deleteResource(resourceId: string): Promise<{ success: boolean; message?: string; error?: string }> {

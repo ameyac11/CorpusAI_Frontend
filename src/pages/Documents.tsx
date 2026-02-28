@@ -228,17 +228,22 @@ export default function Documents() {
       const response = await resourceService.uploadResource(file);
       if (response.success && response.data) {
         const ext = file.name.split('.').pop()?.toLowerCase() as DocumentType;
-        return {
-          success: true,
-          document: {
-            id: response.data.id,
-            name: file.name,
-            type: ext,
-            size: file.size / (1024 * 1024),
-            status: 'ready',
-            uploadedAt: new Date(),
-          }
+        const doc: UserDocument = {
+          id: response.data.id,
+          name: file.name,
+          type: ext,
+          size: file.size / (1024 * 1024),
+          status: 'processing' as any,
+          uploadedAt: new Date(),
         };
+
+        // Poll for ingestion completion in the background
+        resourceService.pollResourceStatus(response.data.id).then(result => {
+          console.log(`[Documents] Ingestion complete for ${file.name}: ${result.status}`);
+          // The documents list will refresh on next load
+        });
+
+        return { success: true, document: doc };
       }
       return { success: false, error: response.error?.message || 'Upload failed' };
     } catch (error) {

@@ -27,9 +27,9 @@ export function AppLayout() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Show loading while checking authentication
+  // Auth is already resolved by parent (AppWithLoading), but keep as safety net
   if (isLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen show />;
   }
 
   // auth gate — redirect to login if session expired or user is unauthenticated

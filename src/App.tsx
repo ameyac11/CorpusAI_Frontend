@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,23 +10,25 @@ import { ChatProvider } from "@/contexts/ChatContext";
 import { NotificationProvider } from "@/components/notifications/NotificationProvider";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
-import Landing from "./pages/Landing";
-import Auth from "./pages/Auth";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Onboarding from "./pages/Onboarding";
-import OAuthCallback from "./pages/OAuthCallback";
-import VerifyEmail from "./pages/VerifyEmail";
-import ResetPassword from "./pages/ResetPassword";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import Chat from "./pages/Chat";
-import Documents from "./pages/Documents";
-import History from "./pages/History";
-import CreativeSpace from "./pages/CreativeSpace";
-import GetStarted from "./pages/GetStarted";
-import NotFound from "./pages/NotFound";
-import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+
+// Lazy-loaded page components — each gets its own JS chunk
+const Landing = lazy(() => import("./pages/Landing"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const OAuthCallback = lazy(() => import("./pages/OAuthCallback"));
+const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Chat = lazy(() => import("./pages/Chat"));
+const Documents = lazy(() => import("./pages/Documents"));
+const History = lazy(() => import("./pages/History"));
+const CreativeSpace = lazy(() => import("./pages/CreativeSpace"));
+const GetStarted = lazy(() => import("./pages/GetStarted"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -35,43 +38,38 @@ function ChatWrapper() {
   return <Chat docsSidebarOpen={context?.docsSidebarOpen ?? false} setDocsSidebarOpen={context?.setDocsSidebarOpen ?? (() => { })} />;
 }
 
-// brief splash screen so the app feels intentional, not janky
+// Show loading screen only while auth state is being resolved
 const AppWithLoading = () => {
-  const [showLoading, setShowLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (showLoading) {
-    return <LoadingScreen />;
-  }
+  const { isLoading } = useAuth();
 
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/login" element={<Auth />} />
-      <Route path="/signup" element={<Auth />} />
-      <Route path="/onboarding" element={<Onboarding />} />
-      <Route path="/auth/callback" element={<OAuthCallback />} />
-      <Route path="/auth/verify-email" element={<VerifyEmail />} />
-      <Route path="/auth/reset-password" element={<ResetPassword />} />
-      <Route path="/privacy" element={<Privacy />} />
-      <Route path="/terms" element={<Terms />} />
-      <Route path="/get-started" element={<GetStarted />} />
-      <Route element={<AppLayout />}>
-        <Route path="/chat" element={<ChatWrapper />} />
-        <Route path="/documents" element={<Documents />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/creative-space" element={<CreativeSpace />} />
-      </Route>
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <LoadingScreen show={isLoading} />
+      {!isLoading && (
+        <Suspense fallback={<LoadingScreen show={true} />}>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/login" element={<Auth />} />
+            <Route path="/signup" element={<Auth />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/auth/callback" element={<OAuthCallback />} />
+            <Route path="/auth/verify-email" element={<VerifyEmail />} />
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/get-started" element={<GetStarted />} />
+            <Route element={<AppLayout />}>
+              <Route path="/chat" element={<ChatWrapper />} />
+              <Route path="/documents" element={<Documents />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/creative-space" element={<CreativeSpace />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      )}
+    </>
   );
 };
 

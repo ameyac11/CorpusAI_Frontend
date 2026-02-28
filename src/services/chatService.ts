@@ -290,5 +290,29 @@ export const chatService = {
       };
     }
   },
+
+  /**
+   * Poll the ingestion status of a chat resource until it's done processing.
+   * Returns the final status ('processed' or 'failed').
+   */
+  async pollResourceStatus(resourceId: string, intervalMs = 1000, maxAttempts = 60): Promise<{ status: string; chunk_count: number }> {
+    const url = `${getApiBasePath()}/chat/resource/${resourceId}/status`;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const response = await fetch(url, { credentials: 'include' });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status !== 'pending') {
+            return { status: data.status, chunk_count: data.chunk_count || 0 };
+          }
+        }
+      } catch {
+        // ignore transient network errors
+      }
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
+    }
+    return { status: 'failed', chunk_count: 0 };
+  },
 };
 
