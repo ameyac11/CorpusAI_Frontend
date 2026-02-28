@@ -60,7 +60,7 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [currentChat?.messages, isStreaming]);
 
-    // Auto-resize textarea
+    // auto-grow textarea as user types, capped at 120px
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
@@ -147,6 +147,7 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
         const isUser = message.role === 'user';
         const [copied, setCopied] = useState(false);
 
+        // strip <think> blocks so the user only sees the final answer
         const displayContent = message.content.replace(/<think>[\s\S]*?(?:<\/think>|$)/g, '').trim();
 
         const handleCopy = async (text: string) => {

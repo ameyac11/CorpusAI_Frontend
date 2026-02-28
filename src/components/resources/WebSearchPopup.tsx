@@ -56,6 +56,7 @@ export default function WebSearchPopup({ open, onOpenChange, onImportSuccess }: 
         }
     };
 
+    // toggle checkbox on entire row click for easier selection
     const toggleSelection = (index: number) => {
         setSelectedIndices((prev) => {
             const newSet = new Set(prev);
@@ -102,6 +103,7 @@ export default function WebSearchPopup({ open, onOpenChange, onImportSuccess }: 
         }
     };
 
+    // reset everything on close so stale results don't linger
     const handleClose = () => {
         setQuery('');
         setResults([]);

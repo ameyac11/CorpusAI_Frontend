@@ -20,14 +20,14 @@ export default function Onboarding() {
     const navigate = useNavigate();
     const { user, isLoading: authLoading } = useAuth();
 
-    // Redirect to login if not authenticated (after loading completes)
+    // bounce to login if they somehow landed here without auth
     useEffect(() => {
         if (!authLoading && !user) {
             navigate('/login');
         }
     }, [user, authLoading, navigate]);
 
-    // Redirect if already completed onboarding
+    // skip onboarding if they already completed it
     useEffect(() => {
         const checkOnboarding = async () => {
             try {

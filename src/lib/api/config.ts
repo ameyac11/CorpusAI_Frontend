@@ -27,6 +27,7 @@ export const getApiBasePath = (): string => {
 };
 
 // Route definitions grouped by feature
+// all routes are relative — they get prefixed with BASE_URL at call time
 export const API_ROUTES = {
   AUTH: {
     LOGIN: '/auth/login',

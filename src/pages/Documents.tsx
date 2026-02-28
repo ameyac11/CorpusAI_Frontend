@@ -133,7 +133,7 @@ export default function Documents() {
     source_url?: string;
   } | null>(null);
 
-  // Search ID state for imports
+  // keep a search ID so we can pass it to the import endpoint later
   const [currentSearchId, setCurrentSearchId] = useState<string | null>(null);
 
   // API Functions moved inside component to access showNotification
@@ -148,6 +148,7 @@ export default function Documents() {
     }
   };
 
+  // bytes → MB conversion happens here since the API returns raw bytes
   const fetchUserDocuments = async () => {
     try {
       const response = await resourceService.listResources();

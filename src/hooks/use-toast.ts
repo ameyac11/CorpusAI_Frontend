@@ -3,6 +3,7 @@ import * as React from "react";
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 1;
+// large delay so toasts stick around until explicitly dismissed
 const TOAST_REMOVE_DELAY = 1000000;
 
 type ToasterToast = ToastProps & {
@@ -121,6 +122,7 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
+// pub/sub pattern — state lives outside React so toasts can be triggered from anywhere
 const listeners: Array<(state: State) => void> = [];
 
 let memoryState: State = { toasts: [] };

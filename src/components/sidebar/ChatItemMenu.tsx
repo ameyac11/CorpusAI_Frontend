@@ -36,6 +36,7 @@ export function ChatItemMenu({
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(chatTitle);
 
+  // inline rename — Enter to save, Escape to cancel
   const handleSaveRename = () => {
     if (newTitle.trim()) {
       onRename(chatId, newTitle.trim());

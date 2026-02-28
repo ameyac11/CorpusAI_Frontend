@@ -8,12 +8,11 @@ import { Client, Account } from 'appwrite';
 const APPWRITE_ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';
 const APPWRITE_PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID || '695f3de400045032e4fc';
 
-// Initialize Appwrite client
+// only used client-side for email verification & password reset flows
 const client = new Client()
   .setEndpoint(APPWRITE_ENDPOINT)
   .setProject(APPWRITE_PROJECT_ID);
 
-// Create account service instance
 export const account = new Account(client);
 
 // Helper to get frontend URL for redirect URLs

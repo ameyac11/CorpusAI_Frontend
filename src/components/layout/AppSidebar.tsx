@@ -42,7 +42,7 @@ export function AppSidebar({ collapsed, onToggle, isMobile = false, onItemClick 
   console.log('[AppSidebar] Chats from context:', chats);
   console.log('[AppSidebar] Current chat:', currentChat);
 
-  // Sort pinned chats first, then by date
+  // pinned first, then most recently active — matches what users expect
   const recentChats = [...chats].sort((a, b) => {
     if (a.starred && !b.starred) return -1;
     if (!a.starred && b.starred) return 1;
@@ -75,7 +75,7 @@ export function AppSidebar({ collapsed, onToggle, isMobile = false, onItemClick 
     deleteChat(chatId);
   };
 
-  // When collapsed, clicking the logo opens the sidebar
+  // clicking logo when collapsed re-expands the sidebar
   const handleLogoClick = () => {
     if (collapsed) {
       onToggle();

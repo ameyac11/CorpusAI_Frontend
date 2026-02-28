@@ -69,6 +69,9 @@ export interface ImportResponse {
     error?: string;
 }
 
+// uses raw fetch instead of apiClient — this service was built before the central client existed
+// TODO: migrate to apiClient for consistency
+
 // Cookies are sent automatically with credentials: 'include'
 // No need for manual auth headers
 
@@ -86,6 +89,7 @@ export const resourcesService = {
     /**
      * Search web using Perplexity (Resource Page only).
      * Makes EXACTLY ONE API call, returns up to 20 results.
+     * Careful: each call counts against the user's daily search quota.
      */
     async searchWeb(query: string): Promise<SearchResponse> {
         const response = await fetch(`${getApiBasePath()}/resources/search`, {

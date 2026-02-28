@@ -122,7 +122,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
   const [contactMessage, setContactMessage] = useState('');
   const [contactSubmitting, setContactSubmitting] = useState(false);
 
-  // Fetch permanent resources from Resources page
+  // grab permanent (Resources page) docs so user can attach them to chat context
   useEffect(() => {
     const fetchPermanentResources = async () => {
       try {
@@ -169,7 +169,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
     scrollToBottom();
   }, [currentChat?.messages, isLoading]);
 
-  // Display rate limit / stream errors as notifications
+  // surface rate-limit / stream errors as toast-style notifications
   useEffect(() => {
     if (streamError) {
       showNotification('warning', 'Model Status', streamError);
@@ -232,6 +232,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
     await sendMessage(message, currentSelectedResources, selectedResourcesMetadata);
   };
 
+  // Shift+Enter for newline, plain Enter to send
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();

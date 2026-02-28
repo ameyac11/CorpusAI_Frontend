@@ -49,6 +49,7 @@ export interface ResourcePreview {
   thumbnail?: string;
 }
 
+// thin wrappers around the api client — keeps components from importing api internals
 export const resourceService = {
   async listResources(): Promise<ApiResponse<{ resources: Resource[] }>> {
     return apiGet<{ resources: Resource[] }>(API_ROUTES.RESOURCES.LIST);

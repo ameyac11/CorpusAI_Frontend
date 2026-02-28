@@ -26,7 +26,7 @@ export default function History() {
     chat.messages.some(m => m.content.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  // Sort pinned chats first
+  // pinned chats always float to top, then sort by most recent activity
   const sortedChats = [...filteredChats].sort((a, b) => {
     if (a.starred && !b.starred) return -1;
     if (!a.starred && b.starred) return 1;
@@ -70,6 +70,7 @@ export default function History() {
     });
   };
 
+  // checkbox selection mode — toggled by clicking any checkbox
   const toggleChatSelection = (e: React.MouseEvent, chatId: string) => {
     e.stopPropagation();
     const newSelected = new Set(selectedChats);

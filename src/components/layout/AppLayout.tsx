@@ -32,12 +32,12 @@ export function AppLayout() {
     return <LoadingScreen />;
   }
 
-  // Redirect to login if not authenticated
+  // auth gate — redirect to login if session expired or user is unauthenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Handle the interaction between left nav sidebar and right doc sidebar
+  // collapse left nav when right doc sidebar opens so they don't fight for space
   const handleDocsSidebarChange = (open: boolean) => {
     if (open) {
       if (!sidebarCollapsed) {

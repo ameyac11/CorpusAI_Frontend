@@ -24,6 +24,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
   const { login, signup, forgotPassword, resendVerification } = useAuth();
   const navigate = useNavigate();
 
+  // step 1 = email, step 2 = password — keeps the form less overwhelming
   const totalSteps = 2;
 
   const handleNext = async () => {
@@ -91,6 +92,7 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
     }
   };
 
+  // don't reveal if email exists — always return success for security
   const handleForgotPassword = async () => {
     if (!email || !email.includes('@')) {
       setError('Please enter your email first');

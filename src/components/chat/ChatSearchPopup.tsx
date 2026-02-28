@@ -19,7 +19,7 @@ export function ChatSearchPopup({ open, onClose }: ChatSearchPopupProps) {
   const { chats, selectChat } = useChat();
   const navigate = useNavigate();
 
-  // Handle open/close with smooth animation
+  // double rAF trick to ensure the DOM has painted before triggering transition
   useEffect(() => {
     if (open) {
       setIsVisible(true);
@@ -45,7 +45,7 @@ export function ChatSearchPopup({ open, onClose }: ChatSearchPopupProps) {
     chat.messages.some(m => m.content.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  // Group chats by date
+  // group chats into time buckets for a cleaner list
   const groupedChats = filteredChats.reduce((groups, chat) => {
     let groupKey = 'Older';
     

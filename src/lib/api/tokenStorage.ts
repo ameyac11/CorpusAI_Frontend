@@ -1,6 +1,7 @@
 // Abstract token storage mechanism
 // Easy to replace with different storage strategies
 
+// legacy keys — we moved to HTTP-only cookies but keep these for cleanup
 const TOKEN_KEY = 'corpus_access_token';
 const REFRESH_TOKEN_KEY = 'corpus_refresh_token';
 
@@ -35,10 +36,10 @@ const defaultStrategy: TokenStorageStrategy = {
   },
 };
 
+// strategy pattern so we can swap to sessionStorage or in-memory for testing
 let strategy: TokenStorageStrategy = defaultStrategy;
 
 export const tokenStorage = {
-  // Allow swapping storage strategy
   setStrategy(newStrategy: TokenStorageStrategy): void {
     strategy = newStrategy;
   },

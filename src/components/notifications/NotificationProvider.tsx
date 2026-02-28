@@ -119,6 +119,7 @@ function NotificationToast({
   const config = notificationConfig[notification.type];
   const timeout = notification.timeout || 5000;
 
+  // auto-dismiss with a progress bar that counts down visually
   React.useEffect(() => {
     const startTime = Date.now();
     const updateInterval = 50;
@@ -137,6 +138,7 @@ function NotificationToast({
     return () => clearInterval(progressInterval);
   }, [timeout]);
 
+  // exit animation before removing from DOM
   const handleDismiss = () => {
     setIsExiting(true);
     setTimeout(onDismiss, 300);

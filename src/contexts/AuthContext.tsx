@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const maxAnonymousMessages = 5;
 
-  // Check auth status on app load
+  // try to restore session from cookies on app boot
   const checkAuth = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -58,9 +58,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           providers: response.data.providers,
         });
       } else {
-        // No valid session
+        // no valid session — wipe any leftover localStorage tokens from before cookie migration
         setUser(null);
-        tokenStorage.clearAll(); // Clean up any legacy tokens
+        tokenStorage.clearAll();
       }
     } catch (error) {
       setUser(null);
@@ -158,6 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // gate anonymous users — returns false when they've hit the cap
   const incrementMessageCount = useCallback(() => {
     if (!user && messageCount >= maxAnonymousMessages) {
       setShowLoginPrompt(true);

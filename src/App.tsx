@@ -34,13 +34,14 @@ function ChatWrapper() {
   return <Chat docsSidebarOpen={context?.docsSidebarOpen ?? false} setDocsSidebarOpen={context?.setDocsSidebarOpen ?? (() => { })} />;
 }
 
+// brief splash screen so the app feels intentional, not janky
 const AppWithLoading = () => {
   const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoading(false);
-    }, 2000); // Show loading screen for 2 seconds
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -72,6 +73,7 @@ const AppWithLoading = () => {
   );
 };
 
+// provider order matters: Auth must wrap Chat since ChatProvider reads auth state
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>

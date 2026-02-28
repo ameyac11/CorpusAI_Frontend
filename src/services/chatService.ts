@@ -117,7 +117,7 @@ export const chatService = {
       });
 
       if (!response.ok) {
-        // Handle 429 rate limit errors specially
+        // 429 gets special treatment — backend tells us which model to fall back to
         if (response.status === 429) {
           try {
             const errorData = await response.json();
@@ -147,6 +147,7 @@ export const chatService = {
       const decoder = new TextDecoder();
       let buffer = '';
 
+      // SSE parser — accumulate chunks and split on newlines
       while (true) {
         const { done, value } = await reader.read();
 
@@ -156,7 +157,8 @@ export const chatService = {
 
         // Process complete SSE events
         const lines = buffer.split('\n');
-        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+        // keep the last incomplete line in buffer for the next iteration
+        buffer = lines.pop() || '';
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {

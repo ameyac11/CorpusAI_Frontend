@@ -35,6 +35,7 @@ const fadeInUp = {
     transition: { duration: 0.5 }
 };
 
+// staggered entrance animations for feature cards
 const staggerContainer = {
     hidden: { opacity: 0 },
     show: {
@@ -161,7 +162,7 @@ export default function Landing() {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Domain restriction: Only allow sending from the official domain (and localhost for dev)
+        // only allow the contact form from our domain (or localhost for dev)
         const allowedDomains = ['corpusai.datanestx.tech', 'localhost', '127.0.0.1'];
         if (!allowedDomains.includes(window.location.hostname)) {
             toast.error('Security restriction: Contact form can only be sent from corpusai.datanestx.tech');

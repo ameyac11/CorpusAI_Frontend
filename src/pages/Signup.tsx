@@ -41,7 +41,7 @@ export default function Signup() {
           </div>
 
           <div className="space-y-3">
-            {/* Social Buttons */}
+            {/* Social buttons shown first for lower-friction signup */}
             <div className="button-glass-wrapper">
               <SocialAuthButtons />
             </div>

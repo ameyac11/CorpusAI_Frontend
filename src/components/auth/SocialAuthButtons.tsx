@@ -3,6 +3,7 @@ import { Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
+// these just redirect to backend OAuth endpoints — no client-side tokens involved
 export function SocialAuthButtons() {
   const { loginWithGoogle, loginWithGithub } = useAuth();
 

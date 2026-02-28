@@ -44,7 +44,7 @@ interface AuthResponse {
 export const authService = {
   async login(credentials: LoginCredentials): Promise<ApiResponse<User & { providers?: string[]; emailVerified?: boolean }>> {
     try {
-      // Step 1: Delete any existing Appwrite session first
+      // two-step login: Appwrite verifies password, then our backend issues cookies
       try {
         await account.deleteSession('current');
         console.log('[Auth] Cleared existing Appwrite session');
@@ -120,7 +120,7 @@ export const authService = {
   },
 
   async signup(credentials: SignupCredentials): Promise<ApiResponse<User & { providers?: string[]; emailVerified?: boolean }>> {
-    // Step 1: Create user in backend (which creates in Appwrite)
+    // signup creates the user backend-side, then we create an Appwrite session to send verification email
     const response = await apiPost<{ success: boolean; data: AuthResponse; error?: string }>(
       API_ROUTES.AUTH.SIGNUP,
       credentials

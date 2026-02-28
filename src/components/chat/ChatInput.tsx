@@ -59,6 +59,7 @@ export function ChatInput() {
   const { model, setModel, dataSource, setDataSource, internetSearch, setInternetSearch, sendMessage, createNewChat, currentChat } = useChat();
   const { incrementMessageCount, isAnonymous } = useAuth();
 
+  // auto-create a chat on first message if none exists
   const handleSend = () => {
     if (!input.trim()) return;
 
@@ -74,6 +75,7 @@ export function ChatInput() {
     setInput('');
   };
 
+  // Shift+Enter = newline, Enter = send
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();

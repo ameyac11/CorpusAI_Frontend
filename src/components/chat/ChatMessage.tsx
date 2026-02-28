@@ -14,7 +14,7 @@ export function ChatMessage({ message, isLoading = false, loadingStatus }: ChatM
   const isUser = message.role === 'user';
   const [imageUrls, setImageUrls] = useState<Map<string, string>>(new Map());
 
-  // Load image previews for attachments
+  // resolve image URLs: prefer storage_url > blob url > fallback to preview endpoint
   useEffect(() => {
     if (!message.attachments || message.attachments.length === 0) return;
 

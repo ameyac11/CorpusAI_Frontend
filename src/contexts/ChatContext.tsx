@@ -102,6 +102,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
     return new Set();
   });
+  // ref tracks the *real* backend chat ID — avoids stale closures in async callbacks
   const currentChatIdRef = useRef<string | null>(null);
 
   // Wrapper to persist disabled models to localStorage
@@ -120,7 +121,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [currentChat?.id]);
 
-  // Fetch rate limit status to determine disabled models
+  // check which models are rate-limited so we can grey them out in the UI
   const fetchRateLimitStatus = useCallback(async () => {
     if (!isAuthenticated) return;
 
@@ -618,8 +619,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         if (token.token) {
           accumulatedContent += token.token;
 
-          // Detect think tags to update isThinking state
-          // Count opening and closing tags to determine if we're inside a think block
+          // detect <think>...</think> tags to show "thinking" spinner
           const openThinkCount = (accumulatedContent.match(/<think>/g) || []).length;
           const closeThinkCount = (accumulatedContent.match(/<\/think>/g) || []).length;
 
@@ -857,7 +857,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
 
   const renameChat = async (chatId: string, newTitle: string) => {
-    // Update local state immediately
+    // optimistic update — rename locally first, then sync to backend
     setChats(prev => prev.map(c =>
       c.id === chatId ? { ...c, title: newTitle } : c
     ));
@@ -865,7 +865,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setCurrentChat(prev => prev ? { ...prev, title: newTitle } : null);
     }
 
-    // Persist to backend
     try {
       const response = await chatService.renameChat(chatId, newTitle);
       if (!response.success) {
@@ -878,7 +877,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteChat = async (chatId: string) => {
-    // Update local state immediately
+    // optimistic delete — remove from UI immediately, soft-delete on backend
     setChats(prev => prev.filter(c => c.id !== chatId));
     if (currentChat?.id === chatId) {
       setCurrentChat(null);

@@ -47,6 +47,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const { model, setModel, dataSource, setDataSource } = useChat();
   const [activeTab, setActiveTab] = useState<SettingsTab>('appearance');
 
+  // navigate to landing page and smooth-scroll to contact section
   const handleContactUs = () => {
     onOpenChange(false);
     navigate('/');

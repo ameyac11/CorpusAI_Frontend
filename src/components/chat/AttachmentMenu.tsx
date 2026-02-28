@@ -30,6 +30,7 @@ export function AttachmentMenu({ attachments, onAttach, onRemove }: AttachmentMe
   const documentInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
+  // random suffix so multiple files dropped at the same instant get unique IDs
   const handleDocumentSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;

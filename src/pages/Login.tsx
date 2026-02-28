@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Login() {
+  // toggle between "Continue with Email" button and the actual email form
   const [showEmailForm, setShowEmailForm] = useState(false);
 
   return (
@@ -45,7 +46,7 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Auth Content */}
+          {/* Social OAuth first, email as fallback — reduces friction */}
           <div className="space-y-6">
 
             <SocialAuthButtons />

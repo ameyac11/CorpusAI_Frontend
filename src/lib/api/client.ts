@@ -50,7 +50,7 @@ const mapStatusToErrorCode = (status: number): string => {
   }
 };
 
-// Create headers (no auth token needed - using HTTP-only cookies)
+// skip Content-Type for FormData — browser sets the multipart boundary automatically
 const createHeaders = (customHeaders?: HeadersInit, isFormData: boolean = false): Headers => {
   const headers = new Headers(customHeaders);
 
@@ -72,6 +72,7 @@ export const apiClient = {
     const url = buildEndpoint(route);
 
     try {
+      // abort controller gives us a hard timeout so we don't hang forever
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
 
@@ -145,6 +146,7 @@ export async function apiDelete<T>(route: string): Promise<ApiResponse<T>> {
   return apiClient.request<T>(route, { method: 'DELETE' });
 }
 
+// file uploads go through here — don't set Content-Type, let FormData handle it
 export async function apiUpload<T>(route: string, formData: FormData): Promise<ApiResponse<T>> {
   // Cookies are sent automatically with credentials: 'include'
   // No Authorization header needed for file uploads

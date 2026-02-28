@@ -11,6 +11,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // hydrate from localStorage so the theme doesn't flash on reload
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('theme') as Theme) || 'dark';
@@ -40,6 +41,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyTheme(theme);
     localStorage.setItem('theme', theme);
 
+    // re-apply when OS theme changes (only relevant if user picked 'system')
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => {
       if (theme === 'system') {
