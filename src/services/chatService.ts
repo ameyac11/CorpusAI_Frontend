@@ -57,7 +57,7 @@ export interface SendMessagePayload {
   chatId?: string;
   content: string;
   mode?: string;
-  model?: string;  // LLM model: llama-guard-4, llama-scout-4, gpt-oss-120b, gpt-4.1, gpt-4o-mini, compound
+  model?: string;  // LLM model: llama-scout-4, gpt-oss-120b, gpt-4o, gpt-4o-mini, compound, kimi-k2
   web_search?: boolean;  // Enable external web search for non-compound models
   attachments?: File[];
   resource_ids?: string[];
@@ -102,7 +102,7 @@ export const chatService = {
       chat_id: payload.chatId || null,
       content: payload.content,
       mode: payload.mode || 'hybrid',
-      model: payload.model || 'gpt-4o-mini',
+      model: payload.model || 'llama-scout-4',
       web_search: payload.web_search || false,
       resource_ids: payload.resource_ids,
     };
@@ -135,6 +135,21 @@ export const chatService = {
             yield { token: '', done: true, error: 'Rate limit exceeded' };
             return;
           }
+        }
+        // 400 with CHAT_MESSAGE_LIMIT — chat has too many messages
+        if (response.status === 400) {
+          try {
+            const errorData = await response.json();
+            if (errorData.detail?.error === 'CHAT_MESSAGE_LIMIT') {
+              yield {
+                token: '',
+                done: true,
+                error: 'CHAT_MESSAGE_LIMIT',
+                message: errorData.detail?.message,
+              };
+              return;
+            }
+          } catch { /* fall through */ }
         }
         yield { token: '', done: true, error: `HTTP error: ${response.status}` };
         return;

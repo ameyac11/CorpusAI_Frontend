@@ -161,10 +161,20 @@ export default function Documents() {
             type: (r.file_type.split('/').pop() as DocumentType) || 'pdf',
             // Convert bytes to MB here since the API returns bytes
             size: (r.size || 0) / (1024 * 1024),
-            status: r.status === 'processed' ? 'ready' : 'processing' as DocumentStatus,
+            status: (r.status === 'processed' ? 'ready' : r.status === 'failed' ? 'failed' : 'processing') as DocumentStatus,
             uploadedAt: new Date(r.created_at),
           }));
         setUserDocuments(docs);
+
+        // For any document still in processing/pending state, start background polling
+        docs.filter(d => d.status === 'processing').forEach(doc => {
+          resourceService.pollResourceStatus(doc.id).then(pollResult => {
+            const finalStatus: DocumentStatus = pollResult.status === 'processed' ? 'ready' : 'failed';
+            setUserDocuments(prev => prev.map(d =>
+              d.id === doc.id ? { ...d, status: finalStatus } : d
+            ));
+          });
+        });
       } else {
         showNotification('error', 'Fetch Failed', response.error?.message || 'Failed to fetch documents');
       }
@@ -236,13 +246,6 @@ export default function Documents() {
           status: 'processing' as any,
           uploadedAt: new Date(),
         };
-
-        // Poll for ingestion completion in the background
-        resourceService.pollResourceStatus(response.data.id).then(result => {
-          console.log(`[Documents] Ingestion complete for ${file.name}: ${result.status}`);
-          // The documents list will refresh on next load
-        });
-
         return { success: true, document: doc };
       }
       return { success: false, error: response.error?.message || 'Upload failed' };
@@ -435,13 +438,27 @@ export default function Documents() {
       setUploadingFiles(prev => prev.filter(id => id !== tempId));
 
       if (result.success && result.document) {
+        const realId = result.document.id;
+        // Set to processing — RAG ingestion is running in the background
         setUserDocuments(prev => prev.map(d =>
           d.id === tempId
-            ? { ...d, id: result.document!.id, status: 'ready', uploadedAt: new Date() }
+            ? { ...d, id: realId, status: 'processing', uploadedAt: new Date() }
             : d
         ));
         // Refresh usage stats after upload
         fetchUsageStats();
+        // Poll until ingestion finishes, then reveal the real status
+        resourceService.pollResourceStatus(realId).then(pollResult => {
+          const finalStatus: DocumentStatus = pollResult.status === 'processed' ? 'ready' : 'failed';
+          setUserDocuments(prev => prev.map(d =>
+            d.id === realId ? { ...d, status: finalStatus } : d
+          ));
+          if (finalStatus === 'ready') {
+            showNotification('success', 'Document Ready', `${file.name} has been processed and is ready to use`);
+          } else {
+            showNotification('error', 'Processing Failed', `Failed to process ${file.name}. Please try again.`);
+          }
+        });
       } else {
         // Handle failure - remove the temp document and show error
         setUserDocuments(prev => prev.filter(d => d.id !== tempId));
@@ -546,7 +563,7 @@ export default function Documents() {
     return (
       <div
         className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors group cursor-pointer"
-        onClick={() => !isUploading && openPreview('user', doc)}
+        onClick={() => !isUploading && doc.status !== 'processing' && doc.status !== 'failed' && openPreview('user', doc)}
       >
         <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center",
           doc.type === 'pdf' ? 'bg-red-500/10' :
@@ -570,6 +587,16 @@ export default function Documents() {
         <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
           {isUploading ? (
             <span className="text-xs text-muted-foreground">Uploading...</span>
+          ) : doc.status === 'processing' ? (
+            <div className="flex items-center gap-1 text-xs text-yellow-600">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Processing...</span>
+            </div>
+          ) : doc.status === 'failed' ? (
+            <div className="flex items-center gap-1 text-xs text-destructive">
+              <AlertCircle className="w-3.5 h-3.5" />
+              <span>Failed</span>
+            </div>
           ) : (
             <>
               <div className="flex items-center gap-1 text-xs text-green-600">

@@ -39,8 +39,13 @@ const models: ModelOption[] = [
       { text: 'Vision', variant: 'vision' }
     ]
   },
+  { value: 'kimi-k2', label: 'Kimi K2' },
   { value: 'gpt-oss-120b', label: 'GPT OSS 120B' },
-  { value: 'gpt-4.1', label: 'GPT-4.1' },
+  {
+    value: 'gpt-4o',
+    label: 'GPT-4o',
+    badges: [{ text: 'Vision', variant: 'vision' }]
+  },
   {
     value: 'gpt-4o-mini',
     label: 'GPT-4o Mini',

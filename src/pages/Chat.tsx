@@ -51,8 +51,9 @@ const models: {
     { value: 'compound', label: 'Compound', requiresAuth: false, webSearch: true },
     { value: 'compound-mini', label: 'Compound Mini', requiresAuth: false, webSearch: true },
     { value: 'llama-scout-4', label: 'Llama 4 Scout', requiresAuth: false, visionSupport: true, isDefault: true },
+    { value: 'kimi-k2', label: 'Kimi K2', requiresAuth: false },
     { value: 'gpt-oss-120b', label: 'GPT OSS 120B', requiresAuth: false },
-    { value: 'gpt-4.1', label: 'GPT-4.1', requiresAuth: false },
+    { value: 'gpt-4o', label: 'GPT-4o', requiresAuth: false, visionSupport: true },
     { value: 'gpt-4o-mini', label: 'GPT-4o Mini', requiresAuth: false, visionSupport: true },
   ];
 
@@ -445,7 +446,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
                 </span>
                 {attachment.loading ? (
                   <span className="text-[10px] text-muted-foreground uppercase">
-                    Uploading...
+                    {attachment.resourceId ? 'Processing...' : 'Uploading...'}
                   </span>
                 ) : (
                   <div className="flex items-center gap-1">

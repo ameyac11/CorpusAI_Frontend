@@ -116,8 +116,9 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                     <SelectItem value="llama-scout-4">Llama 4 Scout</SelectItem>
                     <SelectItem value="compound">Compound</SelectItem>
                     <SelectItem value="compound-mini">Compound Mini</SelectItem>
+                    <SelectItem value="kimi-k2">Kimi K2</SelectItem>
                     <SelectItem value="gpt-oss-120b">GPT OSS 120B</SelectItem>
-                    <SelectItem value="gpt-4.1">GPT-4.1</SelectItem>
+                    <SelectItem value="gpt-4o">GPT-4o</SelectItem>
                     <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
                   </SelectContent>
                 </Select>

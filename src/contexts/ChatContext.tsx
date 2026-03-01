@@ -4,7 +4,7 @@ import { chatService } from '@/services/chatService';
 import { useAuth } from '@/contexts/AuthContext';
 import { getApiBasePath } from '@/lib/api/config';
 
-export type AIModel = 'compound' | 'compound-mini' | 'llama-scout-4' | 'gpt-oss-120b' | 'gpt-4.1' | 'gpt-4o-mini';
+export type AIModel = 'compound' | 'compound-mini' | 'llama-scout-4' | 'kimi-k2' | 'gpt-oss-120b' | 'gpt-4o' | 'gpt-4o-mini';
 export type DataSource = 'documents' | 'hybrid' | 'ai-only';
 
 export interface UserUsage {
@@ -616,6 +616,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             setStreamError(token.message || 'Daily query limit reached. Try again tomorrow.');
             // Refresh usage display
             fetchRateLimitStatus();
+          } else if (token.error === 'CHAT_MESSAGE_LIMIT') {
+            setStreamError(token.message || 'This chat has reached its message limit. Please create a new chat to continue.');
           } else {
             setStreamError(token.error);
           }
@@ -837,30 +839,36 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                 });
               };
 
-              // Set resourceId immediately but keep loading=true while ingestion runs
+              // Mark as processing (loading=true, resourceId set) — keep spinner until ingestion finishes
               updateAttachmentResource(resourceId, true);
 
-              // Poll for ingestion completion in the background
+              // Poll for RAG ingestion to finish, THEN clear loading spinner
               chatService.pollResourceStatus(resourceId).then(result => {
                 console.log(`[addAttachments] Ingestion complete for ${file.name}: ${result.status}, ${result.chunk_count} chunks`);
+                // Only now set loading=false so the UI reflects the document is truly ready
                 updateAttachmentResource(resourceId, false);
                 if (result.status === 'failed') {
-                  setStreamError(`Processing failed for ${file.name}`);
+                  setStreamError(`Processing failed for ${file.name}. Please try uploading again.`);
                 }
               });
             } else {
+              // No resource ID — mark this attachment as done loading (nothing to poll)
               console.error('[addAttachments] No resource ID returned for', file.name);
+              updateAttachmentLoading([file.id], false);
             }
           }
         }
       }
-      console.log('[addAttachments] All files uploaded and processed');
+      console.log('[addAttachments] All files uploaded (ingestion polling running in background).');
     } catch (error) {
       console.error('[addAttachments] Upload error:', error);
       setStreamError('Failed to upload files');
-    } finally {
+      // On unexpected error, clear loading state so UI doesn't get stuck
       updateAttachmentLoading(attachmentIds, false);
     }
+    // NOTE: We intentionally do NOT call updateAttachmentLoading(false) in a finally block here.
+    // Loading is cleared per-file by updateAttachmentResource() only after polling confirms
+    // the RAG ingestion is complete. This prevents showing 'Ready' before the doc is usable.
   };
 
   const removeAttachment = (attachmentId: string) => {
