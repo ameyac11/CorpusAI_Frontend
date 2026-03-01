@@ -132,7 +132,7 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
   /* ── Show stream errors ───────────────────────────────────────── */
   useEffect(() => {
     if (streamError) {
-      showNotification('stream_error', 'Error', streamError);
+      showNotification('error', 'Error', streamError);
     }
   }, [streamError, showNotification]);
 
@@ -322,7 +322,7 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
           {attachedFiles.length > 0 && (
             <div className="flex flex-wrap gap-1.5 justify-end max-w-[85%]">
               {attachedFiles.map(file => (
-                <div key={file.id} className="flex items-center gap-1.5 pl-2 pr-2.5 py-1.5 bg-secondary/60 rounded-xl border border-border/50 text-xs">
+                <div key={file.id} className="flex items-center gap-1.5 pl-2 pr-2.5 py-1.5 bg-sidebar-accent/60 rounded-xl border border-border/50 text-xs">
                   <div className="w-7 h-7 rounded-lg bg-background flex items-center justify-center">
                     {isPdfFile(file.name) ? <FileType className="w-3.5 h-3.5 text-red-500" /> :
                       file.type === 'image' ? <ImageIcon className="w-3.5 h-3.5 text-primary" /> :
@@ -429,7 +429,7 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
     return (
       <div className="flex gap-2 overflow-x-auto pb-2 px-1 scrollbar-hide">
         {attachments.map(attachment => (
-          <div key={attachment.id} className="relative flex items-center gap-2 pl-2 pr-7 py-2 bg-secondary/70 rounded-xl border border-border/50 shrink-0">
+          <div key={attachment.id} className="relative flex items-center gap-2 pl-2 pr-7 py-2 bg-sidebar-accent/70 rounded-xl border border-border/50 shrink-0">
             <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center">
               {attachment.loading ? <Loader2 className="w-4 h-4 text-primary animate-spin" /> :
                 isPdfFile(attachment.name) ? <FileType className="w-4 h-4 text-red-500" /> :
@@ -486,10 +486,10 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
   /* ════════════════════════ RENDER ══════════════════════════════ */
 
   return (
-    <div className="flex flex-col h-screen w-full bg-background">
+    <div className="flex flex-col h-[100dvh] w-full bg-card overflow-hidden">
 
       {/* ── Header ──────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between px-3 py-2.5 border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-40">
+      <header className="flex items-center justify-between px-3 py-2.5 border-b border-border bg-card/95 backdrop-blur-sm sticky top-0 z-40 shrink-0">
         <button
           onClick={onOpenSidebar}
           className="w-9 h-9 rounded-full flex items-center justify-center text-foreground hover:bg-secondary transition-colors active:scale-95"
@@ -500,7 +500,7 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
         {/* Model selector trigger — tap to open bottom sheet */}
         <button
           onClick={() => setModelSheetOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/60 border border-border/40 active:scale-[0.97] transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sidebar-accent/60 border border-border/40 active:scale-[0.97] transition-all"
         >
           <Sparkles className="w-3.5 h-3.5 text-primary" />
           <span className="text-sm font-medium text-foreground">
@@ -531,30 +531,26 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
       <div className="flex-1 overflow-y-auto">
         {isNewChat ? (
           /* ── Welcome Screen ─────────────────────────────────── */
-          <div className="flex flex-col px-5 pt-10 pb-4">
-            <div className="mb-8">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center mb-4">
-                <Sparkles className="w-6 h-6 text-primary" />
-              </div>
-              <p className="text-muted-foreground text-sm mb-1">Hi {userName}</p>
-              <h2 className="text-2xl font-semibold text-foreground leading-tight">
+          <div className="flex flex-col items-center justify-center px-5 flex-1 h-full min-h-[50vh]">
+            <div className="flex flex-col items-center mb-6">
+              <img
+                src="/DataNesTX_Logo_Dark_Frontend.png"
+                alt="CorpusAI Logo"
+                className="w-14 h-14 object-contain mb-6 dark:hidden hidden" // Placeholder for light mode if needed, assuming dark mode primary for now
+                style={{ filter: "drop-shadow(0 0 10px rgba(168,85,247,0.2))" }}
+              />
+              <img
+                src="/DataNesTX_Logo_Dark_Frontend.png"
+                alt="CorpusAI Logo"
+                className="w-14 h-14 object-contain mb-6 dark:block block"
+                style={{ filter: "drop-shadow(0 0 10px rgba(168,85,247,0.2))" }}
+              />
+              <h2 className="text-[28px] md:text-3xl font-serif text-foreground leading-tight text-center tracking-tight">
                 How can I help you today?
               </h2>
             </div>
 
-            {/* Quick Action Chips */}
-            <div className="flex flex-col gap-2">
-              {quickActions.map((action, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleQuickAction(action.action)}
-                  className="flex items-center gap-3 px-4 py-3.5 bg-secondary/50 hover:bg-secondary/80 active:bg-secondary rounded-2xl text-left transition-colors border border-border/30"
-                >
-                  <span className="text-lg">{action.icon}</span>
-                  <span className="text-sm font-medium text-foreground">{action.label}</span>
-                </button>
-              ))}
-            </div>
+            {/* Quick Action Chips - Hidden on mobile welcome screen to match clean Claude layout */}
 
             {/* Usage indicator */}
             {userUsage && (
@@ -587,96 +583,103 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
       </div>
 
       {/* ── Bottom Input Area ───────────────────────────────────── */}
-      <div className="border-t border-border bg-background px-3 py-2.5 pb-safe">
+      <div className="px-2 pb-safe shrink-0 mb-2">
         {/* Uploaded Files */}
         {renderUploadedFiles()}
 
-        {/* Input Container */}
-        <div className="bg-secondary/40 border border-border/50 rounded-2xl overflow-hidden shadow-sm focus-within:border-border focus-within:shadow-md transition-all">
-          {/* Textarea Row */}
-          <div className="flex items-end gap-2 px-3 py-2.5">
+        {/* Input Container - Floating Pill */}
+        <div className="bg-sidebar-accent/40 border border-border/50 rounded-[24px] overflow-hidden shadow-sm focus-within:border-border focus-within:shadow-md transition-all flex flex-col">
+
+          <div className="flex items-end gap-1 px-2 py-2">
+            {/* Attachment Button (Left) */}
+            <button
+              onClick={() => setAttachmentSheetOpen(true)}
+              className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-card/60 transition-colors active:scale-95 mb-0.5"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+
+            {/* Textarea (Middle) */}
             <textarea
               ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask CorpusAI..."
-              className="flex-1 bg-transparent border-0 resize-none focus:outline-none text-foreground placeholder:text-muted-foreground/70 min-h-[24px] max-h-[120px] text-[15px] py-0.5 leading-normal"
+              placeholder="Chat with CorpusAI..."
+              className="flex-1 bg-transparent border-0 resize-none focus:outline-none text-foreground placeholder:text-muted-foreground/70 min-h-[24px] max-h-[120px] text-[15px] py-1.5 leading-normal"
               rows={1}
             />
-          </div>
 
-          {/* ── Toolbar Row ─────────────────────────────────── */}
-          <div className="flex items-center justify-between px-2.5 pb-2.5 gap-1">
-            <div className="flex items-center gap-0.5">
-              {/* Attachment */}
-              <button
-                onClick={() => setAttachmentSheetOpen(true)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/60 transition-colors active:scale-95"
-              >
-                <Plus className="w-5 h-5" />
-              </button>
-
-              {/* Web Search Toggle */}
-              <button
-                onClick={isCompound ? undefined : () => setInternetSearch(!internetSearch)}
+            {/* Send Button (Right) */}
+            <div className="shrink-0 mb-0.5 ml-1 flex items-center gap-1">
+              <Button
+                onClick={handleSend}
+                disabled={
+                  !input.trim() || isStreaming || (currentChat?.attachments?.some(a => a.loading) ?? false)
+                }
+                size="icon"
                 className={cn(
-                  'w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-95',
-                  isCompound
-                    ? 'bg-primary/20 text-primary cursor-default'
-                    : internetSearch
-                      ? 'bg-primary/20 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/60'
+                  'rounded-full h-9 w-9 transition-all shadow-sm',
+                  input.trim() && !isStreaming
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-sidebar-accent text-foreground/50 opacity-80 border border-border/40' // Styled more like a generic circle when empty, like voice
                 )}
               >
-                <Globe className="w-4 h-4" />
-              </button>
-
-              {/* Data Source */}
-              <button
-                onClick={() => setSourceSheetOpen(true)}
-                disabled={!!hasMessages}
-                className={cn(
-                  'w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-95',
-                  hasMessages ? 'text-muted-foreground/40 cursor-not-allowed' : 'text-muted-foreground hover:text-foreground hover:bg-background/60'
+                {currentChat?.attachments?.some(a => a.loading) ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <ArrowUp className="w-4 h-4" />
                 )}
-              >
-                <Database className="w-4 h-4" />
-              </button>
-
-              {/* Expand toolbar toggle */}
-              <button
-                onClick={() => setToolbarExpanded(!toolbarExpanded)}
-                className={cn(
-                  'w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-95',
-                  toolbarExpanded ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-background/60'
-                )}
-              >
-                <ChevronDown className={cn('w-4 h-4 transition-transform', toolbarExpanded && 'rotate-180')} />
-              </button>
+              </Button>
             </div>
-
-            {/* Send Button */}
-            <Button
-              onClick={handleSend}
-              disabled={
-                !input.trim() || isStreaming || (currentChat?.attachments?.some(a => a.loading) ?? false)
-              }
-              size="icon"
-              className={cn(
-                'rounded-full h-8 w-8 transition-all shadow-sm',
-                input.trim() && !isStreaming
-                  ? 'bg-primary text-primary-foreground shadow-md'
-                  : 'bg-muted text-muted-foreground opacity-50'
-              )}
-            >
-              {currentChat?.attachments?.some(a => a.loading) ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <ArrowUp className="w-4 h-4" />
-              )}
-            </Button>
           </div>
+          {/* ── Secondary Tools (Only show if expanded or needed) ── */}
+          {toolbarExpanded && (
+            <div className="flex items-center justify-between px-3 pb-2 pt-1 border-t border-border/10">
+              <div className="flex items-center gap-1">
+                {/* Web Search Toggle */}
+                <button
+                  onClick={isCompound ? undefined : () => setInternetSearch(!internetSearch)}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95 border',
+                    isCompound
+                      ? 'bg-primary/20 text-primary border-transparent cursor-default'
+                      : internetSearch
+                        ? 'bg-primary/20 text-primary border-primary/20'
+                        : 'bg-card text-muted-foreground border-border/40 hover:text-foreground'
+                  )}
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  Web List
+                </button>
+
+                {/* Data Source */}
+                <button
+                  onClick={() => setSourceSheetOpen(true)}
+                  disabled={!!hasMessages}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95 border',
+                    hasMessages
+                      ? 'opacity-50 cursor-not-allowed border-transparent bg-sidebar-accent/30'
+                      : 'bg-card text-muted-foreground border-border/40 hover:text-foreground'
+                  )}
+                >
+                  <Database className="w-3.5 h-3.5" />
+                  Sources
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Expand Context Indicator (Tiny carrot at bottom center if not expanded) */}
+          {!toolbarExpanded && (
+            <button
+              onClick={() => setToolbarExpanded(true)}
+              className="w-full flex justify-center pb-1 pt-0.5 opacity-40 hover:opacity-100"
+            >
+              <div className="w-8 h-1 rounded-full bg-border/80"></div>
+            </button>
+          )}
 
           {/* ── Expanded Toolbar ─────────────────────────────── */}
           {toolbarExpanded && (
@@ -690,7 +693,7 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
               {/* Data Source (visual) */}
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-muted-foreground">Source</span>
-                <div className="flex items-center gap-1 p-0.5 bg-background/50 rounded-full border border-border/30">
+                <div className="flex items-center gap-1 p-0.5 bg-card/50 rounded-full border border-border/30">
                   {dataSources.map(d => (
                     <button
                       key={d.value}
@@ -751,39 +754,35 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
                   }}
                   disabled={isDisabled}
                   className={cn(
-                    'w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98]',
-                    isActive ? 'bg-primary/10 border border-primary/30' : 'bg-secondary/40 border border-transparent hover:bg-secondary/70',
+                    'w-full flex items-center justify-between py-3.5 border-b border-border/40 last:border-0 transition-opacity active:opacity-70',
                     isDisabled && 'opacity-40 cursor-not-allowed'
                   )}
                 >
-                  <div className={cn(
-                    'w-9 h-9 rounded-xl flex items-center justify-center',
-                    isActive ? 'bg-primary text-primary-foreground' : 'bg-background border border-border'
-                  )}>
-                    <Cpu className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex flex-col items-start min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-foreground">{m.label}</span>
-                      {m.isDefault && <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">Default</span>}
+                      <span className={cn(
+                        "text-[17px] font-medium tracking-tight",
+                        isActive ? "text-blue-500" : "text-foreground"
+                      )}>
+                        {m.label}
+                      </span>
+                      {/* Simplified badges for Claude style */}
+                      {m.isDefault && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded pl-1 pr-1 font-semibold uppercase tracking-wider">Default</span>}
+                      {isDisabled && <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded pl-1 pr-1 font-semibold uppercase tracking-wider">Full</span>}
                     </div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      {m.visionSupport && (
-                        <span className="text-[9px] text-blue-500 flex items-center gap-0.5">
-                          <ImageIcon className="w-2.5 h-2.5" /> Vision
-                        </span>
-                      )}
-                      {m.webSearch && (
-                        <span className="text-[9px] text-green-500 flex items-center gap-0.5">
-                          <Globe className="w-2.5 h-2.5" /> Web
-                        </span>
-                      )}
-                      {isDisabled && (
-                        <span className="text-[9px] text-orange-500">At Capacity</span>
-                      )}
-                    </div>
+
+                    {/* Fake description to match claude style since we don't have descriptions in model type currently */}
+                    <span className={cn(
+                      "text-[14px] mt-0.5 text-left",
+                      isActive ? "text-blue-500/80" : "text-muted-foreground"
+                    )}>
+                      {m.value.includes('claude-3-5-sonnet') ? 'Most efficient for everyday tasks' :
+                        m.value.includes('claude-3-opus') ? 'Most capable for ambitious work' :
+                          m.value.includes('gpt-4o') ? 'Advanced multimodal capabilities' :
+                            'Fastest for quick answers'}
+                    </span>
                   </div>
-                  {isActive && <Check className="w-4 h-4 text-primary shrink-0" />}
+                  {isActive && <Check className="w-5 h-5 text-blue-500 shrink-0 ml-4" />}
                 </button>
               );
             })}
@@ -815,13 +814,13 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
                   disabled={isLocked}
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left transition-all active:scale-[0.98]',
-                    isActive ? 'bg-primary/10 border border-primary/30' : 'bg-secondary/40 border border-transparent',
+                    isActive ? 'bg-primary/10 border border-primary/30' : 'bg-sidebar-accent/40 border border-transparent',
                     isLocked && 'opacity-40 cursor-not-allowed'
                   )}
                 >
                   <div className={cn(
                     'w-9 h-9 rounded-xl flex items-center justify-center',
-                    isActive ? 'bg-primary text-primary-foreground' : 'bg-background border border-border'
+                    isActive ? 'bg-primary text-primary-foreground' : 'bg-card border border-border'
                   )}>
                     <Database className="w-4 h-4" />
                   </div>
@@ -844,8 +843,8 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
           <div className="flex justify-center py-3">
             <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />
           </div>
-          <h3 className="text-base font-semibold text-foreground px-5 mb-4">Add Attachment</h3>
-          <div className="grid grid-cols-3 gap-4 px-6">
+          <h3 className="text-base font-semibold text-foreground px-5 mb-6 text-center">Add to chat</h3>
+          <div className="flex justify-center gap-3 px-6">
             <button
               onClick={() => {
                 if (documentInputRef.current) {
@@ -853,12 +852,10 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
                   documentInputRef.current.click();
                 }
               }}
-              className="flex flex-col items-center gap-2"
+              className="flex flex-col items-center justify-center gap-2.5 w-24 h-24 rounded-2xl bg-sidebar-accent/20 border border-border/60 hover:bg-sidebar-accent/50 active:scale-95 transition-all"
             >
-              <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                <ImageIcon className="w-6 h-6 text-blue-500" />
-              </div>
-              <span className="text-xs text-muted-foreground font-medium">Photos</span>
+              <ImageIcon className="w-6 h-6 text-muted-foreground" />
+              <span className="text-sm text-foreground font-medium">Photos</span>
             </button>
 
             <button
@@ -868,12 +865,10 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
                   documentInputRef.current.click();
                 }
               }}
-              className="flex flex-col items-center gap-2"
+              className="flex flex-col items-center justify-center gap-2.5 w-24 h-24 rounded-2xl bg-sidebar-accent/20 border border-border/60 hover:bg-sidebar-accent/50 active:scale-95 transition-all"
             >
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <Paperclip className="w-6 h-6 text-primary" />
-              </div>
-              <span className="text-xs text-muted-foreground font-medium">Files</span>
+              <FileText className="w-6 h-6 text-muted-foreground" />
+              <span className="text-sm text-foreground font-medium">Files</span>
             </button>
 
             <button
@@ -881,13 +876,35 @@ export function MobileChatView({ onOpenSidebar }: MobileChatViewProps) {
                 navigate('/documents');
                 setAttachmentSheetOpen(false);
               }}
-              className="flex flex-col items-center gap-2"
+              className="flex flex-col items-center justify-center gap-2.5 w-24 h-24 rounded-2xl bg-sidebar-accent/20 border border-border/60 hover:bg-sidebar-accent/50 active:scale-95 transition-all"
             >
-              <div className="w-14 h-14 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-                <FileText className="w-6 h-6 text-green-500" />
-              </div>
-              <span className="text-xs text-muted-foreground font-medium">Resources</span>
+              <Database className="w-6 h-6 text-muted-foreground" />
+              <span className="text-sm text-foreground font-medium">Sources</span>
             </button>
+          </div>
+
+          <div className="mt-8 px-6">
+            <div className="w-full h-px bg-border/40 mb-4"></div>
+            {/* Web Search Toggle - Moved to bottom sheet to match claude layout */}
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-3">
+                <Globe className="w-5 h-5 text-muted-foreground" />
+                <span className="text-[15px] font-medium">Web search</span>
+              </div>
+              <div
+                onClick={isCompound ? undefined : () => setInternetSearch(!internetSearch)}
+                className={cn(
+                  "w-11 h-6 rounded-full transition-colors relative cursor-pointer",
+                  internetSearch ? "bg-blue-500" : "bg-muted-foreground/30",
+                  isCompound && "opacity-50 cursor-not-allowed"
+                )}
+              >
+                <div className={cn(
+                  "absolute top-1 bg-white w-4 h-4 rounded-full transition-all shadow-sm",
+                  internetSearch ? "left-6" : "left-1"
+                )} />
+              </div>
+            </div>
           </div>
         </SheetContent>
       </Sheet>

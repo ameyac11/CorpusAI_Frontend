@@ -10,7 +10,7 @@ export default function Login() {
   const [showEmailForm, setShowEmailForm] = useState(false);
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+    <div className="min-h-[100dvh] relative flex items-center justify-center overflow-hidden">
       {/* Background Image - Matching Onboarding */}
       <div
         className="absolute inset-0 z-0"

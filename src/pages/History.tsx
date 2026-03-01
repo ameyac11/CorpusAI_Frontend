@@ -96,7 +96,7 @@ export default function History() {
   const isInSelectionMode = selectedChats.size > 0;
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-full bg-background">
       {/* Header */}
       <header className="flex flex-col items-center px-4 sm:px-6 py-4">
         <div className="w-full max-w-3xl flex items-center justify-between mb-4">

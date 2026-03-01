@@ -79,7 +79,7 @@ export function AppLayout() {
   };
 
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden">
+    <div className="flex h-[100dvh] w-full bg-background overflow-hidden">
       {/* Mobile Chat View - Renders its own UI with built-in header */}
       {isMobile && location.pathname === '/chat' ? (
         <>

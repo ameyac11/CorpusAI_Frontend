@@ -1171,7 +1171,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
   return (
     <>
       <div className={cn(
-        "flex flex-col h-screen relative transition-all duration-300",
+        "flex flex-col h-full relative transition-all duration-300",
         // Desktop: margin for fixed sidebars
         "xl:mr-0",
         docsSidebarOpen && !activeDocRef && "xl:mr-80", // sidebar is w-80 (20rem), hide when doc viewer open

@@ -85,7 +85,7 @@ export function AppSidebar({ collapsed, onToggle, isMobile = false, onItemClick 
   return (
     <>
       <aside className={cn(
-        'h-screen border-r flex flex-col transition-all duration-300 ease-in-out',
+        'h-full border-r flex flex-col transition-all duration-300 ease-in-out',
         // Mobile: always full width, no collapse
         isMobile ? 'w-64 bg-sidebar border-sidebar-border' : '',
         // Desktop: support collapse

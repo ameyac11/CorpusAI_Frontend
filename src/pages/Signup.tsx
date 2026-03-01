@@ -5,7 +5,7 @@ import { EmailAuthFlow } from '@/components/auth/EmailAuthFlow';
 
 export default function Signup() {
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+    <div className="min-h-[100dvh] relative flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div
         className="absolute inset-0 z-0"
