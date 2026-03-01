@@ -61,6 +61,7 @@ export interface SendMessagePayload {
   web_search?: boolean;  // Enable external web search for non-compound models
   attachments?: File[];
   resource_ids?: string[];
+  behavior_mode?: string;  // "grounded" | "balanced" | "creative"
 }
 
 export interface StreamToken {
@@ -105,6 +106,7 @@ export const chatService = {
       model: payload.model || 'llama-scout-4',
       web_search: payload.web_search || false,
       resource_ids: payload.resource_ids,
+      behavior_mode: payload.behavior_mode || 'balanced',
     };
 
     try {

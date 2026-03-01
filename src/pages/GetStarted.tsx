@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, FileText, FlaskConical, Layout, MessageSquare, ArrowRight, Layers, Database, Brain, Zap, Briefcase, Compass, Globe, Cpu, Image as ImageIcon, BookOpen, Sparkles } from 'lucide-react';
+import { Search, FileText, FlaskConical, Layout, MessageSquare, ArrowRight, Layers, Database, Brain, Zap, Briefcase, Compass, Globe, Cpu, Image as ImageIcon, BookOpen, Sparkles, SlidersHorizontal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -67,7 +67,7 @@ export default function GetStarted() {
                                 <MessageSquare className="w-5 h-5 opacity-70" /> Multi-Model Chat
                             </h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Chat with 6 AI models including Llama 4 Scout (vision), GPT-4.1, GPT-4o Mini, GPT OSS 120B, Compound, and Compound Mini.
+                                Chat with 7 AI models including Llama 4 Scout (vision), GPT-4o, GPT-4o Mini, GPT OSS 120B, Kimi K2, Compound, and Compound Mini.
                             </p>
                         </div>
 
@@ -155,6 +155,46 @@ export default function GetStarted() {
                     </div>
                 </section>
 
+                {/* Behavior Modes */}
+                <section className="bg-[#f3f0ff] dark:bg-[#201a2b] rounded-[2rem] p-12">
+                    <h2 className="text-3xl font-serif text-[#3b1fa8] dark:text-[#d0c2ff] mb-6">
+                        Behavior Modes
+                    </h2>
+                    <p className="text-muted-foreground mb-10 max-w-3xl font-light text-lg">
+                        Behavior Modes control the creativity and tone of AI responses independently from how documents are retrieved. Use the slider next to the data source selector in the chat toolbar.
+                    </p>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <div className="bg-white dark:bg-[#2a2438] p-6 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm">
+                            <div className="flex items-center gap-2 mb-3">
+                                <SlidersHorizontal className="w-5 h-5 text-purple-600" />
+                                <h3 className="text-lg font-medium text-foreground">Grounded</h3>
+                            </div>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                                Low temperature, precise and factual. Best for research analysis, technical questions, and data extraction where accuracy is paramount.
+                            </p>
+                        </div>
+                        <div className="bg-white dark:bg-[#2a2438] p-6 rounded-2xl border-2 border-purple-400 dark:border-purple-600 shadow-sm">
+                            <div className="flex items-center gap-2 mb-3">
+                                <SlidersHorizontal className="w-5 h-5 text-purple-600" />
+                                <h3 className="text-lg font-medium text-foreground">Balanced</h3>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium">Default</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                                Moderate temperature, natural and versatile. The default mode that works well for most conversations and document interactions.
+                            </p>
+                        </div>
+                        <div className="bg-white dark:bg-[#2a2438] p-6 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm">
+                            <div className="flex items-center gap-2 mb-3">
+                                <SlidersHorizontal className="w-5 h-5 text-purple-600" />
+                                <h3 className="text-lg font-medium text-foreground">Creative</h3>
+                            </div>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                                High temperature, expressive and varied. Great for brainstorming, creative writing, and generating diverse ideas. Auto-downgrades to Balanced in Document Only mode.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Working with Files and Data */}
                 <section>
                     <h2 className="text-3xl font-serif text-[#191919] dark:text-[#fcfcf9] mb-12">
@@ -192,9 +232,10 @@ export default function GetStarted() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
                             { name: 'Llama 4 Scout', tags: ['Default', 'Vision'], desc: 'Meta\'s latest model with image understanding capabilities.' },
-                            { name: 'GPT-4.1', tags: [], desc: 'OpenAI\'s advanced reasoning model for complex analysis.' },
+                            { name: 'GPT-4o', tags: ['Vision'], desc: 'OpenAI\'s advanced reasoning model for complex analysis.' },
                             { name: 'GPT-4o Mini', tags: ['Vision'], desc: 'Fast, efficient model with vision support for quick tasks.' },
                             { name: 'GPT OSS 120B', tags: [], desc: 'Large open-source model for deep, nuanced responses.' },
+                            { name: 'Kimi K2', tags: [], desc: 'Moonshot AI\'s powerful instruct model for diverse tasks.' },
                             { name: 'Compound', tags: ['Web Search'], desc: 'Built-in web search for real-time information retrieval.' },
                             { name: 'Compound Mini', tags: ['Web Search'], desc: 'Lightweight model with integrated web search capabilities.' },
                         ].map((model) => (

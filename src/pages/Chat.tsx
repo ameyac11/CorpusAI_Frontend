@@ -37,6 +37,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { DocumentSidebar, DocumentRef } from '@/components/chat/DocumentSidebar';
+import { BehaviorSlider } from '@/components/chat/BehaviorSlider';
 
 // Documents are now managed through the backend API
 
@@ -85,7 +86,7 @@ interface MessageAttachments {
 }
 
 export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerChange }: ChatProps) {
-  const { currentChat, sendMessage, addAttachments, removeAttachment, clearAttachments, updateAttachmentLoading, model, setModel, dataSource, setDataSource, internetSearch, setInternetSearch, createNewChat, isStreaming, isThinking, streamError, disabledModels, userUsage } = useChat();
+  const { currentChat, sendMessage, addAttachments, removeAttachment, clearAttachments, updateAttachmentLoading, model, setModel, dataSource, setDataSource, behaviorMode, setBehaviorMode, internetSearch, setInternetSearch, createNewChat, isStreaming, isThinking, streamError, disabledModels, userUsage } = useChat();
   const { isAnonymous, messageCount, maxAnonymousMessages, incrementMessageCount } = useAuth();
   const { showNotification } = useNotification();
   const navigate = useNavigate();
@@ -658,6 +659,12 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
             </Tooltip>
           </TooltipProvider>
         </div>
+
+        {/* Behavior Mode Slider */}
+        <BehaviorSlider
+          value={behaviorMode}
+          onChange={setBehaviorMode}
+        />
 
         <div className="flex-1" />
 

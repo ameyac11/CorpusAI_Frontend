@@ -6,6 +6,7 @@ import { getApiBasePath } from '@/lib/api/config';
 
 export type AIModel = 'compound' | 'compound-mini' | 'llama-scout-4' | 'kimi-k2' | 'gpt-oss-120b' | 'gpt-4o' | 'gpt-4o-mini';
 export type DataSource = 'documents' | 'hybrid' | 'ai-only';
+export type BehaviorMode = 'grounded' | 'balanced' | 'creative';
 
 export interface UserUsage {
   pages: { used: number; limit: number };
@@ -68,12 +69,14 @@ interface ChatContextType {
   currentChat: Chat | null;
   model: AIModel;
   dataSource: DataSource;
+  behaviorMode: BehaviorMode;
   internetSearch: boolean;
   isStreaming: boolean;
   isThinking: boolean;
   streamError: string | null;
   setModel: (model: AIModel) => void;
   setDataSource: (source: DataSource) => void;
+  setBehaviorMode: (mode: BehaviorMode) => void;
   setInternetSearch: (enabled: boolean) => void;
   createNewChat: () => void;
   selectChat: (chatId: string) => void;
@@ -98,6 +101,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [currentChat, setCurrentChat] = useState<Chat | null>(null);
   const [model, setModel] = useState<AIModel>('llama-scout-4');
   const [dataSource, setDataSource] = useState<DataSource>('hybrid');
+  const [behaviorMode, setBehaviorMode] = useState<BehaviorMode>('balanced');
   const [internetSearch, setInternetSearch] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
@@ -589,6 +593,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         model,  // Pass selected model to backend
         web_search: ['compound', 'compound-mini'].includes(model) ? false : internetSearch,  // Compound models have built-in search; others use external
         resource_ids: [...(resourceIds || []), ...attachmentResourceIds], // Merge selected resources and uploaded attachments
+        behavior_mode: behaviorMode,  // Behavior Mode: grounded | balanced | creative
       });
 
       let accumulatedContent = '';
@@ -965,12 +970,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         currentChat,
         model,
         dataSource,
+        behaviorMode,
         internetSearch,
         isStreaming,
         isThinking,
         streamError,
         setModel,
         setDataSource,
+        setBehaviorMode,
         setInternetSearch,
         createNewChat,
         selectChat,
