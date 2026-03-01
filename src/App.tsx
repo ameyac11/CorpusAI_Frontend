@@ -34,8 +34,8 @@ const queryClient = new QueryClient();
 
 // Wrapper to pass outlet context to Chat
 function ChatWrapper() {
-  const context = useOutletContext<{ docsSidebarOpen: boolean; setDocsSidebarOpen: (open: boolean) => void }>();
-  return <Chat docsSidebarOpen={context?.docsSidebarOpen ?? false} setDocsSidebarOpen={context?.setDocsSidebarOpen ?? (() => { })} />;
+  const context = useOutletContext<{ docsSidebarOpen: boolean; setDocsSidebarOpen: (open: boolean) => void; onDocViewerChange?: (open: boolean) => void }>();
+  return <Chat docsSidebarOpen={context?.docsSidebarOpen ?? false} setDocsSidebarOpen={context?.setDocsSidebarOpen ?? (() => { })} onDocViewerChange={context?.onDocViewerChange} />;
 }
 
 // Show loading screen only while auth state is being resolved

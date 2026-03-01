@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Monitor, Moon, Sun, Shield, HelpCircle, Mail, X } from 'lucide-react';
+import { Monitor, Moon, Sun, Shield, HelpCircle, Mail, X, BarChart2 } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useChat, AIModel, DataSource } from '@/contexts/ChatContext';
 import { cn } from '@/lib/utils';
@@ -23,11 +23,12 @@ const themeOptions = [
   { value: 'system', label: 'System', icon: Monitor },
 ] as const;
 
-type SettingsTab = 'appearance' | 'ai' | 'help';
+type SettingsTab = 'appearance' | 'ai' | 'usage' | 'help';
 
 const tabs: { id: SettingsTab; label: string; icon: React.ElementType }[] = [
   { id: 'appearance', label: 'Appearance', icon: Sun },
   { id: 'ai', label: 'AI Preferences', icon: Shield },
+  { id: 'usage', label: 'Usage', icon: BarChart2 },
   { id: 'help', label: 'Help & Support', icon: HelpCircle },
 ];
 
@@ -40,7 +41,7 @@ interface SettingsDialogProps {
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { model, setModel, dataSource, setDataSource } = useChat();
+  const { model, setModel, dataSource, setDataSource, userUsage } = useChat();
   const [activeTab, setActiveTab] = useState<SettingsTab>('appearance');
 
   // navigate to landing page and smooth-scroll to contact section
@@ -142,6 +143,74 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           </div>
         );
 
+      case 'usage':
+        return (
+          <div className="space-y-5">
+            <div>
+              <h3 className="text-base font-medium text-foreground mb-1">Daily Usage</h3>
+              <p className="text-sm text-muted-foreground mb-4">Resets daily at midnight UTC</p>
+            </div>
+            {userUsage ? (
+              <div className="space-y-4">
+                {/* Queries */}
+                <div className="p-4 rounded-xl border border-border bg-card/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Queries</p>
+                      <p className="text-xs text-muted-foreground">Chat messages sent today</p>
+                    </div>
+                    <span className="text-sm font-semibold tabular-nums">
+                      {userUsage.queries.used}
+                      <span className="text-muted-foreground font-normal">/{userUsage.queries.limit}</span>
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-secondary overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all duration-700",
+                        (userUsage.queries.used / userUsage.queries.limit) > 0.85 ? "bg-red-500" : "bg-primary"
+                      )}
+                      style={{ width: `${Math.min(100, (userUsage.queries.used / userUsage.queries.limit) * 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {userUsage.queries.limit - userUsage.queries.used} remaining
+                  </p>
+                </div>
+                {/* Pages */}
+                <div className="p-4 rounded-xl border border-border bg-card/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Pages Processed</p>
+                      <p className="text-xs text-muted-foreground">PDF pages ingested today</p>
+                    </div>
+                    <span className="text-sm font-semibold tabular-nums">
+                      {userUsage.pages.used}
+                      <span className="text-muted-foreground font-normal">/{userUsage.pages.limit}</span>
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-secondary overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all duration-700",
+                        (userUsage.pages.used / userUsage.pages.limit) > 0.85 ? "bg-red-500" : "bg-primary"
+                      )}
+                      style={{ width: `${Math.min(100, (userUsage.pages.used / userUsage.pages.limit) * 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {userUsage.pages.limit - userUsage.pages.used} remaining
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl border border-border bg-card/50 text-center text-sm text-muted-foreground">
+                Usage data not available
+              </div>
+            )}
+          </div>
+        );
+
       case 'help':
         return (
           <div className="space-y-6">
@@ -174,10 +243,10 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[850px] w-full xl:w-[850px] h-screen xl:h-[650px] p-0 gap-0 overflow-hidden bg-background dark:bg-[#0A0A0A] xl:border-border dark:xl:border-white/20 border-0 xl:rounded-2xl rounded-none [&>button]:hidden shadow-2xl dark:xl:shadow-[0_0_50px_-12px_rgba(0,0,0,0.8)] ring-1 ring-border dark:ring-white/10 data-[state=open]:duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
+      <DialogContent className="max-w-[750px] w-full xl:w-[750px] h-screen xl:h-[550px] p-0 gap-0 overflow-hidden bg-background dark:bg-[#0A0A0A] xl:border-border dark:xl:border-white/20 border-0 xl:rounded-2xl rounded-none [&>button]:hidden shadow-2xl dark:xl:shadow-[0_0_50px_-12px_rgba(0,0,0,0.8)] ring-1 ring-border dark:ring-white/10 data-[state=open]:duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
         <div className="flex flex-col xl:flex-row h-full">
           {/* Sidebar - Horizontal on mobile, vertical on desktop */}
-          <div className="xl:w-60 bg-secondary/20 border-b xl:border-b-0 xl:border-r border-border p-3 xl:p-4 flex xl:flex-col backdrop-blur-sm shrink-0">
+          <div className="xl:w-56 bg-secondary/20 border-b xl:border-b-0 xl:border-r border-border p-3 xl:p-4 flex xl:flex-col backdrop-blur-sm shrink-0">
             <div className="hidden xl:block mb-6 px-2 pt-2">
               <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                 <div className="w-2 h-6 rounded-full bg-primary/80" />

@@ -36,6 +36,7 @@ import {
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { DocumentSidebar, DocumentRef } from '@/components/chat/DocumentSidebar';
 
 // Documents are now managed through the backend API
 
@@ -74,6 +75,7 @@ const loadingStatuses = [
 interface ChatProps {
   docsSidebarOpen: boolean;
   setDocsSidebarOpen: (open: boolean) => void;
+  onDocViewerChange?: (open: boolean) => void;
 }
 
 // Store attachments per message for display
@@ -81,8 +83,8 @@ interface MessageAttachments {
   [messageId: string]: AttachedFile[];
 }
 
-export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps) {
-  const { currentChat, sendMessage, addAttachments, removeAttachment, clearAttachments, updateAttachmentLoading, model, setModel, dataSource, setDataSource, internetSearch, setInternetSearch, createNewChat, isStreaming, isThinking, streamError, disabledModels } = useChat();
+export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerChange }: ChatProps) {
+  const { currentChat, sendMessage, addAttachments, removeAttachment, clearAttachments, updateAttachmentLoading, model, setModel, dataSource, setDataSource, internetSearch, setInternetSearch, createNewChat, isStreaming, isThinking, streamError, disabledModels, userUsage } = useChat();
   const { isAnonymous, messageCount, maxAnonymousMessages, incrementMessageCount } = useAuth();
   const { showNotification } = useNotification();
   const navigate = useNavigate();
@@ -113,6 +115,9 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
     source_url?: string;
   } | null>(null);
   const [previewAttachmentInfo, setPreviewAttachmentInfo] = useState<{ name: string; type: string } | null>(null);
+
+  // Document sidebar state (Task 3 - right-side viewer for inline refs)
+  const [activeDocRef, setActiveDocRef] = useState<DocumentRef | null>(null);
 
   // Help menu state
   const [helpMenuOpen, setHelpMenuOpen] = useState(false);
@@ -161,13 +166,30 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Notify AppLayout when doc viewer opens/closes so it can collapse left sidebar
+  useEffect(() => {
+    onDocViewerChange?.(!!activeDocRef);
+  }, [activeDocRef, onDocViewerChange]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Scroll on new messages and loading state changes
   useEffect(() => {
     scrollToBottom();
-  }, [currentChat?.messages, isLoading]);
+  }, [currentChat?.messages?.length, isLoading]);
+
+  // Keep scrolling to bottom during streaming (content grows continuously)
+  useEffect(() => {
+    if (!isStreaming) return;
+    // Immediate scroll when streaming starts
+    scrollToBottom();
+    const interval = setInterval(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 250);
+    return () => clearInterval(interval);
+  }, [isStreaming]);
 
   // surface rate-limit / stream errors as toast-style notifications
   useEffect(() => {
@@ -758,7 +780,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
                 return (
                   <div
                     key={file.id}
-                    onClick={() => openAttachmentPreview(file, file.id)}
+                    onClick={() => setActiveDocRef({ resourceId: file.id, fileName: file.name, page: 1 })}
                     className={cn(
                       "flex items-center gap-2 pl-2 pr-3 py-2 rounded-xl border transition-colors cursor-pointer bg-secondary/60 dark:bg-secondary/80 border-border/50 hover:border-primary/30"
                     )}
@@ -806,6 +828,94 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
     // Strip think tags from display (but keep for thinking animation detection)
     // Matches: <think>... (until </think> OR end of string)
     const displayContent = message.content.replace(/<think>[\s\S]*?(?:<\/think>|$)/g, '').trim();
+
+    // Build lookup from source filename → resource_id using sourceChunks
+    const sourceChunks = message.sourceChunks || [];
+    const sourceMap = new Map<string, string>(); // filename → resource_id
+    const sourceMapLower = new Map<string, string>(); // lowercase filename → resource_id
+    const indexMap = new Map<string, { fileName: string; resourceId: string }>(); // doc_N → info
+    for (let i = 0; i < sourceChunks.length; i++) {
+      const chunk = sourceChunks[i];
+      if (chunk.source && chunk.resource_id) {
+        sourceMap.set(chunk.source, chunk.resource_id);
+        sourceMapLower.set(chunk.source.toLowerCase(), chunk.resource_id);
+        // Map doc_N (1-based) to allow fallback when LLM uses doc id instead of filename
+        const docKey = `doc_${i + 1}`;
+        if (!indexMap.has(docKey)) {
+          indexMap.set(docKey, { fileName: chunk.source, resourceId: chunk.resource_id });
+        }
+      }
+    }
+
+    // Helper to resolve a citation filename to a resource_id
+    const resolveCitation = (rawName: string): { resourceId: string; displayName: string } | null => {
+      // Direct match
+      if (sourceMap.has(rawName)) return { resourceId: sourceMap.get(rawName)!, displayName: rawName };
+      // Case-insensitive match
+      if (sourceMapLower.has(rawName.toLowerCase())) return { resourceId: sourceMapLower.get(rawName.toLowerCase())!, displayName: rawName };
+      // doc_N fallback
+      if (indexMap.has(rawName.toLowerCase())) {
+        const info = indexMap.get(rawName.toLowerCase())!;
+        return { resourceId: info.resourceId, displayName: info.fileName };
+      }
+      return null;
+    };
+
+    // Renders inline citation references as clickable badges
+    // Pattern: [📄 filename p.X]
+    const CITATION_REGEX = /\[📄\s+(.+?)\s+p\.(\d+)\]/g;
+
+    const renderWithCitations = (text: string): React.ReactNode => {
+      const parts: React.ReactNode[] = [];
+      let lastIndex = 0;
+      let match: RegExpExecArray | null;
+      const re = new RegExp(CITATION_REGEX.source, 'g');
+
+      while ((match = re.exec(text)) !== null) {
+        // Push text before match
+        if (match.index > lastIndex) {
+          parts.push(text.slice(lastIndex, match.index));
+        }
+
+        const rawFileName = match[1];
+        const page = parseInt(match[2], 10);
+        const resolved = resolveCitation(rawFileName);
+
+        if (resolved) {
+          parts.push(
+            <button
+              key={`cite-${match.index}`}
+              onClick={() => setActiveDocRef({ resourceId: resolved.resourceId, fileName: resolved.displayName, page })}
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 mx-0.5 rounded-md bg-primary/10 text-primary text-[11px] font-medium hover:bg-primary/20 transition-colors cursor-pointer border border-primary/20"
+              title={`Open ${resolved.displayName} at page ${page}`}
+            >
+              <FileText className="w-3 h-3" />
+              <span className="max-w-[120px] truncate">{resolved.displayName}</span>
+              <span className="opacity-70">p.{page}</span>
+            </button>
+          );
+        } else {
+          // No resource_id found, render as non-clickable badge
+          parts.push(
+            <span
+              key={`cite-${match.index}`}
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 mx-0.5 rounded-md bg-muted text-muted-foreground text-[11px] font-medium border border-border/50"
+            >
+              <FileText className="w-3 h-3" />
+              <span className="max-w-[120px] truncate">{rawFileName}</span>
+              <span className="opacity-70">p.{page}</span>
+            </span>
+          );
+        }
+        lastIndex = re.lastIndex;
+      }
+
+      if (lastIndex < text.length) {
+        parts.push(text.slice(lastIndex));
+      }
+
+      return parts.length > 0 ? <>{parts}</> : text;
+    };
 
     // Code block with copy button
     const CodeBlock = ({ className, children, ...props }: any) => {
@@ -939,12 +1049,23 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
               ol({ children, ...props }: any) {
                 return <ol className="my-2 ml-4 space-y-1 list-decimal marker:text-primary/60" {...props}>{children}</ol>;
               },
-              li({ children, ...props }: any) {
-                return <li className="text-foreground/85 pl-1" {...props}>{children}</li>;
-              },
-              // Enhanced paragraphs
+              // Enhanced paragraphs – detect [📄 filename p.X] inline citations
               p({ children, ...props }: any) {
-                return <p className="my-2 text-foreground/85 leading-relaxed" {...props}>{children}</p>;
+                const processNode = (node: React.ReactNode): React.ReactNode => {
+                  if (typeof node === 'string') return renderWithCitations(node);
+                  if (Array.isArray(node)) return node.map((n, i) => <React.Fragment key={i}>{processNode(n)}</React.Fragment>);
+                  return node;
+                };
+                return <p className="my-2 text-foreground/85 leading-relaxed" {...props}>{processNode(children)}</p>;
+              },
+              // Enhanced list items – detect citations in text too
+              li({ children, ...props }: any) {
+                const processNode = (node: React.ReactNode): React.ReactNode => {
+                  if (typeof node === 'string') return renderWithCitations(node);
+                  if (Array.isArray(node)) return node.map((n, i) => <React.Fragment key={i}>{processNode(n)}</React.Fragment>);
+                  return node;
+                };
+                return <li className="text-foreground/85 pl-1" {...props}>{processNode(children)}</li>;
               },
               // Enhanced blockquotes
               blockquote({ children, ...props }: any) {
@@ -984,6 +1105,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
           >
             {displayContent}
           </ReactMarkdown>
+
         </div>
         {/* Action buttons - only show when message is complete (has content and not streaming) */}
         {message.content && !isStreaming && (
@@ -1020,7 +1142,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
     );
   };
 
-  // Loading indicator - Clean minimal style
+  // Loading indicator - spinner (shown before first token arrives)
   const LoadingIndicator = () => {
     return (
       <div className="flex items-start gap-3 max-w-[85%]">
@@ -1042,9 +1164,10 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
     <>
       <div className={cn(
         "flex flex-col h-screen relative transition-all duration-300",
-        // Desktop: margin for fixed sidebar
+        // Desktop: margin for fixed sidebars
         "xl:mr-0",
-        docsSidebarOpen && "xl:mr-72"
+        docsSidebarOpen && !activeDocRef && "xl:mr-80", // sidebar is w-80 (20rem), hide when doc viewer open
+        activeDocRef && "xl:mr-[40vw]"
       )}>
         {/* Documents button - positioned absolutely in top-right */}
         {!docsSidebarOpen && (
@@ -1052,13 +1175,16 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
 
             <Button
               variant="outline"
-              size="sm"
+              size={activeDocRef ? "icon" : "sm"}
               id="tour-documents-trigger"
-              onClick={() => setDocsSidebarOpen(!docsSidebarOpen)}
-              className="gap-2 bg-background/80 backdrop-blur-sm h-9 sm:h-8"
+              onClick={() => { setActiveDocRef(null); setDocsSidebarOpen(!docsSidebarOpen); }}
+              className={cn(
+                "bg-background/80 backdrop-blur-sm h-9 sm:h-8",
+                !activeDocRef && "gap-2"
+              )}
             >
               <FileText className="w-4 h-4" />
-              <span className="hidden sm:inline">Documents</span>
+              {!activeDocRef && <span className="hidden sm:inline">Documents</span>}
             </Button>
           </div>
         )}
@@ -1111,7 +1237,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
             </div>
           ) : (
             // ChatGPT-style conversation layout
-            <div className="max-w-3xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 pb-24 sm:pb-6">
+            <div className="max-w-3xl mx-auto p-3 sm:p-4 md:p-6 pt-16 sm:pt-16 md:pt-16 space-y-4 sm:space-y-6 pb-24 sm:pb-6">
               {/* Scope Lock Indicator - Compact Design */}
               {currentChat?.scope_locked && (currentChat?.scope_resources?.length > 0 || currentChat?.scope_images?.length > 0) && (
                 <div className="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-lg py-1.5 px-3 flex items-center gap-3 overflow-hidden">
@@ -1339,6 +1465,12 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
         </div>
       </div>
 
+      {/* Document Sidebar - right-side viewer for inline references */}
+      <DocumentSidebar
+        documentRef={activeDocRef}
+        onClose={() => setActiveDocRef(null)}
+      />
+
       {/* Attachment Preview Modal */}
       <Dialog open={attachmentPreviewOpen} onOpenChange={setAttachmentPreviewOpen}>
         <DialogContent className="sm:max-w-[800px] max-h-[90vh] p-0 gap-0 [&>button]:hidden">
@@ -1470,58 +1602,97 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
             side="top"
             sideOffset={10}
             className={cn(
-              "mb-2 p-0 overflow-hidden rounded-3xl border border-border shadow-xl",
+              "mb-2 p-0 overflow-hidden rounded-2xl border border-border shadow-xl",
               "transition-[width,height] duration-500 ease-&lsqb;cubic-bezier(0.32,0.72,0,1)&rsqb;",
-              showContactForm ? "w-[400px]" : "w-64",
-              // Ensure entry animation is from bottom
+              showContactForm ? "w-[360px]" : "w-60",
               "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=top]:slide-in-from-bottom-2"
             )}
           >
             <div className={cn(
               "transition-all duration-500 ease-&lsqb;cubic-bezier(0.32,0.72,0,1)&rsqb;",
-              // Use a wrapper to help smooth height transitions if possible, or just let content dictate
             )}>
               {!showContactForm ? (
-                <div className="flex flex-col p-1.5 animate-in fade-in zoom-in-95 duration-300">
-                  <a
-                    href="/get-started"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative flex cursor-pointer select-none items-center rounded-xl px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-secondary hover:text-secondary-foreground"
-                    onClick={() => setHelpMenuOpen(false)}
-                  >
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 mr-2.5 text-primary">
-                      <HelpCircle className="h-3.5 w-3.5" />
+                <div className="flex flex-col animate-in fade-in zoom-in-95 duration-300">
+                  {/* Daily Usage Section */}
+                  {userUsage && (
+                    <div className="px-3 pt-3 pb-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Daily Usage</p>
+                      <div className="space-y-2">
+                        <div>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[11px] text-muted-foreground">Queries</span>
+                            <span className="text-[11px] font-medium text-foreground">{userUsage.queries.used}/{userUsage.queries.limit}</span>
+                          </div>
+                          <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
+                            <div
+                              className={cn(
+                                "h-full rounded-full transition-all duration-500",
+                                (userUsage.queries.used / userUsage.queries.limit) > 0.85 ? "bg-red-500" : "bg-primary"
+                              )}
+                              style={{ width: `${Math.min(100, (userUsage.queries.used / userUsage.queries.limit) * 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[11px] text-muted-foreground">Pages</span>
+                            <span className="text-[11px] font-medium text-foreground">{userUsage.pages.used}/{userUsage.pages.limit}</span>
+                          </div>
+                          <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
+                            <div
+                              className={cn(
+                                "h-full rounded-full transition-all duration-500",
+                                (userUsage.pages.used / userUsage.pages.limit) > 0.85 ? "bg-red-500" : "bg-primary"
+                              )}
+                              style={{ width: `${Math.min(100, (userUsage.pages.used / userUsage.pages.limit) * 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <span>Get Started</span>
-                  </a>
-                  <div
-                    onClick={() => setShowContactForm(true)}
-                    className="relative flex cursor-pointer select-none items-center rounded-xl px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-secondary hover:text-secondary-foreground"
-                  >
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 mr-2.5 text-primary">
-                      <Mail className="h-3.5 w-3.5" />
+                  )}
+                  {userUsage && <Separator className="my-1" />}
+                  <div className="flex flex-col p-1">
+                    <a
+                      href="/get-started"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="relative flex cursor-pointer select-none items-center rounded-lg px-2.5 py-1.5 text-sm font-medium outline-none transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                      onClick={() => setHelpMenuOpen(false)}
+                    >
+                      <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 mr-2 text-primary">
+                        <HelpCircle className="h-3 w-3" />
+                      </div>
+                      <span className="text-[13px]">Get Started</span>
+                    </a>
+                    <div
+                      onClick={() => setShowContactForm(true)}
+                      className="relative flex cursor-pointer select-none items-center rounded-lg px-2.5 py-1.5 text-sm font-medium outline-none transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                    >
+                      <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 mr-2 text-primary">
+                        <Mail className="h-3 w-3" />
+                      </div>
+                      <span className="text-[13px]">Contact Support</span>
                     </div>
-                    <span>Contact Support</span>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-500">
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-secondary/30">
-                    <h4 className="font-semibold">Contact Support</h4>
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-secondary/30">
+                    <h4 className="text-sm font-semibold">Contact Support</h4>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 rounded-full hover:bg-background"
+                      className="h-7 w-7 p-0 rounded-full hover:bg-background"
                       onClick={() => setShowContactForm(false)}
                     >
                       <ArrowLeft className="h-4 w-4" />
                     </Button>
                   </div>
 
-                  <div className="p-6 space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider" htmlFor="name">
+                  <div className="p-4 space-y-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider" htmlFor="name">
                         Name
                       </label>
                       <Input
@@ -1529,11 +1700,11 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
                         placeholder="Your name"
                         value={contactName}
                         onChange={(e) => setContactName(e.target.value)}
-                        className="h-10 rounded-xl bg-secondary/50 border-transparent focus:border-primary focus:bg-background transition-all"
+                        className="h-9 rounded-lg bg-secondary/50 border-transparent focus:border-primary focus:bg-background transition-all text-sm"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider" htmlFor="email">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider" htmlFor="email">
                         Email
                       </label>
                       <Input
@@ -1542,11 +1713,11 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
                         placeholder="name@example.com"
                         value={contactEmail}
                         onChange={(e) => setContactEmail(e.target.value)}
-                        className="h-10 rounded-xl bg-secondary/50 border-transparent focus:border-primary focus:bg-background transition-all"
+                        className="h-9 rounded-lg bg-secondary/50 border-transparent focus:border-primary focus:bg-background transition-all text-sm"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider" htmlFor="message">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider" htmlFor="message">
                         Message
                       </label>
                       <Textarea
@@ -1554,11 +1725,11 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen }: ChatProps)
                         placeholder="How can we help?"
                         value={contactMessage}
                         onChange={(e) => setContactMessage(e.target.value)}
-                        className="min-h-[100px] rounded-xl bg-secondary/50 border-transparent focus:border-primary focus:bg-background resize-none transition-all"
+                        className="min-h-[80px] rounded-lg bg-secondary/50 border-transparent focus:border-primary focus:bg-background resize-none transition-all text-sm"
                       />
                     </div>
                     <Button
-                      className="w-full h-11 rounded-xl font-medium shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-[0.98]"
+                      className="w-full h-9 rounded-lg text-sm font-medium shadow-md shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-[0.98]"
                       onClick={async () => {
                         if (!contactName || !contactEmail || !contactMessage) return;
 

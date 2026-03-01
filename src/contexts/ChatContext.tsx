@@ -7,6 +7,11 @@ import { getApiBasePath } from '@/lib/api/config';
 export type AIModel = 'compound' | 'compound-mini' | 'llama-scout-4' | 'gpt-oss-120b' | 'gpt-4.1' | 'gpt-4o-mini';
 export type DataSource = 'documents' | 'hybrid' | 'ai-only';
 
+export interface UserUsage {
+  pages: { used: number; limit: number };
+  queries: { used: number; limit: number };
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -23,6 +28,13 @@ export interface Message {
     file_type?: string;
   }>;
   context_attachment_ids?: string[]; // For follow-up references
+  sourceChunks?: Array<{
+    page?: number;
+    score?: number;
+    text?: string;
+    source?: string;
+    resource_id?: string;
+  }>;
 }
 
 export interface Chat {
@@ -75,6 +87,7 @@ interface ChatContextType {
   starChat: (chatId: string) => void;
   disabledModels: Set<AIModel>;
   setDisabledModels: (models: Set<AIModel> | ((prev: Set<AIModel>) => Set<AIModel>)) => void;
+  userUsage: UserUsage | null;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -102,6 +115,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
     return new Set();
   });
+  const [userUsage, setUserUsage] = useState<UserUsage | null>(null);
   // ref tracks the *real* backend chat ID — avoids stale closures in async callbacks
   const currentChatIdRef = useRef<string | null>(null);
 
@@ -121,7 +135,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [currentChat?.id]);
 
-  // check which models are rate-limited so we can grey them out in the UI
+  // check usage status so we can display limits in the UI
   const fetchRateLimitStatus = useCallback(async () => {
     if (!isAuthenticated) return;
 
@@ -132,10 +146,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
-        // Always update the state, even if empty, to ensure enabled models are cleared
+        // Update unified usage state
+        if (data.usage) {
+          setUserUsage(data.usage as UserUsage);
+          console.log('[ChatContext] Updated user usage:', data.usage);
+        }
+        // Keep disabled_models for backward compat (always empty now)
         if (data.disabled_models !== undefined) {
           setDisabledModels(new Set(data.disabled_models as AIModel[]));
-          console.log('[ChatContext] Updated disabled models:', data.disabled_models);
         }
       }
     } catch (error) {
@@ -234,7 +252,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                     content: m.content,
                     timestamp: new Date(m.createdAt),
                     attachments: messageAttachments.length > 0 ? messageAttachments : undefined,
-                    context_attachment_ids: m.context_attachment_ids || []
+                    context_attachment_ids: m.context_attachment_ids || [],
+                    sourceChunks: (m as any).source_chunks || undefined
                   };
                 });
 
@@ -353,7 +372,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
               content: m.content,
               timestamp: new Date(m.createdAt),
               attachments: messageAttachments.length > 0 ? messageAttachments : undefined,
-              context_attachment_ids: m.context_attachment_ids || []
+              context_attachment_ids: m.context_attachment_ids || [],
+              sourceChunks: (m as any).source_chunks || undefined
             };
           });
 
@@ -592,22 +612,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         // Handle error
         if (token.error) {
           if (token.error === 'MODEL_LIMIT_REACHED') {
-            // Handle rate limit fallback
-            if (token.model) {
-              console.log('[RATE LIMIT] Disabling model:', token.model);
-              setDisabledModels(prev => {
-                const newSet = new Set([...prev, token.model! as AIModel]);
-                console.log('[RATE LIMIT] Updated disabledModels:', Array.from(newSet));
-                return newSet;
-              });
-            }
-            if (token.suggested_fallback) {
-              console.log('[RATE LIMIT] Switching to fallback:', token.suggested_fallback);
-              setModel(token.suggested_fallback as AIModel);
-              setStreamError(`Model at capacity. Switching to ${token.suggested_fallback}...`);
-            } else {
-              setStreamError(`Model at capacity. Please try another model.`);
-            }
+            // Unified daily query limit reached
+            setStreamError(token.message || 'Daily query limit reached. Try again tomorrow.');
+            // Refresh usage display
+            fetchRateLimitStatus();
           } else {
             setStreamError(token.error);
           }
@@ -662,6 +670,23 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         if (token.done) {
           console.log('[sendMessage] Stream complete');
 
+          // Store source chunks on the assistant message for inline references
+          if (token.chunks && token.chunks.length > 0) {
+            const chunks = token.chunks;
+            setCurrentChat(prev => {
+              if (!prev) return prev;
+              const messages = [...prev.messages];
+              const lastMsg = messages[messages.length - 1];
+              if (lastMsg && lastMsg.role === 'assistant') {
+                messages[messages.length - 1] = { ...lastMsg, sourceChunks: chunks };
+              }
+              return { ...prev, messages };
+            });
+          }
+
+          // Refresh usage after each query
+          fetchRateLimitStatus();
+
           // Always clear attachments after message is sent
           // The scope keeps track of resources on the backend
           if (hasAttachments) {
@@ -711,7 +736,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setIsStreaming(false);
       setIsThinking(false);
     }
-  }, [dataSource, currentChat, clearAttachments, updateAttachmentLoading, model, setModel, setDisabledModels, internetSearch]);
+  }, [dataSource, currentChat, clearAttachments, updateAttachmentLoading, model, setModel, setDisabledModels, internetSearch, fetchRateLimitStatus]);
 
 
   const addAttachments = async (files: AttachedFile[]) => {
@@ -951,6 +976,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         starChat,
         disabledModels,
         setDisabledModels,
+        userUsage,
       }}
     >
       {children}

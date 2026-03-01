@@ -31,8 +31,8 @@ export function UserMenu({ collapsed = false }: UserMenuProps) {
         <DropdownMenuTrigger asChild>
           <button
             className={cn(
-              'flex items-center gap-3 p-2 rounded-lg bg-sidebar-accent/50 hover:bg-sidebar-accent transition-colors w-full',
-              collapsed && 'justify-center'
+              'flex items-center transition-colors outline-none',
+              collapsed ? 'justify-center p-0' : 'p-2 gap-3 rounded-lg w-full hover:bg-sidebar-accent/50'
             )}
           >
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium flex-shrink-0">

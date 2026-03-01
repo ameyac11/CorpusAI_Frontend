@@ -12,6 +12,7 @@ import { LoadingScreen } from '@/components/layout/LoadingScreen';
 export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [docsSidebarOpen, setDocsSidebarOpen] = useState(false);
+  const [docViewerOpen, setDocViewerOpen] = useState(false);
   const [wasNavOpen, setWasNavOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1280);
@@ -45,12 +46,32 @@ export function AppLayout() {
         setSidebarCollapsed(true);
       }
     } else {
-      if (wasNavOpen) {
+      if (wasNavOpen && !docViewerOpen) {
         setSidebarCollapsed(false);
         setWasNavOpen(false);
       }
     }
     setDocsSidebarOpen(open);
+  };
+
+  // collapse left nav when doc viewer (citation preview) opens
+  const handleDocViewerChange = (open: boolean) => {
+    setDocViewerOpen(open);
+    if (open) {
+      // Close the documents sidebar since only one panel at a time
+      if (docsSidebarOpen) {
+        setDocsSidebarOpen(false);
+      }
+      if (!sidebarCollapsed) {
+        setWasNavOpen(true);
+        setSidebarCollapsed(true);
+      }
+    } else {
+      if (wasNavOpen) {
+        setSidebarCollapsed(false);
+        setWasNavOpen(false);
+      }
+    }
   };
 
   const handleNavToggle = () => {
@@ -112,7 +133,7 @@ export function AppLayout() {
 
           <main className="flex-1 flex flex-col overflow-hidden">
             {location.pathname === '/chat' ? (
-              <Outlet context={{ docsSidebarOpen, setDocsSidebarOpen: handleDocsSidebarChange }} />
+              <Outlet context={{ docsSidebarOpen, setDocsSidebarOpen: handleDocsSidebarChange, onDocViewerChange: handleDocViewerChange }} />
             ) : (
               <Outlet />
             )}

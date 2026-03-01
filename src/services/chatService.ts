@@ -71,11 +71,13 @@ export interface StreamToken {
     score?: number;
     text?: string;
     source?: string;
+    resource_id?: string;
   }>;
   mode?: string;
   chat_id?: string;
   type?: string;
   error?: string;
+  message?: string;
   // Rate limit error fields
   model?: string;
   suggested_fallback?: string;
