@@ -30,7 +30,7 @@ const PURPOSES = [
 
 export default function Onboarding() {
     const navigate = useNavigate();
-    const { user, isLoading: authLoading } = useAuth();
+    const { user, isLoading: authLoading, checkAuth } = useAuth();
 
     const [step, setStep] = useState(0);
     const [name, setName] = useState('');
@@ -75,6 +75,7 @@ export default function Onboarding() {
             try {
                 const response = await apiPost('/onboarding/complete', { name, role, purpose });
                 if (response.success) {
+                    await checkAuth(); // Refresh auth state to pull custom username
                     setStep(3);
                     setTimeout(() => navigate('/chat'), 2000);
                 } else {

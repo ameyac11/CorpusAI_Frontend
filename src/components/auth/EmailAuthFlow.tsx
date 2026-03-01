@@ -4,6 +4,7 @@ import { Mail, Lock, User, ArrowRight, ArrowLeft, Check, AlertCircle } from 'luc
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiGet } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
 interface EmailAuthFlowProps {
@@ -45,10 +46,19 @@ export function EmailAuthFlow({ mode }: EmailAuthFlowProps) {
       if (mode === 'login') {
         setIsLoading(true);
         try {
-          const result = await login(email, password);
-          // Check if onboarding is completed - redirect accordingly
-          // The login function returns the onboarding status
-          navigate('/onboarding');
+          await login(email, password);
+          // Check onboarding status — skip if already completed
+          try {
+            const statusRes = await apiGet<{ success: boolean; data: { onboarding_completed: boolean } }>('/onboarding/status');
+            if (statusRes.success && statusRes.data?.data?.onboarding_completed) {
+              navigate('/chat');
+            } else {
+              navigate('/onboarding');
+            }
+          } catch {
+            // If status check fails, fall back to onboarding
+            navigate('/onboarding');
+          }
         } catch (err: any) {
           setError(err.message || 'Invalid credentials');
         } finally {
