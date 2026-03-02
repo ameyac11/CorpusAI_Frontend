@@ -67,6 +67,8 @@ export const API_ROUTES = {
   CREATIVE: {
     GENERATE: '/creative/generate',
     HISTORY: '/creative/history',
+    DELETE: (outputId: string) => `/creative/${outputId}`,
+    FILE: (outputId: string) => `/creative/${outputId}/file`,
   },
 } as const;
 

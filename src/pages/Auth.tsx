@@ -8,6 +8,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { ThemeLogo } from '@/components/brand/ThemeLogo';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiGet } from '@/lib/api';
 
 type AuthMode = 'signin' | 'signup';
 type AuthStep = 'method' | 'email' | 'password' | 'forgot' | 'signup-details' | 'signup-password';
@@ -38,7 +39,16 @@ export default function Auth() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/onboarding', { replace: true });
+      // Check if onboarding is already completed — if so, go straight to chat
+      apiGet<{ success: boolean; data: { onboarding_completed: boolean } }>('/onboarding/status')
+        .then(res => {
+          if (res.success && res.data?.data?.onboarding_completed) {
+            navigate('/chat', { replace: true });
+          } else {
+            navigate('/onboarding', { replace: true });
+          }
+        })
+        .catch(() => navigate('/onboarding', { replace: true }));
     }
   }, [isAuthenticated, navigate]);
 
@@ -71,7 +81,16 @@ export default function Auth() {
     setError('');
     try {
       await login(email, password);
-      navigate('/onboarding');
+      try {
+        const statusRes = await apiGet<{ success: boolean; data: { onboarding_completed: boolean } }>('/onboarding/status');
+        if (statusRes.success && statusRes.data?.data?.onboarding_completed) {
+          navigate('/chat');
+        } else {
+          navigate('/onboarding');
+        }
+      } catch {
+        navigate('/onboarding');
+      }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password');
     }
