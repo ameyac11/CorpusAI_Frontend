@@ -1,5 +1,4 @@
-// Chat service with SSE streaming support
-// Connects to FastAPI backend
+// SSE streaming chat service
 
 import { apiGet, apiPost, apiPut, apiDelete, API_ROUTES, type ApiResponse } from '@/lib/api';
 import { getApiBasePath } from '@/lib/api/config';
@@ -91,11 +90,7 @@ export interface SendMessageResponse {
 }
 
 export const chatService = {
-  /**
-   * Send a message and stream the response using SSE.
-   * Returns an async generator that yields tokens.
-   * Requires authentication.
-   */
+  /** Stream response tokens via SSE. */
   async *sendMessageStream(payload: SendMessagePayload): AsyncGenerator<StreamToken> {
     const url = `${getApiBasePath()}/chat/send`;
 
@@ -110,7 +105,7 @@ export const chatService = {
     };
 
     try {
-      // Cookies are sent automatically with credentials: 'include'
+      // Cookies sent via credentials: 'include'
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -121,7 +116,7 @@ export const chatService = {
       });
 
       if (!response.ok) {
-        // 429 gets special treatment — backend tells us which model to fall back to
+        // 429: rate limit, suggest fallback
         if (response.status === 429) {
           try {
             const errorData = await response.json();
@@ -138,7 +133,7 @@ export const chatService = {
             return;
           }
         }
-        // 400 with CHAT_MESSAGE_LIMIT — chat has too many messages
+        // 400: chat message limit
         if (response.status === 400) {
           try {
             const errorData = await response.json();
@@ -166,7 +161,7 @@ export const chatService = {
       const decoder = new TextDecoder();
       let buffer = '';
 
-      // SSE parser — accumulate chunks and split on newlines
+      // SSE parser, accumulate chunks then split on newlines
       while (true) {
         const { done, value } = await reader.read();
 
@@ -176,7 +171,7 @@ export const chatService = {
 
         // Process complete SSE events
         const lines = buffer.split('\n');
-        // keep the last incomplete line in buffer for the next iteration
+        // Keep last partial line in buffer
         buffer = lines.pop() || '';
 
         for (const line of lines) {
@@ -209,10 +204,7 @@ export const chatService = {
     }
   },
 
-  /**
-   * Create a new chat.
-   * Requires authentication.
-   */
+  /** Create a new chat. */
   async createChat(title?: string, mode?: string): Promise<ApiResponse<{ id: string; title: string; mode: string }>> {
     return apiPost(API_ROUTES.CHAT.CREATE, {
       title: title || 'New Chat',
@@ -220,46 +212,32 @@ export const chatService = {
     });
   },
 
-  /**
-   * Get chat history for current authenticated user.
-   * Requires authentication.
-   */
+  /** Get chat history for current user. */
   async getChatHistory(): Promise<ApiResponse<{ chats: Chat[] }>> {
     return apiGet(API_ROUTES.CHAT.HISTORY);
   },
 
-  /**
-   * Get messages for a specific chat.
-   */
+  /** Get messages for a specific chat. */
   async getChatMessages(chatId: string): Promise<ApiResponse<{ chat: Chat; messages: ChatMessage[] }>> {
     return apiGet(API_ROUTES.CHAT.MESSAGES(chatId));
   },
 
-  /**
-   * Delete a chat.
-   */
+  /** Delete a chat. */
   async deleteChat(chatId: string): Promise<ApiResponse<void>> {
     return apiDelete<void>(API_ROUTES.CHAT.DELETE(chatId));
   },
 
-  /**
-   * Rename a chat.
-   */
+  /** Rename a chat. */
   async renameChat(chatId: string, newTitle: string): Promise<ApiResponse<Chat>> {
     return apiPut<Chat>(API_ROUTES.CHAT.RENAME(chatId), { title: newTitle });
   },
 
-  /**
-   * Star/unstar a chat (pin/unpin).
-   */
+  /** Star or unstar a chat. */
   async starChat(chatId: string, starred: boolean): Promise<ApiResponse<{ id: string; starred: boolean }>> {
     return apiPut<{ id: string; starred: boolean }>(API_ROUTES.CHAT.STAR(chatId), { starred });
   },
 
-  /**
-   * Upload a file for the chat.
-   * Requires authentication.
-   */
+  /** Upload a file for the chat. */
   async uploadFile(file: File, chatId?: string): Promise<ApiResponse<{ filename: string; stored_as: string; status: string; chunk_count: number; id: string; expires_at?: string }>> {
     const formData = new FormData();
     formData.append('file', file);
@@ -270,7 +248,7 @@ export const chatService = {
     const url = `${getApiBasePath()}${API_ROUTES.CHAT.UPLOAD}`;
 
     try {
-      // Cookies are sent automatically with credentials: 'include'
+      // Cookies sent automatically
       const response = await fetch(url, {
         method: 'POST',
         credentials: 'include', // Send cookies automatically
@@ -310,10 +288,7 @@ export const chatService = {
     }
   },
 
-  /**
-   * Poll the ingestion status of a chat resource until it's done processing.
-   * Returns the final status ('processed' or 'failed').
-   */
+  /** Poll resource status until processing is done. */
   async pollResourceStatus(resourceId: string, intervalMs = 1000, maxAttempts = 60): Promise<{ status: string; chunk_count: number }> {
     const url = `${getApiBasePath()}/chat/resource/${resourceId}/status`;
 

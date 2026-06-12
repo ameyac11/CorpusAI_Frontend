@@ -44,11 +44,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const maxAnonymousMessages = 5;
 
-  // try to restore session from cookies on app boot
+  // Restore session from cookies on boot
   const checkAuth = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Always try to get current user (cookies are sent automatically)
+      // Cookies are sent automatically
       const response = await authService.getCurrentUser();
       if (response.success && response.data) {
         setUser({
@@ -58,19 +58,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           providers: response.data.providers,
         });
       } else {
-        // no valid session — wipe any leftover localStorage tokens from before cookie migration
+        // No valid session, clear legacy tokens
         setUser(null);
         tokenStorage.clearAll();
       }
     } catch (error) {
       setUser(null);
-      tokenStorage.clearAll(); // Clean up any legacy tokens
+      tokenStorage.clearAll(); // Clear legacy tokens
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // Check auth on mount
+  // Check auth once on mount
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
@@ -110,12 +110,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithGoogle = useCallback(() => {
-    // Redirect to backend Google OAuth endpoint
+    // Redirect to Google OAuth
     window.location.href = `${API_CONFIG.BASE_URL}/auth/google`;
   }, []);
 
   const loginWithGithub = useCallback(() => {
-    // Redirect to backend GitHub OAuth endpoint
+    // Redirect to GitHub OAuth
     window.location.href = `${API_CONFIG.BASE_URL}/auth/github`;
   }, []);
 
@@ -158,7 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // gate anonymous users — returns false when they've hit the cap
+  // Return false when anon user hits message cap
   const incrementMessageCount = useCallback(() => {
     if (!user && messageCount >= maxAnonymousMessages) {
       setShowLoginPrompt(true);

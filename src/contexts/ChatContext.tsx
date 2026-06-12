@@ -107,7 +107,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [isThinking, setIsThinking] = useState(false);
   const [streamError, setStreamError] = useState<string | null>(null);
   const [disabledModels, setDisabledModelsState] = useState<Set<AIModel>>(() => {
-    // Load disabled models from localStorage on initial mount
+    // Load disabled models from localStorage
     const saved = localStorage.getItem('corpus_disabled_models');
     if (saved) {
       try {
@@ -120,10 +120,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     return new Set();
   });
   const [userUsage, setUserUsage] = useState<UserUsage | null>(null);
-  // ref tracks the *real* backend chat ID — avoids stale closures in async callbacks
+  // Ref tracks real backend chat ID
   const currentChatIdRef = useRef<string | null>(null);
 
-  // Wrapper to persist disabled models to localStorage
+  // Persist disabled models to localStorage
   const setDisabledModels = useCallback((models: Set<AIModel> | ((prev: Set<AIModel>) => Set<AIModel>)) => {
     setDisabledModelsState(prev => {
       const next = typeof models === 'function' ? models(prev) : models;
@@ -132,14 +132,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  // Persist current chat ID
+  // Save active chat ID on change
   useEffect(() => {
     if (currentChat?.id) {
       localStorage.setItem('corpus_active_chat', currentChat.id);
     }
   }, [currentChat?.id]);
 
-  // check usage status so we can display limits in the UI
+  // Fetch usage to display limits in UI
   const fetchRateLimitStatus = useCallback(async () => {
     if (!isAuthenticated) return;
 
@@ -155,7 +155,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           setUserUsage(data.usage as UserUsage);
           console.log('[ChatContext] Updated user usage:', data.usage);
         }
-        // Keep disabled_models for backward compat (always empty now)
+        // Keep disabled_models for backward compat
         if (data.disabled_models !== undefined) {
           setDisabledModels(new Set(data.disabled_models as AIModel[]));
         }
@@ -165,13 +165,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated, setDisabledModels]);
 
-  // Load chats when authenticated (triggers on login, not just mount)
+  // Load chats after login
   useEffect(() => {
     let mounted = true;
 
     const loadChats = async () => {
       if (!isAuthenticated) {
-        // Clear chats when logged out
+        // Clear on logout
         setChats([]);
         setCurrentChat(null);
         return;
@@ -179,10 +179,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
       console.log('[ChatContext] Skipping chat history load - user wants fresh start on refresh');
 
-      // Fetch rate limit status only
+      // Fetch rate limit only
       await fetchRateLimitStatus();
 
-      // DON'T load chat history on refresh - user wants clean slate
+      // Don't load history on refresh
       const response = await chatService.getChatHistory();
       console.log('[ChatContext] History response:', response);
 
@@ -204,7 +204,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         console.log('[ChatContext] Setting chats state with', mappedChats.length, 'items:', mappedChats);
         setChats(mappedChats);
 
-        // Restore active chat on refresh
+        // Restore active chat from localStorage
         const lastActiveId = localStorage.getItem('corpus_active_chat');
         console.log('[ChatContext] Last active chat ID from localStorage:', lastActiveId);
 
@@ -221,7 +221,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                 const { chat: backendChat, messages } = resp.data;
                 console.log('[ChatContext] Loaded', messages.length, 'messages for chat');
 
-                // Build resource map for resolving context_attachment_ids
+                // Build resource map for context_attachment_ids
                 const resourceMap = new Map<string, any>();
                 [
                   ...(backendChat.scope_resources || []),
@@ -248,7 +248,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                     url: undefined
                   }));
 
-                  // Note: context_attachment_ids is for RAG context only, not visual display
+                  // context_attachment_ids is for RAG, not display
 
                   return {
                     id: m.id,
@@ -266,9 +266,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                   messages: mappedMessages,
                   title: backendChat.title,
                   mode: backendChat.mode,
-                  // Preserve original updatedAt - don't update on selection
+                  // Don't update updatedAt on selection
                   updatedAt: chatToRestore.updatedAt,
-                  // Preserve starred state from loaded chat
+                  // Preserve starred state
                   starred: chatToRestore.starred
                 });
               }
@@ -293,7 +293,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     };
   }, [isAuthenticated, fetchRateLimitStatus]);
 
-  // Sync dataSource with current chat's mode
+  // Sync dataSource with chat mode
   useEffect(() => {
     if (currentChat?.mode) {
       // Map backend mode to frontend DataSource
@@ -319,17 +319,17 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     };
     // Only set current chat, don't add to history yet
     setCurrentChat(newChat);
-    currentChatIdRef.current = null; // Reset ref for new chat
+    currentChatIdRef.current = null; // Reset for new chat
   };
 
   const selectChat = async (chatId: string) => {
-    // 1. Find the chat in local list (preview)
+    // 1. Find chat in local list (preview)
     const chat = chats.find(c => c.id === chatId);
     if (chat) {
       setCurrentChat(chat);
-      currentChatIdRef.current = chatId; // Update ref to selected chat
+      currentChatIdRef.current = chatId; // Update ref
 
-      // 2. Fetch full details including messages from backend
+      // 2. Fetch full details from backend
       try {
         const response = await chatService.getChatMessages(chatId);
         if (response.success && response.data) {
@@ -339,7 +339,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           console.log('[loadChatMessages] Scope resources:', backendChat.scope_resources);
           console.log('[loadChatMessages] Scope images:', backendChat.scope_images);
 
-          // Build resource map for resolving context_attachment_ids
+          // Build resource map for context_attachment_ids
           const resourceMap = new Map<string, any>();
           [
             ...(backendChat.scope_resources || []),
@@ -368,7 +368,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
               url: undefined
             }));
 
-            // Note: context_attachment_ids is for RAG context only, not visual display
+            // context_attachment_ids is RAG context, not display
 
             return {
               id: m.id,
@@ -390,9 +390,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             messages: mappedMessages,
             title: backendChat.title,
             mode: backendChat.mode,
-            // Preserve original updatedAt - don't update on selection
+            // Don't update updatedAt on selection
             updatedAt: chat.updatedAt,
-            // Preserve starred state from local chat
+            // Preserve starred from local chat
             starred: chat.starred,
             scope_locked: backendChat.scope_locked,
             scope_resources: backendChat.scope_resources,
@@ -401,7 +401,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
           setCurrentChat(fullChat);
 
-          // Also update the chat in the main list - preserve order
+          // Also update in chats list, preserve order
           setChats(prev => prev.map(c => c.id === chatId ? fullChat : c));
         }
       } catch (error) {
@@ -410,9 +410,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Helper functions for attachment management (must be before sendMessage)
+  // Attachment management helpers
   const updateAttachmentLoading = useCallback((attachmentIds: string[], loading: boolean) => {
-    // Use functional updates to avoid stale state
+    // Functional update to avoid stale state
     setCurrentChat(prev => {
       if (!prev || !prev.attachments) return prev;
 
@@ -437,7 +437,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const clearAttachments = useCallback(() => {
     console.log('[clearAttachments] Called');
 
-    // Use functional updates to avoid using stale state
+    // Functional update to avoid stale state
     setCurrentChat(prev => {
       if (!prev) return prev;
       console.log('[clearAttachments] Clearing attachments from chat with', prev.messages.length, 'messages');
@@ -447,7 +447,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     });
 
     setChats(prev => prev.map(chat => {
-      // Use the functional update version of currentChat
+      // Clear for all chats with attachments
       if (chat.attachments && chat.attachments.length > 0) {
         return { ...chat, attachments: [] };
       }
@@ -464,11 +464,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     setIsStreaming(true);
     setIsThinking(false);
 
-    // Capture attachments to include in user message
+    // Capture current attachments
     const attachedFiles = currentChat?.attachments || [];
     const hasAttachments = attachedFiles.length > 0;
 
-    // Collect resource IDs from attachments (for backend vision processing)
+    // Collect resource IDs for backend vision processing
     const attachmentResourceIds = attachedFiles
       .map(a => a.resourceId)
       .filter((id): id is string => !!id);
@@ -477,7 +477,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     console.log('[sendMessage] Attachment Resource IDs:', attachmentResourceIds);
     console.log('[sendMessage] Selected Resource IDs:', resourceIds);
 
-    // Check if all attachments have resource IDs
+    // Fail if attachments are still uploading
     const attachmentsWithoutIds = attachedFiles.filter(a => !a.resourceId);
     if (attachmentsWithoutIds.length > 0) {
       console.error('[sendMessage] Some attachments missing resourceIds:', attachmentsWithoutIds);
@@ -490,19 +490,19 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     console.log('[sendMessage] TOTAL Resource IDs being sent:', totalResourceIds);
     console.log('[sendMessage] Number of resource IDs:', totalResourceIds.length);
 
-    // Combine uploaded file attachments and selected resource metadata
+    // Combine file attachments and selected resources
     const uploadedFileAttachments = hasAttachments ? attachedFiles.map(a => ({
       id: a.resourceId || a.id,
       name: a.name,
       type: a.type,
-      // Store just metadata, not blob URL (will be lost on refresh anyway)
+      // Metadata only, no blob URL
       url: undefined,
     })) : [];
 
     const resourceAttachments = resourceMetadata || [];
     const allAttachments = [...uploadedFileAttachments, ...resourceAttachments];
 
-    // Create user message locally first with attachments
+    // Build user message with attachments
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -514,7 +514,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     console.log('[sendMessage] Created user message:', userMessage);
     console.log('[sendMessage] User message attachments:', userMessage.attachments);
 
-    // Create placeholder for assistant message
+    // Placeholder for streaming assistant message
     const assistantMessageId = (Date.now() + 1).toString();
     const assistantMessage: Message = {
       id: assistantMessageId,
@@ -565,17 +565,17 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const updated = {
         ...chatToUpdate,
         messages: [...chatToUpdate.messages, userMessage, assistantMessage],
-        // Update timestamp when sending message to move chat to top
+        // Move chat to top on send
         updatedAt: new Date(),
-        attachments: [], // Clear attachments from chat after adding to message
+        attachments: [], // Clear attachments after adding to message
       };
 
       const otherChats = prev.filter(c => c.id !== updated.id);
-      // Move chat to top of list when sending message
+      // Move chat to top of list
       return [updated, ...otherChats];
     });
 
-    // Map dataSource to backend mode
+    // Map dataSource to backend mode string
     const modeMap: Record<DataSource, string> = {
       'documents': 'document_only',
       'hybrid': 'hybrid',
@@ -584,8 +584,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // Stream response from backend
-      // For compound and compound-mini models, web search is always enabled via backend
-      // For other models, use the internetSearch toggle
+      // Compound models have built-in web search
       const stream = chatService.sendMessageStream({
         chatId: chatId || undefined,
         content,
@@ -599,7 +598,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       let accumulatedContent = '';
 
       for await (const token of stream) {
-        // Handle init message with chat_id
+        // Handle init event with chat_id
         if (token.type === 'init' && token.chat_id) {
           currentChatIdRef.current = token.chat_id;
           // Update chat ID in state
@@ -614,10 +613,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           continue;
         }
 
-        // Handle error
+        // Handle error tokens
         if (token.error) {
           if (token.error === 'MODEL_LIMIT_REACHED') {
-            // Unified daily query limit reached
+            // Daily query limit reached
             setStreamError(token.message || 'Daily query limit reached. Try again tomorrow.');
             // Refresh usage display
             fetchRateLimitStatus();
@@ -630,15 +629,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Accumulate tokens
+        // Accumulate streamed tokens
         if (token.token) {
           accumulatedContent += token.token;
 
-          // detect <think>...</think> tags to show "thinking" spinner
+          // Detect <think>...</think> for thinking spinner
           const openThinkCount = (accumulatedContent.match(/<think>/g) || []).length;
           const closeThinkCount = (accumulatedContent.match(/<\/think>/g) || []).length;
 
-          // If we have more opening tags than closing tags, we're thinking
+          // More open than close tags means thinking
           const currentlyThinking = openThinkCount > closeThinkCount;
           setIsThinking(currentlyThinking);
 
@@ -653,7 +652,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                 content: accumulatedContent,
               };
             }
-            // Don't update timestamp during streaming
+            // Don't update timestamp while streaming
             return { ...prev, messages };
           });
 
@@ -668,16 +667,16 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                 content: accumulatedContent,
               };
             }
-            // Don't update timestamp during streaming
+            // Don't update timestamp while streaming
             return [{ ...first, messages }, ...rest];
           });
         }
 
-        // Handle completion
+        // Handle stream completion
         if (token.done) {
           console.log('[sendMessage] Stream complete');
 
-          // Store source chunks on the assistant message for inline references
+          // Store source chunks on assistant message
           if (token.chunks && token.chunks.length > 0) {
             const chunks = token.chunks;
             setCurrentChat(prev => {
@@ -691,17 +690,17 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             });
           }
 
-          // Refresh usage after each query
+          // Refresh usage after query
           fetchRateLimitStatus();
 
-          // Always clear attachments after message is sent
-          // The scope keeps track of resources on the backend
+          // Clear attachments after send
+          // Backend scope tracks resources
           if (hasAttachments) {
             console.log('[sendMessage] Clearing attachments after send');
             clearAttachments();
           }
 
-          // Refetch chat history to get updated timestamps from backend
+          // Refetch history for updated timestamps
           try {
             const response = await chatService.getChatHistory();
             if (response.success && response.data?.chats) {
@@ -711,17 +710,17 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                 return {
                   id: c.id,
                   title: c.title,
-                  messages: [], // Messages will be loaded when chat is selected
+                  messages: [], // Loaded on chat select
                   createdAt: isNaN(created.getTime()) ? new Date() : created,
                   updatedAt: isNaN(updated.getTime()) ? created : updated,
                   starred: c.starred || false,
                 };
               });
-              // Update chats list while preserving messages for current chat
+              // Update chats, preserving messages for current chat
               setChats(prev => {
                 return mappedChats.map(newChat => {
                   const existingChat = prev.find(c => c.id === newChat.id);
-                  // Preserve messages if it's the current chat
+                  // Preserve messages for current chat
                   if (existingChat && existingChat.id === currentChatIdRef.current) {
                     return { ...newChat, messages: existingChat.messages };
                   }
@@ -749,7 +748,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const addAttachments = async (files: AttachedFile[]) => {
     console.log('[addAttachments] Called with files:', files.map(f => f.name));
 
-    // Create chat if it doesn't exist
+    // Create chat if none exists
     let chatToUpdate = currentChat;
 
     if (!chatToUpdate) {
@@ -775,7 +774,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setCurrentChat(updatedCurrentChat);
       chatToUpdate = updatedCurrentChat;
 
-      // Update in history list if it exists there
+      // Update in history list if it exists
       setChats(prev => {
         const chatExists = prev.some(c => c.id === chatToUpdate!.id);
         if (chatExists) {

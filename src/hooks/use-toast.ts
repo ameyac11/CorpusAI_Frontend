@@ -3,7 +3,7 @@ import * as React from "react";
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 1;
-// large delay so toasts stick around until explicitly dismissed
+// Long delay, toasts stay until dismissed
 const TOAST_REMOVE_DELAY = 1000000;
 
 type ToasterToast = ToastProps & {
@@ -86,8 +86,7 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action;
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
+      // Side effect: queue removal
       if (toastId) {
         addToRemoveQueue(toastId);
       } else {
@@ -122,7 +121,7 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
-// pub/sub pattern — state lives outside React so toasts can be triggered from anywhere
+// State lives outside React so toasts work anywhere
 const listeners: Array<(state: State) => void> = [];
 
 let memoryState: State = { toasts: [] };

@@ -39,7 +39,7 @@ import remarkGfm from 'remark-gfm';
 import { DocumentSidebar, DocumentRef } from '@/components/chat/DocumentSidebar';
 import { BehaviorSlider } from '@/components/chat/BehaviorSlider';
 
-// Documents are now managed through the backend API
+// Documents managed via backend API
 
 const models: {
   value: AIModel;
@@ -92,7 +92,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const documentInputRef = useRef<HTMLInputElement>(null);
-  // Documents removed - using real backend data
+  // Using real backend data
   const [searchQuery, setSearchQuery] = useState('');
   const [input, setInput] = useState('');
   const [permanentResources, setPermanentResources] = useState<any[]>([]);
@@ -129,13 +129,13 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
   const [contactMessage, setContactMessage] = useState('');
   const [contactSubmitting, setContactSubmitting] = useState(false);
 
-  // grab permanent (Resources page) docs so user can attach them to chat context
+  // Fetch permanent resources for chat context
   useEffect(() => {
     const fetchPermanentResources = async () => {
       try {
         const response = await resourceService.listResources();
         if (response.success && response.data) {
-          // Flatten wrapper if double wrapped (safeguard) or use direct array
+          // Handle possible double-wrapped response
           const resources = response.data.resources || response.data;
           setPermanentResources(Array.isArray(resources) ? resources : (resources as any).resources || []);
         }
@@ -193,7 +193,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
     return () => clearInterval(interval);
   }, [isStreaming]);
 
-  // surface rate-limit / stream errors as toast-style notifications
+  // Show errors as notifications
   useEffect(() => {
     if (streamError) {
       showNotification('warning', 'Model Status', streamError);
@@ -222,7 +222,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
   };
 
   const handleSuggestionClick = (suggestion: string) => {
-    // Fill input instead of sending directly
+    // Fill input, don't send directly
     setInput(suggestion);
   };
 
@@ -252,11 +252,11 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
     // Clear selected resources immediately so they disappear from input area
     setSelectedResources(new Set());
 
-    // Send message - attachments will be included automatically from currentChat
+    // Send; attachments included from currentChat
     await sendMessage(message, currentSelectedResources, selectedResourcesMetadata);
   };
 
-  // Shift+Enter for newline, plain Enter to send
+  // Shift+Enter = newline, Enter = send
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -333,7 +333,7 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
     setAttachmentPreviewLoading(true);
     setAttachmentPreviewData(null);
 
-    // If we have a resourceId (backend upload), fetch from API
+    // Backend upload: fetch preview via API
     if (resourceId) {
       try {
         const response = await resourceService.getResourcePreview(resourceId);
@@ -344,12 +344,12 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
         console.error('[Chat] Attachment preview error:', error);
       }
     }
-    // For local file attachments (not yet uploaded), use local file data
+    // Local file preview (not yet uploaded)
     else if (attachment.file) {
       const ext = attachment.name.split('.').pop()?.toLowerCase() || '';
 
       if (isImageFile(attachment.name)) {
-        // Convert to base64 for images
+        // Convert to base64
         const reader = new FileReader();
         reader.onload = () => {
           const base64 = (reader.result as string).split(',')[1];
@@ -737,10 +737,9 @@ export default function Chat({ docsSidebarOpen, setDocsSidebarOpen, onDocViewerC
             !input.trim() ||
             isStreaming ||
             (currentChat?.attachments?.some(a => a.loading) ?? false) ||
-            // Only require documents/resources for FIRST message in Documents/Hybrid mode
-            // If chat already has messages, don't require new uploads
+            // First message in doc/hybrid mode needs uploads
             (hasMessages
-              ? false  // Follow-up messages: never require documents
+              ? false  // Follow-up messages: no doc requirement
               : (dataSource === 'documents' || dataSource === 'hybrid') &&
               (!currentChat?.attachments || currentChat.attachments.length === 0) &&
               selectedResources.size === 0)

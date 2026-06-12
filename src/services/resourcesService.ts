@@ -1,7 +1,4 @@
-/**
- * Resources Service for CorpusAI.
- * Handles API calls for permanent resources (web imports, file uploads).
- */
+/** Permanent resources API (web imports, file uploads). */
 
 import { getApiBasePath } from '@/lib/api/config';
 
@@ -69,16 +66,11 @@ export interface ImportResponse {
     error?: string;
 }
 
-// uses raw fetch instead of apiClient — this service was built before the central client existed
-// TODO: migrate to apiClient for consistency
-
-// Cookies are sent automatically with credentials: 'include'
-// No need for manual auth headers
+// Uses raw fetch (predates central api client)
+// TODO: migrate to apiClient
 
 export const resourcesService = {
-    /**
-     * List all permanent resources for the current user.
-     */
+    /** List all permanent resources. */
     async listResources(): Promise<ResourcesResponse> {
         const response = await fetch(`${getApiBasePath()}/resources`, {
             credentials: 'include', // Send cookies
@@ -86,11 +78,7 @@ export const resourcesService = {
         return response.json();
     },
 
-    /**
-     * Search web using Perplexity (Resource Page only).
-     * Makes EXACTLY ONE API call, returns up to 20 results.
-     * Careful: each call counts against the user's daily search quota.
-     */
+    /** Search web via Perplexity (resource page only). */
     async searchWeb(query: string): Promise<SearchResponse> {
         const response = await fetch(`${getApiBasePath()}/resources/search`, {
             method: 'POST',
@@ -103,9 +91,7 @@ export const resourcesService = {
         return response.json();
     },
 
-    /**
-     * Import selected web search results as permanent resources.
-     */
+    /** Import selected web results as permanent resources. */
     async importResources(searchId: string, selectedIndices: number[]): Promise<ImportResponse> {
         const response = await fetch(`${getApiBasePath()}/resources/import`, {
             method: 'POST',
@@ -121,9 +107,7 @@ export const resourcesService = {
         return response.json();
     },
 
-    /**
-     * Upload a file to Resource Page (permanent).
-     */
+    /** Upload a file as permanent resource. */
     async uploadResource(file: File): Promise<{ success: boolean; data?: ResourceItem; error?: string }> {
         const formData = new FormData();
         formData.append('file', file);
@@ -136,9 +120,7 @@ export const resourcesService = {
         return response.json();
     },
 
-    /**
-     * Poll ingestion status for a permanent resource until processing completes.
-     */
+    /** Poll resource until ingestion is done. */
     async pollResourceStatus(resourceId: string, intervalMs = 1000, maxAttempts = 60): Promise<{ status: string; chunk_count: number }> {
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
             try {
@@ -159,9 +141,7 @@ export const resourcesService = {
         return { status: 'failed', chunk_count: 0 };
     },
 
-    /**
-     * Delete a resource (permanent removal).
-     */
+    /** Permanently delete a resource. */
     async deleteResource(resourceId: string): Promise<{ success: boolean; message?: string; error?: string }> {
         const response = await fetch(`${getApiBasePath()}/resources/${resourceId}`, {
             method: 'DELETE',

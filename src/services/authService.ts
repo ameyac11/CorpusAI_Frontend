@@ -1,5 +1,4 @@
-// Authentication service
-// UI components should only call these functions
+// Auth service for UI components
 
 import { apiGet, apiPost, API_ROUTES, tokenStorage, type ApiResponse, type ApiError } from '@/lib/api';
 import { account, getFrontendUrl } from '@/lib/appwrite';
@@ -44,16 +43,16 @@ interface AuthResponse {
 export const authService = {
   async login(credentials: LoginCredentials): Promise<ApiResponse<User & { providers?: string[]; emailVerified?: boolean }>> {
     try {
-      // two-step login: Appwrite verifies password, then our backend issues cookies
+      // Two-step: Appwrite verifies, backend issues cookies
       try {
         await account.deleteSession('current');
         console.log('[Auth] Cleared existing Appwrite session');
       } catch (e) {
-        // No session to delete, that's fine
+        // No session to delete
         console.log('[Auth] No existing session to clear');
       }
 
-      // Step 2: Authenticate with Appwrite to verify password
+      // Verify password via Appwrite
       let appwriteSession;
       try {
         appwriteSession = await account.createEmailPasswordSession(credentials.email, credentials.password);
@@ -71,7 +70,7 @@ export const authService = {
         };
       }
 
-      // Step 3: Get our backend JWT tokens (stored in HTTP-only cookies)
+      // Get backend JWT cookies
       const response = await apiPost<{ success: boolean; data: AuthResponse; error?: string }>(
         API_ROUTES.AUTH.LOGIN,
         credentials
@@ -79,7 +78,7 @@ export const authService = {
 
       if (response.success && response.data?.data) {
         const authData = response.data.data;
-        // Tokens are now in HTTP-only cookies, no need to store in localStorage
+        // Tokens live in cookies now
         return {
           data: {
             id: authData.user.id,
@@ -93,7 +92,7 @@ export const authService = {
         };
       }
 
-      // If backend fails, delete Appwrite session
+      // Backend failed, clean up Appwrite session
       try {
         await account.deleteSession('current');
       } catch (e) {
@@ -120,7 +119,7 @@ export const authService = {
   },
 
   async signup(credentials: SignupCredentials): Promise<ApiResponse<User & { providers?: string[]; emailVerified?: boolean }>> {
-    // signup creates the user backend-side, then we create an Appwrite session to send verification email
+    // Signup creates user backend-side, then Appwrite sends verification
     const response = await apiPost<{ success: boolean; data: AuthResponse; error?: string }>(
       API_ROUTES.AUTH.SIGNUP,
       credentials
@@ -128,26 +127,26 @@ export const authService = {
 
     if (response.success && response.data?.data) {
       const authData = response.data.data;
-      // Tokens are now in HTTP-only cookies, no need to store
+      // Tokens are in cookies
 
-      // Step 2: Create Appwrite session to send verification email
+      // Create Appwrite session to send verification email
       try {
-        // Login to Appwrite to create session
+        // Login to Appwrite
         await account.createEmailPasswordSession(credentials.email, credentials.password);
         console.log('[Auth] Appwrite session created after signup');
 
-        // Now send verification email
+        // Send verification email
         try {
           const frontendUrl = getFrontendUrl();
           await account.createVerification(`${frontendUrl}/auth/verify-email`);
           console.log('[Auth] Email verification sent via Appwrite');
         } catch (verifyError: any) {
           console.error('[Auth] Failed to send verification email:', verifyError);
-          // Don't fail signup if verification email fails
+          // Don't fail signup if email fails
         }
       } catch (sessionError: any) {
         console.error('[Auth] Failed to create Appwrite session:', sessionError);
-        // Continue anyway - user can request verification later
+        // Continue — user can verify later
       }
 
       return {
@@ -172,18 +171,18 @@ export const authService = {
   },
 
   async logout(): Promise<ApiResponse<void>> {
-    // Clear Appwrite session if exists
+    // Clear Appwrite session on logout
     try {
       await account.deleteSession('current');
       console.log('[Auth] Appwrite session deleted');
     } catch (e) {
-      // Session might not exist, that's OK
+      // Session might not exist
       console.log('[Auth] No Appwrite session to delete');
     }
 
     const response = await apiPost<void>(API_ROUTES.AUTH.LOGOUT);
 
-    // Clear any legacy tokens (cookies are cleared by backend)
+    // Clear legacy tokens (cookies cleared by backend)
     tokenStorage.clearAll();
 
     return response;
@@ -202,13 +201,13 @@ export const authService = {
   },
 
   async refreshToken(): Promise<ApiResponse<AuthTokens>> {
-    // Refresh token is now in HTTP-only cookie
+    // Refresh token is in HTTP-only cookie
     const response = await apiPost<{ success: boolean; data: { message: string }; error?: string }>(
       API_ROUTES.AUTH.REFRESH_TOKEN
     );
 
     if (response.success) {
-      // Tokens are refreshed in cookies
+      // Tokens refreshed in cookies
       return { data: { accessToken: '', refreshToken: '' }, error: null, success: true };
     }
 
@@ -217,7 +216,7 @@ export const authService = {
 
   async verifyEmail(userId: string, secret: string): Promise<ApiResponse<void>> {
     try {
-      // Use Appwrite Client SDK for verification
+      // Use Appwrite SDK for email verification
       await account.updateVerification(userId, secret);
       console.log('[Auth] Email verified successfully via Appwrite');
       return {
@@ -241,7 +240,7 @@ export const authService = {
 
   async forgotPassword(email: string): Promise<ApiResponse<void>> {
     try {
-      // Use Appwrite Client SDK for password recovery
+      // Use Appwrite SDK for password recovery
       const frontendUrl = getFrontendUrl();
       await account.createRecovery(email, `${frontendUrl}/auth/reset-password`);
       console.log('[Auth] Password reset email sent via Appwrite');
@@ -252,7 +251,7 @@ export const authService = {
       };
     } catch (error: any) {
       console.error('[Auth] Password reset failed:', error);
-      // Don't reveal if email exists - always return success
+      // Don't reveal if email exists
       return {
         data: null,
         error: null,
@@ -263,7 +262,7 @@ export const authService = {
 
   async resetPassword(userId: string, secret: string, newPassword: string): Promise<ApiResponse<void>> {
     try {
-      // Use Appwrite Client SDK for password reset
+      // Use Appwrite SDK for password reset
       await account.updateRecovery(userId, secret, newPassword);
       console.log('[Auth] Password reset successfully via Appwrite');
       return {
@@ -287,7 +286,7 @@ export const authService = {
 
   async resendVerification(email: string): Promise<ApiResponse<void>> {
     try {
-      // Use Appwrite Client SDK to resend verification
+      // Use Appwrite SDK to resend verification
       const frontendUrl = getFrontendUrl();
       await account.createVerification(`${frontendUrl}/auth/verify-email`);
       console.log('[Auth] Verification email resent via Appwrite');
@@ -310,7 +309,7 @@ export const authService = {
     }
   },
 
-  // Check if user is authenticated (by calling /me endpoint)
+  // Check auth via /me endpoint
   async isAuthenticated(): Promise<boolean> {
     const response = await this.getCurrentUser();
     return response.success;

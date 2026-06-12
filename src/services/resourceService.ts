@@ -1,5 +1,4 @@
-// Resource service for document/file management
-// UI components should only call these functions
+// Resource service wrapper
 
 import { apiGet, apiPost, apiDelete, apiUpload, API_ROUTES, type ApiResponse } from '@/lib/api';
 
@@ -49,7 +48,7 @@ export interface ResourcePreview {
   thumbnail?: string;
 }
 
-// thin wrappers around the api client — keeps components from importing api internals
+// Thin wrappers around api client
 export const resourceService = {
   async listResources(): Promise<ApiResponse<{ resources: Resource[] }>> {
     return apiGet<{ resources: Resource[] }>(API_ROUTES.RESOURCES.LIST);

@@ -148,7 +148,7 @@ export default function Documents() {
     }
   };
 
-  // bytes → MB conversion happens here since the API returns raw bytes
+  // API returns bytes, convert to MB here
   const fetchUserDocuments = async () => {
     try {
       const response = await resourceService.listResources();
@@ -159,14 +159,14 @@ export default function Documents() {
             id: r.id,
             name: r.file_name,
             type: (r.file_type.split('/').pop() as DocumentType) || 'pdf',
-            // Convert bytes to MB here since the API returns bytes
+            // Convert to MB
             size: (r.size || 0) / (1024 * 1024),
             status: (r.status === 'processed' ? 'ready' : r.status === 'failed' ? 'failed' : 'processing') as DocumentStatus,
             uploadedAt: new Date(r.created_at),
           }));
         setUserDocuments(docs);
 
-        // For any document still in processing/pending state, start background polling
+        // Poll docs still in processing state
         docs.filter(d => d.status === 'processing').forEach(doc => {
           resourceService.pollResourceStatus(doc.id).then(pollResult => {
             const finalStatus: DocumentStatus = pollResult.status === 'processed' ? 'ready' : 'failed';
@@ -301,7 +301,7 @@ export default function Documents() {
     const state = location.state as { openAddDialog?: boolean };
     if (state?.openAddDialog) {
       setAddModalOpen(true);
-      // Clear the state to prevent reopening on refresh
+      // Clear state to prevent reopen on refresh
       navigate(location.pathname, { replace: true });
     }
   }, [location, navigate]);
@@ -338,7 +338,7 @@ export default function Documents() {
     : 0;
 
   const formatSize = (mb: number) => {
-    // Always show in MB as requested (e.g., 0.5 MB for 500KB)
+    // Always show in MB (e.g., 0.5 MB for 500KB)
     return `${Number(mb.toFixed(2))} MB`;
   };
 
@@ -439,15 +439,15 @@ export default function Documents() {
 
       if (result.success && result.document) {
         const realId = result.document.id;
-        // Set to processing — RAG ingestion is running in the background
+        // Set processing — RAG ingestion runs in background
         setUserDocuments(prev => prev.map(d =>
           d.id === tempId
             ? { ...d, id: realId, status: 'processing', uploadedAt: new Date() }
             : d
         ));
-        // Refresh usage stats after upload
+        // Refresh usage after upload
         fetchUsageStats();
-        // Poll until ingestion finishes, then reveal the real status
+        // Poll until ingestion finishes
         resourceService.pollResourceStatus(realId).then(pollResult => {
           const finalStatus: DocumentStatus = pollResult.status === 'processed' ? 'ready' : 'failed';
           setUserDocuments(prev => prev.map(d =>
@@ -460,7 +460,7 @@ export default function Documents() {
           }
         });
       } else {
-        // Handle failure - remove the temp document and show error
+        // Remove temp doc and show error
         setUserDocuments(prev => prev.filter(d => d.id !== tempId));
         showNotification('error', 'Upload Failed', result.error || 'Failed to upload file');
       }
@@ -473,7 +473,7 @@ export default function Documents() {
     if (!webSearchQuery.trim()) return;
     setAddModalOpen(false);
     setIsSearchingWeb(true);
-    // searchWeb now handles state update directly
+    // searchWeb handles state update directly
     await searchWeb(webSearchQuery);
     setIsSearchingWeb(false);
     setWebSearchQuery('');
@@ -487,11 +487,11 @@ export default function Documents() {
 
     if (imported) {
       setWebResources(prev => [...prev, imported]);
-      // Remove from search results after successful import
+      // Remove from results after import
       setWebSearchResults(prev => prev.filter(r => r.id !== result.id));
       showNotification('success', 'Imported', 'Web resource imported successfully');
     } else {
-      // Revert loading state on failure
+      // Revert loading on failure
       setWebSearchResults(prev => prev.map(r =>
         r.id === result.id ? { ...r, importing: false } : r
       ));
@@ -516,7 +516,7 @@ export default function Documents() {
         setWebResources(prev => prev.filter(r => r.id !== itemToDelete.id));
       }
 
-      // Refresh usage stats after delete
+      // Refresh usage after delete
       fetchUsageStats();
     } catch (error) {
       console.error('[Documents] Delete error:', error);
