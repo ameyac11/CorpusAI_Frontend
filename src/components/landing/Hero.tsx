@@ -73,7 +73,7 @@ export function Hero() {
           >
             <Button asChild size="lg" className="h-12 px-8 text-sm font-semibold rounded-xl bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600 text-white shadow-lg shadow-purple-500/20 border-0">
               <Link to="/signup">
-                Get Started Free
+                Get Started
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
