@@ -1,53 +1,90 @@
+<div align="center">
+
 # 🌟 CorpusAI Frontend
 
-![CorpusAI Thumbnail 1](./assets/corpusai_thumbnail_1.png)
-![CorpusAI Thumbnail 2](./assets/corpusai_thumbnail_2.png)
+**React · Vite · Tailwind CSS**
 
-This is the frontend application for CorpusAI, built with React, Vite, and Tailwind CSS. It provides an intuitive and modern user interface for interacting with the CorpusAI system.
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Appwrite](https://img.shields.io/badge/Appwrite-F02E65?style=for-the-badge&logo=appwrite&logoColor=white)](https://appwrite.io/)
 
-## ✨ Key Features
+<br />
 
-- **💬 Intelligent Chat Interface**: Seamless chat UI to interact with your indexed documents.
-- **📄 Document Management**: Upload, view, and organize resources with a built-in history.
-- **🎨 Creative Space**: A dedicated workspace for AI-assisted text and image generation.
-- **🔐 Comprehensive Authentication**: Secure login, signup, password reset, email verification, and OAuth support.
-- **🚀 Onboarding Flow**: Guided setup for new users.
-- **📱 Responsive Design**: Fully optimized for both desktop and mobile experiences.
+🎥 [Demo 1](https://youtu.be/Nquag0QaE1I) · 🎥 [Demo 2](https://youtu.be/XfuICVTkITg) · 📝 [Kaggle Writeup](https://www.kaggle.com/writeups/ameyac11/corpusai) · 🔗 [DOI](https://doi.org/10.34740/kaggle/w/86626)
 
-## 🛠️ Technology Stack
+<br />
 
-- **Framework**: ⚛️ React 18 with ⚡ Vite
-- **Styling**: 🎨 Tailwind CSS, Tailwind Animate
-- **UI Components**: 🧩 Radix UI (accessible component primitives)
-- **State Management**: 🔄 React Query (for server state), React Hook Form
-- **Routing**: 🗺️ React Router DOM
-- **Authentication & Backend**: 🔐 Appwrite
-- **Icons**: 🖼️ Lucide React
-- **Document Rendering**: 📄 React PDF, React Markdown
+### 📸 Preview
 
-## 📦 Prerequisites
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <a href="https://youtu.be/XfuICVTkITg">
+        <img src="./assets/corpusai_thumbnail_1.png" alt="CorpusAI Landing Page" width="500" style="border-radius: 12px; border: 1px solid #e5e7eb;" />
+      </a>
+      <br />
+      <sub><b>🏠 Landing Page</b> · <a href="https://youtu.be/Nquag0QaE1I">Watch Demo</a></sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://youtu.be/XfuICVTkITg">
+        <img src="./assets/corpusai_thumbnail_2.png" alt="CorpusAI Chat Interface" width="500" style="border-radius: 12px; border: 1px solid #e5e7eb;" />
+      </a>
+      <br />
+      <sub><b>💬 Chat Interface</b> · <a href="https://youtu.be/XfuICVTkITg">Watch Demo</a></sub>
+    </td>
+  </tr>
+</table>
 
-- 🟢 Node.js (v18 or higher recommended)
-- 📦 npm
+</div>
 
-## 🚀 Getting Started
+<br />
 
-1. **Install Dependencies** 📥
-   Navigate to the `frontend` directory and run:
-   ```bash
-   npm install
-   ```
+The client app for **CorpusAI** — chat with your documents, manage resources, and create with AI.  
+Powered by the [Backend API](../backend/README.md).
 
-2. **Environment Configuration** ⚙️
-   Ensure you have a `.env` file in the root of the frontend directory with the necessary Appwrite and other service credentials.
+---
 
-3. **Run Development Server** 🏃‍♂️
-   Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-   The application will be available at `http://localhost:5173`.
+## ✨ Features
+
+- 💬 **Intelligent Chat** — Scoped document conversations
+- 📄 **Document Management** — Upload · preview · organize · history
+- 🎨 **Creative Space** — AI text & image generation
+- 🔐 **Authentication** — Login · signup · OAuth · email verification
+- 🚀 **Onboarding** — Guided setup for new users
+- 📱 **Responsive** — Desktop & mobile ready
+- 📖 **Rich Viewing** — PDF & Markdown rendering
+
+---
+
+## 🛠️ Tech Stack
+
+| | |
+|:---:|:---|
+| ⚛️ | **React 18** · TypeScript · Vite |
+| 🎨 | **Tailwind CSS** · Radix UI · Framer Motion |
+| 🔄 | **React Query** · React Hook Form · Zod |
+| 🗺️ | **React Router** |
+| 🔐 | **Appwrite** |
+| 📄 | React PDF · React Markdown |
+
+---
+
+## 🚀 Quick Start
+
+```bash
+npm install
+npm run dev
+```
+
+🌐 App → [`http://localhost:8080`](http://localhost:8080)
+
+---
 
 ## 📜 License
 
-This project is licensed under the **Apache License 2.0**. Please refer to the `LICENSE` file in this repository for more details.
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge)](./LICENSE)
+
+Licensed under the **Apache License, Version 2.0**.  
+Copyright © 2026 Ameya Sanjay Chopade · See [LICENSE](./LICENSE) for details.
