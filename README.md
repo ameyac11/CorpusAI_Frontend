@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌟 CorpusAI Frontend
+# 📊 CorpusAI Frontend
 
 **React · Vite · Tailwind CSS**
 
@@ -41,14 +41,24 @@
 
 <br />
 
-The client app for **CorpusAI** — chat with your documents, manage resources, and create with AI.  
-Powered by the [Backend API](../backend/README.md).
+The client app for **CorpusAI** — an AI-powered document intelligence platform. Upload documents, chat with scoped context, manage your library, and generate content in Creative Space.
+
+Powered by the **[CorpusAI Backend](https://github.com/ameyac11/CorpusAI_Backend)** API.
+
+---
+
+## 🔗 Related Repository
+
+| Repo | Description |
+|:---|:---|
+| **CorpusAI Frontend** *(this repo)* | React client — chat UI, document management, Creative Space |
+| **[CorpusAI Backend](https://github.com/ameyac11/CorpusAI_Backend)** | FastAPI API — RAG pipeline, auth, storage, LLM routing |
 
 ---
 
 ## ✨ Features
 
-- 💬 **Intelligent Chat** — Scoped document conversations
+- 💬 **Intelligent Chat** — Scoped document conversations with multiple chat modes
 - 📄 **Document Management** — Upload · preview · organize · history
 - 🎨 **Creative Space** — AI text & image generation
 - 🔐 **Authentication** — Login · signup · OAuth · email verification
@@ -71,14 +81,51 @@ Powered by the [Backend API](../backend/README.md).
 
 ---
 
+## 📋 Prerequisites
+
+- Node.js 18+
+- Running **[CorpusAI Backend](https://github.com/ameyac11/CorpusAI_Backend)** instance (local or deployed)
+- Appwrite project (for client-side auth)
+
+---
+
 ## 🚀 Quick Start
 
 ```bash
 npm install
+```
+
+Create a `.env` file in the project root, then start the dev server:
+
+```bash
 npm run dev
 ```
 
 🌐 App → [`http://localhost:8080`](http://localhost:8080)
+
+Make sure the backend is running at `http://localhost:8000` (or update `VITE_API_BASE_URL` to match your API).
+
+---
+
+## ⚙️ Environment Variables
+
+| Variable | Description |
+|:---|:---|
+| `VITE_API_BASE_URL` | Backend API URL (e.g. `http://localhost:8000/api/v1`) |
+| `VITE_APPWRITE_ENDPOINT` | Appwrite API endpoint |
+| `VITE_APPWRITE_PROJECT_ID` | Appwrite project ID |
+| `VITE_WEB3FORMS_ACCESS_KEY` | Web3Forms key for contact form (optional) |
+
+Never commit `.env` files or API keys to version control.
+
+---
+
+## 📦 Build
+
+```bash
+npm run build      # production build
+npm run preview    # preview production build locally
+```
 
 ---
 
