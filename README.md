@@ -129,6 +129,12 @@ npm run preview    # preview production build locally
 
 ---
 
+## 🌟 Support
+
+If you find this project useful or interesting, please consider giving it a ⭐ on GitHub! Your support helps make the project more visible and encourages further development.
+
+---
+
 ## 📜 License
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue?style=for-the-badge)](./LICENSE)
